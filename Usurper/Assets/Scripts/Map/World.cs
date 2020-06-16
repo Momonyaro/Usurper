@@ -59,6 +59,8 @@ public class World
         int chunkX = chunk.GetChunkStartPos().x;
         int chunkY = chunk.GetChunkStartPos().y;
 
+        
+
         return viewportData;
     }
 
