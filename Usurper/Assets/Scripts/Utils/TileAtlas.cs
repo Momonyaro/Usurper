@@ -65,6 +65,11 @@ namespace Atlas
       tile.colliderType = collider ? Tile.ColliderType.Grid : Tile.ColliderType.None;
     }
 
+    public TileObject Copy()
+    {
+      return new TileObject(id, tile.sprite, collider, lightSource);
+    }
+
     public Tile GetTileCopy()
     {
       Tile newCopy = (Tile)ScriptableObject.CreateInstance(typeof(Tile));

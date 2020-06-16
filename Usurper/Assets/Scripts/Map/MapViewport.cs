@@ -35,9 +35,9 @@ public class MapViewport : MonoBehaviour
     }
 
     //Translate the intData to tiles.
-    private Tile[] ConvertToTiles(int[] mapData)
+    private TileObject[] ConvertToTiles(int[] mapData)
     {
-        Tile[] toReturn = new Tile[mapData.Length];
+        TileObject[] toReturn = new TileObject[mapData.Length];
 
         cachedTiles = new List<TileObject>(); 
 
@@ -50,7 +50,7 @@ public class MapViewport : MonoBehaviour
                 if (cachedTile.id == intData) 
                 { 
                     if (cachedTile.tile == null) { Debug.Log("null cachedTileObject at: " + cachedTile.id); cachedTiles.Remove(cachedTile); break; } //Broken tile, fetch a new one
-                    toReturn[i] = cachedTile.GetTileCopy(); 
+                    toReturn[i] = cachedTile.Copy(); 
                     foundInCache = true; 
                     break; 
                 } 
@@ -58,14 +58,14 @@ public class MapViewport : MonoBehaviour
             if (foundInCache) continue;
 
             TileObject fetched = TileAtlas.FetchTileObjectByID(intData);
-            toReturn[i] = fetched.GetTileCopy();
+            toReturn[i] = fetched.Copy();
             cachedTiles.Add(fetched);
         }
 
         return toReturn;
     }
 
-    public void DrawTileArrayToTilemap(Tile[] tileData)
+    public void DrawTileArrayToTilemap(TileObject[] tileData)
     {
         viewport.size = viewport.WorldToCell(new Vector3Int(31, 31, 1));
         viewport.ResizeBounds();
@@ -89,7 +89,8 @@ public class MapViewport : MonoBehaviour
         for (int j = 0; j < tileData.Length; j++)
         {
             //if (tileData[j] == null) Debug.Log("null tile at:" + viewport.WorldToCell(positions[j]), tileData[j]);
-            viewport.SetTile(viewport.WorldToCell(positions[j]), tileData[j]);
+            //Apply light color in steps. example is 4 levels of brightness where we just take some distance and in steps apply lightlevels.
+            viewport.SetTile(viewport.WorldToCell(positions[j]), tileData[j].tile);
         }
 
         viewport.RefreshAllTiles();
