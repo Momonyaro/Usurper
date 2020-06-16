@@ -5,11 +5,18 @@ using UnityEngine;
 
 public class StreamingResourceLoader : MonoBehaviour
 {
+    public static bool finishedReading = false;
+
     //The idea is to load in maps, sprites, items & entities from external files in order to allow mods
-    void Start()
+    public void Init()
     {
         FetchSpritesForAtlas();
         GetComponent<SpriteRenderer>().sprite = Atlas.SpriteAtlas.FetchSpriteByName("spr_player");
+        Atlas.TileAtlas.AddTileObjectToAtlas(new Atlas.TileObject(0, Atlas.SpriteAtlas.FetchSpriteByName("spr_grass_0"), false, false));
+        Atlas.TileAtlas.AddTileObjectToAtlas(new Atlas.TileObject(1, Atlas.SpriteAtlas.FetchSpriteByName("spr_grass_1"), false, false));
+        Atlas.TileAtlas.AddTileObjectToAtlas(new Atlas.TileObject(2, Atlas.SpriteAtlas.FetchSpriteByName("spr_grass_2"), false, false));
+        Atlas.TileAtlas.AddTileObjectToAtlas(new Atlas.TileObject(3, Atlas.SpriteAtlas.FetchSpriteByName("spr_boulder_0"), true, false));
+        finishedReading = true;
     }
 
 

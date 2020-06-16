@@ -24,7 +24,7 @@ public class World
     {
         int xOffset = 0;
         int yOffset = 0;
-        for (int i = 0; i < renderDiameter; i++)
+        for (int i = 0; i < worldData.Length; i++)
         {
             worldData[i] = new Chunk(xOffset, yOffset);
             xOffset += Chunk.chunkSize;
@@ -36,7 +36,7 @@ public class World
     {
         //first check if pointOnWorld is on the loaded world! If not, we will have to fetch a chunk on that position from .map files later
         //How do we load the missing data from other chunks?
-        int[,] viewportData = new int[(MapViewport.viewPortRadius * 2) - 1, (MapViewport.viewPortRadius * 2) - 1]; //x, y range = 0-30
+        int[,] viewportData = new int[31, 31]; //x, y range = 0-30
 
         for (int i = 0; i < worldData.Length; i++)
         {
@@ -56,10 +56,23 @@ public class World
     private int[,] WriteChunkDataToViewport(int[,] viewportData, Chunk chunk, Vector2Int pointOnWorld)
     {
         //based on the pointOnWorld +- viewportRadius we can fetch the tiles we want and write them to the buffer.
-        int chunkX = chunk.GetChunkStartPos().x;
-        int chunkY = chunk.GetChunkStartPos().y;
+        int[,] chunkMapData = chunk.GetChunkMapData();
+        Rect renderArea = new Rect(pointOnWorld.x, pointOnWorld.y, (MapViewport.viewPortRadius * 2) + 1, (MapViewport.viewPortRadius * 2) + 1);
+        Debug.Log("RenderArea: " + renderArea);
 
-        
+        for (int y = 0; y < Chunk.chunkSize; y++)
+        {
+            for (int x = 0; x < Chunk.chunkSize; x++)
+            {
+                Vector2Int posToTest = chunk.GetChunkStartPos() + new Vector2Int(x, y);
+                if (renderArea.Contains(posToTest))
+                {
+                    int viewX = posToTest.x - Mathf.RoundToInt(renderArea.xMin); 
+                    int viewY = posToTest.y - Mathf.RoundToInt(renderArea.yMin);
+                    viewportData[viewX, viewY] = chunkMapData[x, y];
+                }
+            }
+        }
 
         return viewportData;
     }
@@ -67,9 +80,9 @@ public class World
     private int[] ConvertCollectedDataToIntArr(int[,] collectedData)
     {
         List<int> toReturn = new List<int>();
-        for (int y = 0; y < (MapViewport.viewPortRadius * 2) - 1; y++)
+        for (int y = 0; y < (MapViewport.viewPortRadius * 2) + 1; y++)
         {
-            for (int x = 0; x < (MapViewport.viewPortRadius * 2) - 1; x++)
+            for (int x = 0; x < (MapViewport.viewPortRadius * 2) + 1; x++)
             {
                 toReturn.Add(collectedData[x, y]);
             }
@@ -80,6 +93,7 @@ public class World
     private float GetDistanceBetweenChunkAndPoint(Chunk chunk, Vector2Int pos)
     {
         //Get center of chunk
+        if (chunk == null) { Debug.Log("Chunk was null? Please look into it!"); return 666;}
         Vector2 chunkCenter = new Vector2(Chunk.chunkSize / 2, Chunk.chunkSize/2);
         return Vector2.Distance(chunk.GetChunkStartPos() + chunkCenter, pos);
     }
