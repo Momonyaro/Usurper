@@ -5,7 +5,7 @@ using UnityEngine;
 public class World
 {
     private const int renderDiameter = 3;
-    public float arbitraryChunkDistance = 48;
+    public float arbitraryChunkDistance = 72;
 
     // We need to store chunks so that it looks like this, where P is the chunk where the player currently is.
     //  0 0 0
@@ -22,17 +22,19 @@ public class World
 
     public void Init()
     {
-        int xOffset = 0;
-        int yOffset = 0;
-        for (int i = 0; i < worldData.Length; i++)
+        for (int y = 0; y < renderDiameter; y++)
         {
-            worldData[i] = new Chunk(xOffset, yOffset);
-            xOffset += Chunk.chunkSize;
-            yOffset += Chunk.chunkSize;
+            for (int x = 0; x < renderDiameter; x++)
+            {
+                int xOffset = x * Chunk.chunkSize;
+                int yOffset = y * Chunk.chunkSize;
+                worldData[x + y * renderDiameter] = new Chunk(xOffset, yOffset);
+                Debug.Log("World added chunk att start positions" + new Vector2Int(xOffset, yOffset));
+            }
         }
     }
 
-    public int[] GetWorldDataAtPoint(Vector2Int pointOnWorld)
+    public int[,] GetWorldDataAtPoint(Vector2Int pointOnWorld)
     {
         //first check if pointOnWorld is on the loaded world! If not, we will have to fetch a chunk on that position from .map files later
         //How do we load the missing data from other chunks?
@@ -43,21 +45,24 @@ public class World
                 //We need to check if this chunk contain data within the renderDistance
                 //Since we have the world positions of the chunks and the player, let's
                 //compare those and see if we get a hit.
-                if (GetDistanceBetweenChunkAndPoint(worldData[i], pointOnWorld) > arbitraryChunkDistance)
+                if (GetDistanceBetweenChunkAndPoint(worldData[i], pointOnWorld) < arbitraryChunkDistance)
                 {
                     //Read Chunk Data and write it to the viewportData buffer!
                     viewportData = WriteChunkDataToViewport(viewportData, worldData[i], pointOnWorld);
                 }
         }
 
-        return ConvertCollectedDataToIntArr(viewportData);
+        return viewportData;
     }
 
     private int[,] WriteChunkDataToViewport(int[,] viewportData, Chunk chunk, Vector2Int pointOnWorld)
     {
         //based on the pointOnWorld +- viewportRadius we can fetch the tiles we want and write them to the buffer.
+        Debug.Log("Writing data from chunk at " + chunk.GetChunkStartPos() + " to viewport");
         int[,] chunkMapData = chunk.GetChunkMapData();
-        Rect renderArea = new Rect(pointOnWorld.x, pointOnWorld.y, (MapViewport.viewPortRadius * 2) + 1, (MapViewport.viewPortRadius * 2) + 1);
+        int halfSize = Mathf.FloorToInt(MapViewport.viewPortRadius / 2);
+        Rect renderArea = new Rect(pointOnWorld.x - halfSize, pointOnWorld.y - halfSize, 
+                                    MapViewport.viewPortRadius, MapViewport.viewPortRadius);
         Debug.Log("RenderArea: " + renderArea);
 
         for (int y = 0; y < Chunk.chunkSize; y++)
@@ -75,19 +80,6 @@ public class World
         }
 
         return viewportData;
-    }
-
-    private int[] ConvertCollectedDataToIntArr(int[,] collectedData)
-    {
-        List<int> toReturn = new List<int>();
-        for (int y = 0; y < (MapViewport.viewPortRadius * 2) + 1; y++)
-        {
-            for (int x = 0; x < (MapViewport.viewPortRadius * 2) + 1; x++)
-            {
-                toReturn.Add(collectedData[x, y]);
-            }
-        }
-        return toReturn.ToArray();
     }
 
     private float GetDistanceBetweenChunkAndPoint(Chunk chunk, Vector2Int pos)

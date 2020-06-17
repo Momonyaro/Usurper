@@ -2,10 +2,11 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+[System.Serializable]
 public class Chunk
 {
     public const short chunkSize = 64;
-    private int[,] mapData;
+    public int[,] mapData;
     private int xStartPos;
     private int yStartPos;
 
@@ -38,6 +39,16 @@ public class Chunk
     private int[,] GetFallbackData()
     {
         int[,] fallback = new int[chunkSize, chunkSize];
+        for (int y = 0; y < chunkSize; y++)
+        {
+            for (int x = 0; x < chunkSize; x++)
+            {
+                fallback[x, y] = 1;
+            }
+        }
+        fallback[0            , 0] = 3; fallback[0            , chunkSize - 1] = 3;
+        fallback[chunkSize - 1, 0] = 3; fallback[chunkSize - 1, chunkSize - 1] = 3;
+        fallback[5, 5] = 2;
         return fallback;
     }
 
