@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace Atlas
+namespace RENDERER.UTILS.Atlas
 {
     public class SpriteAtlas : MonoBehaviour
     {
@@ -29,7 +29,7 @@ namespace Atlas
                     return sprites[i];
                 }
             }
-            return Resources.Load<Sprite>("Sprites/" + spriteErrorFallbackName);
+            return null;
         }
     }
 }

@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using RENDERER.UTILS.Atlas;
 
 public class MapLoader : MonoBehaviour
 {
@@ -59,6 +60,6 @@ public struct Map
     int width;
     int height;
 
-    List<Atlas.TileObject> tileAtlas;
+    List<TileObject> tileAtlas;
     string[] chunkPaths;
 }
