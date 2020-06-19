@@ -27,14 +27,10 @@ namespace RENDERER.MAP
 
         private void Start()
         {
-    #if RENDER_EDITOR
-            //WE NEED TO HAVE THINGOS HERE FOR THE EDITOR
-    #else
             FindObjectOfType<StreamingResourceLoader>().Init();
             loadedWorld.Init();
             mapLighter = new MapLighter();
             OnMapUpdate();
-    #endif
         }
 
         private void Update()
