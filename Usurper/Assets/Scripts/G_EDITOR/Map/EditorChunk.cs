@@ -61,6 +61,10 @@ namespace EDITOR.MAP
             Vector2 cStartPos = chunkData.GetChunkStartPos();
             Vector2 localMousePos = mouseWorldPos - cStartPos; //Get the mouse pos relative to the chunk
             Vector2Int roundedPos = new Vector2Int(Mathf.FloorToInt(localMousePos.x), Mathf.FloorToInt(localMousePos.y));
+
+            if (roundedPos.x < 0 || roundedPos.x >= Chunk.chunkSize ||
+                roundedPos.y < 0 || roundedPos.y >= Chunk.chunkSize)    return;
+
             ReplaceTileOnChunk(roundedPos, PointerImageGhost.selected.id);
         }
 
@@ -70,9 +74,15 @@ namespace EDITOR.MAP
             tilemap.SetTile(new Vector3Int(tilePos.x, tilePos.y, 0), TileAtlas.FetchTileObjectByID(idOfNewTile).tile);
         }
 
-        private void DrawChunk()
+        public void DrawChunk()
         {
             TileObject[,] tileData = ConvertToTiles(chunkData.mapData);
+            MAP_DISPLAY_MODES currentMode = EditorMap.MAP_DISPLAY_MODE;
+            Tile colliderTile = (Tile)ScriptableObject.CreateInstance(typeof(Tile));
+            colliderTile.sprite = Resources.Load<Sprite>("Sprites/UI/spr_ui_trash");
+            colliderTile.color = Color.red;
+
+            Debug.Log("Drawing chunk with " + currentMode);
 
             Vector2Int cStartPos = chunkData.GetChunkStartPos();
             Vector3Int cVec3Pos = new Vector3Int(cStartPos.x, cStartPos.y, 0);
@@ -91,9 +101,28 @@ namespace EDITOR.MAP
                     //Debug.Log("X: " + x + " Y: " + y + " TILE: " + tileData[x, y].tile);
                     //DEPENDING ON THE MAP_DISPLAY_MODE, CHECK IF WE'RE GONNA INJECT A SUBSTITUTE TILE!
                     tilemap.SetTile(tilemap.WorldToCell(cVec3Pos + new Vector3Int(x, y, 0)), tileData[x, y].tile);
+                    switch (currentMode)
+                    {
+                        case MAP_DISPLAY_MODES.DEFAULT:
+                            continue;
+
+                        case MAP_DISPLAY_MODES.COLLIDER:
+                            if (tileData[x, y].collider)
+                            {
+                                tilemap.SetTile(tilemap.WorldToCell(cVec3Pos + new Vector3Int(x, y, 0)), colliderTile);
+                            }
+                            continue;
+                        
+                        case MAP_DISPLAY_MODES.LIGHTS:
+                            if (tileData[x, y].lightSource)
+                            {
+                                tilemap.SetTile(tilemap.WorldToCell(cVec3Pos + new Vector3Int(x, y, 0)), colliderTile);
+                            }
+                            continue;
+                    }
                 }
             }
-            ResizeColliderBounds(cVec3Pos + new Vector3Int(Chunk.chunkSize / 2, Chunk.chunkSize / 2, 0), Chunk.chunkSize, Chunk.chunkSize);
+            ResizeColliderBounds(new Vector3(Chunk.chunkSize / 2, Chunk.chunkSize / 2), Chunk.chunkSize, Chunk.chunkSize);
         }
 
         private TileObject[,] ConvertToTiles(int[,] mapData)

@@ -1,11 +1,12 @@
 using UnityEngine;
+using EDITOR.MAP;
 
 namespace EDITOR.CONTROLS
 {
     public class CameraController : MonoBehaviour
     {
         private const float minSize = 7;
-        private const float maxSize = 40;
+        private const float maxSize = 220;
 
         public float camMoveSpeed = 1.0f;
         public float camZoomSpeed = .01f;
@@ -24,13 +25,14 @@ namespace EDITOR.CONTROLS
             CameraMoveAction(movementVec);
             if (Input.GetKey(KeyCode.Plus) || Input.GetKey(KeyCode.KeypadPlus)) CameraZoomAction(-1);
             if (Input.GetKey(KeyCode.Minus)|| Input.GetKey(KeyCode.KeypadMinus))CameraZoomAction( 1);
+            DebugKeyboardInput();
         }
 
         private void CameraZoomAction(float scrollMultiplier)
         {
             float actualScrollSpeed = camZoomSpeed * scrollMultiplier;
 
-            cam.orthographicSize += actualScrollSpeed;
+            cam.orthographicSize = Mathf.Lerp(cam.orthographicSize, cam.orthographicSize + actualScrollSpeed, camZoomSpeed);
             if (cam.orthographicSize < minSize) { cam.orthographicSize = minSize; }
             if (cam.orthographicSize > maxSize) { cam.orthographicSize = maxSize; }
         }
@@ -38,9 +40,15 @@ namespace EDITOR.CONTROLS
         private void CameraMoveAction(Vector3 movementVec)
         {
             movementVec *= camMoveSpeed;
-            if (movementVec.x < .4f && movementVec.y < .4f) Debug.Log(movementVec);
             Vector3 lerpOffset = cam.transform.position + movementVec;
             cam.transform.position = Vector3.Lerp(cam.transform.position, lerpOffset, camMoveSpeed);
+        }
+
+        private void DebugKeyboardInput()
+        {
+            if (Input.GetKeyDown(KeyCode.F1)) { EditorMap.MAP_DISPLAY_MODE = MAP_DISPLAY_MODES.DEFAULT; FindObjectOfType<EditorMap>().OrderMapRedraw(); }
+            if (Input.GetKeyDown(KeyCode.F2)) { EditorMap.MAP_DISPLAY_MODE = MAP_DISPLAY_MODES.COLLIDER; FindObjectOfType<EditorMap>().OrderMapRedraw(); }
+            if (Input.GetKeyDown(KeyCode.F3)) { EditorMap.MAP_DISPLAY_MODE = MAP_DISPLAY_MODES.LIGHTS; FindObjectOfType<EditorMap>().OrderMapRedraw(); }
         }
 
     }

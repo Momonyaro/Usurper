@@ -6,16 +6,20 @@ public class PanelButtonSmooth : MonoBehaviour
 {
     public bool panelOpen = false;
     public RectTransform panelTransform;
+    public TileAtlasEditor tempSolutionTileAtlasToggle;
+    public float panelMoveDist;
 
     public void TogglePanelSmooth(float smoothSpeed)
     {
         if (panelOpen)
         {
-            StartCoroutine(MovePanel(panelTransform.position + new Vector3(250, 0, 0), smoothSpeed));
+            StartCoroutine(MovePanel(panelTransform.position + new Vector3(panelMoveDist, 0, 0), smoothSpeed));
+            if (tempSolutionTileAtlasToggle != null) tempSolutionTileAtlasToggle.ToggleTileInteractivity();
         }
         else 
         {
-            StartCoroutine(MovePanel(panelTransform.position + new Vector3(-250, 0, 0), smoothSpeed));
+            StartCoroutine(MovePanel(panelTransform.position + new Vector3(-panelMoveDist, 0, 0), smoothSpeed));
+            if (tempSolutionTileAtlasToggle != null) tempSolutionTileAtlasToggle.ToggleTileInteractivity();
         }
     }
 

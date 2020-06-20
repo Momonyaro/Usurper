@@ -36,7 +36,24 @@ public class TileAtlasEditor : MonoBehaviour
 
         Instantiate(newTileBlockPrefab, blockContentParent);
 
+        ToggleTileInteractivity();
+        
         yield break;
+    }
+
+    public void ToggleTileInteractivity()
+    {
+        for (int i = 0; i < transform.childCount; i++)
+        {
+            if (transform.GetChild(i).GetComponent<ListTileObjContainer>() != null)
+            {
+                ListTileObjContainer container = transform.GetChild(i).GetComponent<ListTileObjContainer>();
+                container.sprNameField.interactable = !container.lightSrcToggle.interactable;
+                container.tileIdField.interactable = !container.lightSrcToggle.interactable;
+                container.colliderToggle.interactable = !container.lightSrcToggle.interactable;
+                container.lightSrcToggle.interactable = !container.lightSrcToggle.interactable;
+            }
+        }
     }
 
     static int SortByID(TileObject t1, TileObject t2)
