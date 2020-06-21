@@ -1,5 +1,5 @@
 using UnityEngine;
-using EDITOR.MAP;
+using RENDERER.MAP;
 
 namespace EDITOR.CONTROLS
 {
@@ -22,7 +22,7 @@ namespace EDITOR.CONTROLS
         {
             Vector3 movementVec = new Vector3(Input.GetAxis("Horizontal"), Input.GetAxis("Vertical"), 0);
 
-            CameraMoveAction(movementVec);
+            //CameraMoveAction(movementVec);
             if (Input.GetKey(KeyCode.Plus) || Input.GetKey(KeyCode.KeypadPlus)) CameraZoomAction(-1);
             if (Input.GetKey(KeyCode.Minus)|| Input.GetKey(KeyCode.KeypadMinus))CameraZoomAction( 1);
             DebugKeyboardInput();
@@ -46,9 +46,9 @@ namespace EDITOR.CONTROLS
 
         private void DebugKeyboardInput()
         {
-            if (Input.GetKeyDown(KeyCode.F1)) { EditorMap.MAP_DISPLAY_MODE = MAP_DISPLAY_MODES.DEFAULT; FindObjectOfType<EditorMap>().OrderMapRedraw(); }
-            if (Input.GetKeyDown(KeyCode.F2)) { EditorMap.MAP_DISPLAY_MODE = MAP_DISPLAY_MODES.COLLIDER; FindObjectOfType<EditorMap>().OrderMapRedraw(); }
-            if (Input.GetKeyDown(KeyCode.F3)) { EditorMap.MAP_DISPLAY_MODE = MAP_DISPLAY_MODES.LIGHTS; FindObjectOfType<EditorMap>().OrderMapRedraw(); }
+            if (Input.GetKeyDown(KeyCode.F1)) { MapViewport.MAP_DISPLAY_MODE = MAP_DISPLAY_MODES.DEFAULT; FindObjectOfType<MapViewport>().OnMapUpdate(); }
+            if (Input.GetKeyDown(KeyCode.F2)) { MapViewport.MAP_DISPLAY_MODE = MAP_DISPLAY_MODES.COLLIDER; FindObjectOfType<MapViewport>().OnMapUpdate(); }
+            if (Input.GetKeyDown(KeyCode.F3)) { MapViewport.MAP_DISPLAY_MODE = MAP_DISPLAY_MODES.LIGHTS; FindObjectOfType<MapViewport>().OnMapUpdate(); }
         }
 
     }

@@ -8,8 +8,10 @@ namespace RENDERER.MAP
     
     public class World
     {
-        private const int renderDiameter = 3;
-        public float arbitraryChunkDistance = 72;
+        public static int width = 2;
+        public static int height = 2;
+        public static string worldName = "";
+        public float arbitraryChunkDistance = 100;
 
         // We need to store chunks so that it looks like this, where P is the chunk where the player currently is.
         //  0 0 0
@@ -19,7 +21,7 @@ namespace RENDERER.MAP
         //We load the chunks by holding the chunk world position range ex. 0-128 and then if we have a SetPlayerPosition(Vector2 pos)
         //from this pos vector we can see what chunk the player is on and if we need to load new ones.
 
-        public Chunk[] worldData = new Chunk[renderDiameter * renderDiameter];
+        public List<Chunk> worldData = new List<Chunk>();
         private Chunk activeChunk;
 
         //When we have the data, we need to export 31x31 tiles to a tilemap where the player is at tile 31x31 (the center). This could mean that chunk
@@ -27,25 +29,33 @@ namespace RENDERER.MAP
 
         public void Init()
         {
-            for (int y = 0; y < renderDiameter; y++)
+            for (int y = 0; y < height; y++)
             {
-                for (int x = 0; x < renderDiameter; x++)
+                for (int x = 0; x < width; x++)
                 {
                     int xOffset = x * Chunk.chunkSize;
                     int yOffset = y * Chunk.chunkSize;
-                    worldData[x + y * renderDiameter] = new Chunk(xOffset, yOffset);
-                    Debug.Log("World added chunk att start positions" + new Vector2Int(xOffset, yOffset));
+                    worldData.Add(new Chunk(xOffset, yOffset));
                 }
             }
+        }
+
+        public void CreateNewWorld(string mapName, int width, int height)
+        {
+            worldName = mapName;
+            World.width = width;
+            World.height = height;
+            worldData.Clear();
+            Init();
         }
 
         public int[,] GetWorldDataAtPoint(Vector2Int pointOnWorld)
         {
             //first check if pointOnWorld is on the loaded world! If not, we will have to fetch a chunk on that position from .map files later
             //How do we load the missing data from other chunks?
-            int[,] viewportData = new int[31, 31]; //x, y range = 0-30
+            int[,] viewportData = new int[MapViewport.viewPortRadius, MapViewport.viewPortRadius];
 
-            for (int i = 0; i < worldData.Length; i++)
+            for (int i = 0; i < worldData.Count; i++)
             {
                     //We need to check if this chunk contain data within the renderDistance
                     //Since we have the world positions of the chunks and the player, let's

@@ -11,7 +11,6 @@ namespace RENDERER.UTILS
     public class StreamingResourceLoader : MonoBehaviour
     {
         public static bool finishedReading = false;
-        public bool inEditor = false;
 
         //The idea is to load in maps, sprites, items & entities from external files in order to allow mods
         public void Init()
@@ -27,11 +26,6 @@ namespace RENDERER.UTILS
             Atlas.TileAtlas.AddTileObjectToAtlas(new Atlas.TileObject(7, Atlas.SpriteAtlas.FetchSpriteByName("spr_boulder_0"), true, false));
             Atlas.TileAtlas.AddTileObjectToAtlas(new Atlas.TileObject(8, Atlas.SpriteAtlas.FetchSpriteByName("spr_str_lantern_0"), true, true));
             finishedReading = true;
-        }
-
-        private void Start()
-        {
-            if (inEditor) Init();
         }
 
 

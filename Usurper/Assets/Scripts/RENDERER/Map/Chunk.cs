@@ -42,7 +42,15 @@ namespace RENDERER.MAP
 
         private int[,] GetFallbackData()
         {
-            return new int[chunkSize, chunkSize];
+            int[,] fallback = new int[chunkSize, chunkSize];
+            for (int y = 0; y < chunkSize; y++)
+            {
+                for (int x = 0; x < chunkSize; x++)
+                {
+                    fallback[x, y] = 1;
+                }
+            }
+            return fallback;
         }
 
         public Vector2Int GetChunkStartPos()

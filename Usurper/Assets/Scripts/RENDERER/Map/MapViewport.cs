@@ -8,10 +8,27 @@ using System.Collections.Generic;
 
 namespace RENDERER.MAP
 {
+
+    public enum MAP_DISPLAY_MODES
+    {
+        DEFAULT,    //Draw the imported data as usual
+        COLLIDER,   //Here we draw the tiles with colliders as a Cross and the others as void
+        LIGHTS,
+    }
+
+
+    public enum MAP_BOUNDS_MODIFY_DIRECTIONS
+    {
+        UP,
+        DOWN,
+        LEFT,
+        RIGHT
+    }
+
     public class MapViewport : MonoBehaviour
     {
 
-        public const int viewPortRadius = 31;
+        public static int viewPortRadius = 31;
         private const bool RENDER_EDITOR = false;
 
         [SerializeField]
@@ -19,14 +36,17 @@ namespace RENDERER.MAP
         private int[,] viewportMapData;
         [SerializeField]
         public List<TileObject> cachedTiles;
+        public static MAP_DISPLAY_MODES MAP_DISPLAY_MODE = MAP_DISPLAY_MODES.DEFAULT;
 
         //Here comes the mess that is tilemaps. We need to create it so that it creates the bounds (63x63 tiles) around the player at 0,0.
         public Tilemap viewport;
         public World loadedWorld = new World();
         private MapLighter mapLighter;
+        public bool inEditor = false;
 
         private void Start()
         {
+            if (inEditor) viewPortRadius = 73;
             FindObjectOfType<StreamingResourceLoader>().Init();
             loadedWorld.Init();
             mapLighter = new MapLighter();
@@ -35,18 +55,50 @@ namespace RENDERER.MAP
 
         private void Update()
         {
-            if (Input.anyKeyDown)
+            if (Input.anyKey)
             {
-                if (Input.GetKeyDown(KeyCode.W)) { playerPosOnMap += Vector2Int.up; OnMapUpdate();}
-                else if (Input.GetKeyDown(KeyCode.A)) { playerPosOnMap += Vector2Int.left; OnMapUpdate();}
-                else if (Input.GetKeyDown(KeyCode.S)) { playerPosOnMap += Vector2Int.down; OnMapUpdate();}
-                else if (Input.GetKeyDown(KeyCode.D)) { playerPosOnMap += Vector2Int.right; OnMapUpdate();}
+                if (Input.GetKey(KeyCode.W)) { playerPosOnMap += Vector2Int.up; OnMapUpdate();}
+                else if (Input.GetKey(KeyCode.A)) { playerPosOnMap += Vector2Int.left; OnMapUpdate();}
+                else if (Input.GetKey(KeyCode.S)) { playerPosOnMap += Vector2Int.down; OnMapUpdate();}
+                else if (Input.GetKey(KeyCode.D)) { playerPosOnMap += Vector2Int.right; OnMapUpdate();}
             }
         }
 
-        private void OnMapUpdate()
+        private void OnMouseDown()
+        {
+            if (inEditor && PointerImageGhost.selected.tile != null)
+            {
+                //Find where the mouse is and if it's within this chunk!
+                Vector2 mouseWorldPos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+                //Debug.Log(mouseWorldPos);
+
+                foreach (var chunk in loadedWorld.worldData)
+                {
+                    Vector2 cStartPos = chunk.GetChunkStartPos();
+                    Vector2 localMousePos = (playerPosOnMap + mouseWorldPos + new Vector2(.5f, .5f)) - cStartPos; //Get the mouse pos relative to the chunk
+                    Debug.Log(localMousePos);
+                    Vector2Int roundedPos = new Vector2Int(Mathf.FloorToInt(localMousePos.x), Mathf.FloorToInt(localMousePos.y));
+        
+                    if (roundedPos.x < 0 || roundedPos.x >= Chunk.chunkSize ||
+                        roundedPos.y < 0 || roundedPos.y >= Chunk.chunkSize)    return;
+        
+                    ReplaceTileOnChunk(chunk, roundedPos, PointerImageGhost.selected.id);
+                }
+            }
+
+        }
+
+
+        private void ReplaceTileOnChunk(Chunk chunkData, Vector2Int tilePos, int idOfNewTile)
+        {
+            chunkData.mapData[tilePos.x, tilePos.y] = idOfNewTile; //Please work it's like 2am
+            OnMapUpdate();
+        }
+
+        public void OnMapUpdate()
         {
             DrawTileArrayToTilemap(ConvertToTiles(loadedWorld.GetWorldDataAtPoint(playerPosOnMap)));
+            SetColliderBounds();
         }
 
         private void viewPortSetData(int[,] mapData)
@@ -57,13 +109,13 @@ namespace RENDERER.MAP
         //Translate the intData to tiles.
         private TileObject[,] ConvertToTiles(int[,] mapData)
         {
-            TileObject[,] toReturn = new TileObject[31, 31];
+            TileObject[,] toReturn = new TileObject[viewPortRadius, viewPortRadius];
 
             cachedTiles = new List<TileObject>(); 
 
-                for (int y = 0; y < 31; y++)
+                for (int y = 0; y < viewPortRadius; y++)
                 {
-                    for (int x = 0; x < 31; x++)
+                    for (int x = 0; x < viewPortRadius; x++)
                     {
                         int intData = mapData[x, y];
                         bool foundInCache = false;
@@ -90,26 +142,30 @@ namespace RENDERER.MAP
 
         public void DrawTileArrayToTilemap(TileObject[,] tileData)
         {
-            viewport.size = viewport.WorldToCell(new Vector3Int(31, 31, 1));
+            Sprite cross = Resources.Load<Sprite>("Sprites/UI/spr_ui_trash");
+            Tile crossTile = (Tile)ScriptableObject.CreateInstance(typeof(Tile));
+            crossTile.sprite = cross;
+            crossTile.color = Color.red;
+            int halfWidth = ((viewPortRadius - 1) / 2);
+            viewport.size = viewport.WorldToCell(new Vector3Int(viewPortRadius, viewPortRadius, 1));
             viewport.ResizeBounds();
-            viewport.SetTile(new Vector3Int(-15, -15, 0), null);
-            viewport.SetTile(new Vector3Int( 15,  15, 0), null);
+            viewport.SetTile(new Vector3Int(-halfWidth, -halfWidth, 0), null);
+            viewport.SetTile(new Vector3Int( halfWidth,  halfWidth, 0), null);
             viewport.ResizeBounds();
             viewport.RefreshAllTiles();
-            Vector3Int[,] positions = new Vector3Int[31, 31];
-            for (int y = -15; y < 16; y++)
+            Vector3Int[,] positions = new Vector3Int[viewPortRadius, viewPortRadius];
+            for (int y = -halfWidth; y < halfWidth + 1; y++)
             {
-                for (int x = -15; x < 16; x++)
+                for (int x = -halfWidth; x < halfWidth + 1; x++)
                 {
-                    positions[x + 15, y + 15] = new Vector3Int(x, y, 0);
+                    positions[x + halfWidth, y + halfWidth] = new Vector3Int(x, y, 0);
                     //Debug.Log(positions[i]);
                 }
             }
 
-            tileData[15, 15].lightSource = true;
-            tileData[15, 15].tile.sprite = SpriteAtlas.FetchSpriteByName("spr_player");
-            if (tileData[15, 15].tile.sprite == null) tileData[15, 15].tile.sprite = Resources.Load<Sprite>("Sprites/spr_err");
-            tileData = mapLighter.LightPass(tileData, 7);
+            tileData[halfWidth, halfWidth].tile = crossTile;
+            if (tileData[halfWidth, halfWidth].tile.sprite == null) tileData[halfWidth, halfWidth].tile.sprite = Resources.Load<Sprite>("Sprites/spr_err");
+            if (!inEditor) tileData = mapLighter.LightPass(tileData, 7);
 
             Debug.Log("Placing " + tileData.Length + " tiles on viewport...");
 
@@ -118,10 +174,169 @@ namespace RENDERER.MAP
                 for (int x = 0; x < viewPortRadius; x++)
                 {
                     viewport.SetTile(viewport.WorldToCell(positions[x, y]), tileData[x, y].tile);
+                    switch (MAP_DISPLAY_MODE)
+                    {
+                        case MAP_DISPLAY_MODES.COLLIDER:
+                            if (tileData[x, y].collider) viewport.SetTile(viewport.WorldToCell(positions[x, y]), crossTile);
+                        break;
+
+                        case MAP_DISPLAY_MODES.LIGHTS:
+                            if (tileData[x, y].lightSource) viewport.SetTile(viewport.WorldToCell(positions[x, y]), crossTile);
+                        break;
+                    }
+                    
                 }
             }
 
             viewport.RefreshAllTiles();
+        }
+
+        public void ResizeEditorMapBounds(int value, MAP_BOUNDS_MODIFY_DIRECTIONS direction)
+        {
+            Debug.Log(value + " " + direction);
+            List<Chunk> newChunks = new List<Chunk>();
+            //Resize map size
+            switch (direction)
+            {
+                case MAP_BOUNDS_MODIFY_DIRECTIONS.UP: World.height += value; break;
+                case MAP_BOUNDS_MODIFY_DIRECTIONS.DOWN: World.height += value; break;
+                case MAP_BOUNDS_MODIFY_DIRECTIONS.LEFT: World.width += value; break;
+                case MAP_BOUNDS_MODIFY_DIRECTIONS.RIGHT: World.width += value; break;
+            }
+
+            //a positive down or left value means, shift all chunks up by a chunkSize and create new chunks at 0 x or y
+            //a negative down or left means, remove chunks at 0 x or y and shift remaining chunks down by a chunkSize
+            if (direction == MAP_BOUNDS_MODIFY_DIRECTIONS.DOWN || direction == MAP_BOUNDS_MODIFY_DIRECTIONS.LEFT)
+            {
+                for (int i = 0; i < loadedWorld.worldData.Count; i++)
+                {
+                    Vector2Int cStartPos = loadedWorld.worldData[i].GetChunkStartPos();
+                    if (direction == MAP_BOUNDS_MODIFY_DIRECTIONS.DOWN) cStartPos += new Vector2Int(0, value * Chunk.chunkSize);
+                    if (direction == MAP_BOUNDS_MODIFY_DIRECTIONS.LEFT) cStartPos += new Vector2Int(value * Chunk.chunkSize, 0);
+                    loadedWorld.worldData[i].SetChunkStartPos(cStartPos.x, cStartPos.y);
+                }
+
+                // Remove chunks with positions less than 0
+                if (value < 0)
+                {
+                    if (direction == MAP_BOUNDS_MODIFY_DIRECTIONS.DOWN)
+                    {
+                        for (int x = 0; x < World.width; x++)
+                        {
+                            foreach (var chunk in loadedWorld.worldData)
+                            {
+                                Vector2Int cStartPos = chunk.GetChunkStartPos();
+                                if (cStartPos.y < 0)
+                                {
+                                    Debug.Log("Deleting chunk at " + cStartPos + " Because it's Y value is less than 0");
+                                    loadedWorld.worldData.Remove(chunk);
+                                    break;
+                                }
+                            }
+                        }
+                    }
+                    else 
+                    {
+                        for (int y = 0; y < World.height; y++)
+                        {
+                            foreach (var chunk in loadedWorld.worldData)
+                            {
+                                Vector2Int cStartPos = chunk.GetChunkStartPos();
+                                if (cStartPos.x < 0)
+                                {
+                                    Debug.Log("Deleting chunk at " + cStartPos + " Because it's X value is less than 0");
+                                    loadedWorld.worldData.Remove(chunk);
+                                    break;
+                                }
+                            }
+                        }
+                    }
+                }
+
+                //Here we add the extra chunks to fill out the new bounds
+                if (value > 0)
+                {
+                    if (direction == MAP_BOUNDS_MODIFY_DIRECTIONS.DOWN)
+                    {
+                        for (int x = 0; x < World.width; x++) { Chunk cData = new Chunk(x * Chunk.chunkSize, 0); loadedWorld.worldData.Add(cData); }
+                    }
+                    else 
+                    {
+                        for (int y = 0; y < World.height; y++) { Chunk cData = new Chunk(0, y * Chunk.chunkSize); loadedWorld.worldData.Add(cData); }
+                    }
+                }
+            }
+
+            //a positive up or right value means, add a extra row or column of chunks for the desired direction
+            //a negative up or right means, remove the row or column of chunks so that it correctly represents the width and height of the map.
+            if (direction == MAP_BOUNDS_MODIFY_DIRECTIONS.UP || direction == MAP_BOUNDS_MODIFY_DIRECTIONS.RIGHT)
+            {
+                if (value < 0)
+                {
+                    if (direction == MAP_BOUNDS_MODIFY_DIRECTIONS.UP)
+                    {
+                        for (int x = 0; x < World.width; x++)
+                        {
+                            foreach (var chunk in loadedWorld.worldData)
+                            {
+                                Vector2Int cStartPos = chunk.GetChunkStartPos();
+                                if (cStartPos.y >= (World.height) * Chunk.chunkSize)
+                                {
+                                    Debug.Log("Deleting chunk at " + cStartPos + " Because it's Y value is less than " + (World.height) * Chunk.chunkSize);
+                                    loadedWorld.worldData.Remove(chunk);
+                                    break;
+                                }
+                            }
+                        }
+                    }
+                    else 
+                    {
+                        for (int y = 0; y < World.height; y++)
+                        {
+                            foreach (var chunk in loadedWorld.worldData)
+                            {
+                                Vector2Int cStartPos = chunk.GetChunkStartPos();
+                                if (cStartPos.x >= (World.width) * Chunk.chunkSize)
+                                {
+                                    Debug.Log("Deleting chunk at " + cStartPos + " Because it's X value is less than " + (World.width) * Chunk.chunkSize);
+                                    loadedWorld.worldData.Remove(chunk);
+                                    break;
+                                }
+                            }
+                        }
+                    }
+                }
+                if (value > 0)
+                {
+                    if (direction == MAP_BOUNDS_MODIFY_DIRECTIONS.UP)
+                    {
+                        for (int x = 0; x < World.width; x++) 
+                        { 
+                            Chunk cData = new Chunk(x * Chunk.chunkSize, (World.height - 1) * Chunk.chunkSize); 
+                            newChunks.Add(cData);
+                        }
+                    }
+                    else 
+                    {
+                        for (int y = 0; y < World.height; y++) 
+                        { 
+                            Chunk cData = new Chunk((World.width - 1) * Chunk.chunkSize, y * Chunk.chunkSize); 
+                            newChunks.Add(cData);
+                        }
+                    }
+                }
+                loadedWorld.worldData.AddRange(newChunks);
+            }
+        }
+
+        public void SetColliderBounds()
+        {
+            if (GetComponent<BoxCollider2D>() != null)
+            {
+                BoxCollider2D col = GetComponent<BoxCollider2D>();
+                //col.offset = new Vector2(viewPortRadius / 2f, viewPortRadius / 2f);
+                col.size = new Vector2(viewPortRadius, viewPortRadius);
+            }
         }
 
     }

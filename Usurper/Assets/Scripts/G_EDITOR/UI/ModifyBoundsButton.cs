@@ -1,5 +1,5 @@
 using UnityEngine;
-using EDITOR.MAP;
+using RENDERER.MAP;
 
 public class ModifyBoundsButton : MonoBehaviour
 {
@@ -8,6 +8,6 @@ public class ModifyBoundsButton : MonoBehaviour
 
     public void ModifyBoundsOfActiveMap()
     {
-        FindObjectOfType<EditorMap>().ResizeEditorMapBounds(value, direction);
+        FindObjectOfType<MapViewport>().ResizeEditorMapBounds(value, direction);
     }
 }
