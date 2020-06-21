@@ -36,7 +36,7 @@ public class NewProjectPanel : MonoBehaviour
     private void CreateInfoTextDump()
     {
         mapInfoTextBox.text = "Map Info:\n" + mapWidth + "x" + mapHeight + " chunks (" + mapWidth * mapHeight + ")\n" + mapWidth * 64 + "x" + mapHeight * 64 + " tiles (" + (mapWidth * 64) * (mapHeight * 64) +")";
-        if (mapHeight > 10 || mapWidth > 10) mapInfoTextBox.text += "\n\n\n<color=red>This may take a while, go make some coffee or something...</color>";
+        if (mapHeight > 64 || mapWidth > 64) mapInfoTextBox.text += "\n\n\n<color=red>This may take a while, go make some coffee or something...</color>";
     }
 
     public void SetMapName(string newName)

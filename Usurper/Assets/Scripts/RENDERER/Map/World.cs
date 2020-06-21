@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 
 namespace RENDERER.MAP
@@ -47,6 +48,11 @@ namespace RENDERER.MAP
             World.height = height;
             worldData.Clear();
             Init();
+        }
+
+        public void CreateWorldWithExistingData(List<Chunk> chunks)
+        {
+            worldData = chunks;
         }
 
         public int[,] GetWorldDataAtPoint(Vector2Int pointOnWorld)

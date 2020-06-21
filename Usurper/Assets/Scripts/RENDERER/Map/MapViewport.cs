@@ -32,7 +32,7 @@ namespace RENDERER.MAP
         private const bool RENDER_EDITOR = false;
 
         [SerializeField]
-        private Vector2Int playerPosOnMap = new Vector2Int(0, 0);
+        public Vector2Int playerPosOnMap = new Vector2Int(0, 0);
         private int[,] viewportMapData;
         [SerializeField]
         public List<TileObject> cachedTiles;
@@ -46,21 +46,28 @@ namespace RENDERER.MAP
 
         private void Start()
         {
-            if (inEditor) viewPortRadius = 73;
-            FindObjectOfType<StreamingResourceLoader>().Init();
-            loadedWorld.Init();
             mapLighter = new MapLighter();
-            OnMapUpdate();
+
+            if (inEditor)
+            {
+                FindObjectOfType<StreamingResourceLoader>().Init();
+                viewPortRadius = 73;
+                loadedWorld.Init();
+                OnMapUpdate();
+            } 
         }
 
         private void Update()
         {
             if (Input.anyKey)
             {
-                if (Input.GetKey(KeyCode.W)) { playerPosOnMap += Vector2Int.up; OnMapUpdate();}
-                else if (Input.GetKey(KeyCode.A)) { playerPosOnMap += Vector2Int.left; OnMapUpdate();}
-                else if (Input.GetKey(KeyCode.S)) { playerPosOnMap += Vector2Int.down; OnMapUpdate();}
-                else if (Input.GetKey(KeyCode.D)) { playerPosOnMap += Vector2Int.right; OnMapUpdate();}
+                if (inEditor)
+                {
+                    if (Input.GetKey(KeyCode.W)) { playerPosOnMap += Vector2Int.up; OnMapUpdate();}
+                    else if (Input.GetKey(KeyCode.A)) { playerPosOnMap += Vector2Int.left; OnMapUpdate();}
+                    else if (Input.GetKey(KeyCode.S)) { playerPosOnMap += Vector2Int.down; OnMapUpdate();}
+                    else if (Input.GetKey(KeyCode.D)) { playerPosOnMap += Vector2Int.right; OnMapUpdate();}
+                }
             }
         }
 
@@ -80,9 +87,10 @@ namespace RENDERER.MAP
                     Vector2Int roundedPos = new Vector2Int(Mathf.FloorToInt(localMousePos.x), Mathf.FloorToInt(localMousePos.y));
         
                     if (roundedPos.x < 0 || roundedPos.x >= Chunk.chunkSize ||
-                        roundedPos.y < 0 || roundedPos.y >= Chunk.chunkSize)    return;
+                        roundedPos.y < 0 || roundedPos.y >= Chunk.chunkSize)    continue;
         
                     ReplaceTileOnChunk(chunk, roundedPos, PointerImageGhost.selected.id);
+                    break;
                 }
             }
 

@@ -16,15 +16,14 @@ namespace RENDERER.UTILS
         public void Init()
         {
             FetchSpritesForAtlas();
-            Atlas.TileAtlas.AddTileObjectToAtlas(new Atlas.TileObject(0, Atlas.SpriteAtlas.FetchSpriteByName("spr_void"), true, false));
-            Atlas.TileAtlas.AddTileObjectToAtlas(new Atlas.TileObject(1, Atlas.SpriteAtlas.FetchSpriteByName("spr_grass_0"), false, false));
-            Atlas.TileAtlas.AddTileObjectToAtlas(new Atlas.TileObject(2, Atlas.SpriteAtlas.FetchSpriteByName("spr_grass_1"), false, false));
-            Atlas.TileAtlas.AddTileObjectToAtlas(new Atlas.TileObject(3, Atlas.SpriteAtlas.FetchSpriteByName("spr_grass_2"), false, false));
-            Atlas.TileAtlas.AddTileObjectToAtlas(new Atlas.TileObject(4, Atlas.SpriteAtlas.FetchSpriteByName("spr_grass_1"), false, false));
-            Atlas.TileAtlas.AddTileObjectToAtlas(new Atlas.TileObject(5, Atlas.SpriteAtlas.FetchSpriteByName("spr_grass_0"), false, false));
-            Atlas.TileAtlas.AddTileObjectToAtlas(new Atlas.TileObject(6, Atlas.SpriteAtlas.FetchSpriteByName("spr_wall_0"), true, false));
-            Atlas.TileAtlas.AddTileObjectToAtlas(new Atlas.TileObject(7, Atlas.SpriteAtlas.FetchSpriteByName("spr_boulder_0"), true, false));
-            Atlas.TileAtlas.AddTileObjectToAtlas(new Atlas.TileObject(8, Atlas.SpriteAtlas.FetchSpriteByName("spr_str_lantern_0"), true, true));
+            Atlas.TileAtlas.AddTileObjectToAtlas(new Atlas.TileObject(0, Atlas.SpriteAtlas.FetchSpriteByName("spr_water"), true, false));
+            Atlas.TileAtlas.AddTileObjectToAtlas(new Atlas.TileObject(1, Atlas.SpriteAtlas.FetchSpriteByName("spr_void"), true, false));
+            Atlas.TileAtlas.AddTileObjectToAtlas(new Atlas.TileObject(2, Atlas.SpriteAtlas.FetchSpriteByName("spr_grass_0"), false, false));
+            Atlas.TileAtlas.AddTileObjectToAtlas(new Atlas.TileObject(3, Atlas.SpriteAtlas.FetchSpriteByName("spr_grass_1"), false, false));
+            Atlas.TileAtlas.AddTileObjectToAtlas(new Atlas.TileObject(4, Atlas.SpriteAtlas.FetchSpriteByName("spr_grass_2"), false, false));
+            Atlas.TileAtlas.AddTileObjectToAtlas(new Atlas.TileObject(5, Atlas.SpriteAtlas.FetchSpriteByName("spr_wall_0"), true, false));
+            Atlas.TileAtlas.AddTileObjectToAtlas(new Atlas.TileObject(6, Atlas.SpriteAtlas.FetchSpriteByName("spr_boulder_0"), true, false));
+            Atlas.TileAtlas.AddTileObjectToAtlas(new Atlas.TileObject(7, Atlas.SpriteAtlas.FetchSpriteByName("spr_str_lantern_0"), true, true));
             finishedReading = true;
         }
 
