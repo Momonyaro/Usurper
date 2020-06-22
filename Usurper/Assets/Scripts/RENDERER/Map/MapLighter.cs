@@ -12,6 +12,7 @@ namespace RENDERER.MAP
         private const int rayCount = 360;
         private const int maxLightsInView = 8;
         private const float ambientLightLevel = 0.15f;
+        //private const float ambientLightLevel = 1;
 
         public TileObject[,] LightPass(TileObject[,] tileData, int dist)
         {
@@ -78,7 +79,7 @@ namespace RENDERER.MAP
                         tileData[tx, ty].tile.color = new Color(cMult, cMult, cMult, 1);
 
                     if (tx == x && ty == y) continue;    
-                    if (tileData[tx, ty].collider) break;
+                    if (tileData[tx, ty].collider && !tileData[tx,ty].transparent) break;
                 }
             }
 

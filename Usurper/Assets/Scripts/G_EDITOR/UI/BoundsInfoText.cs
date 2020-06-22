@@ -21,4 +21,10 @@ public class BoundsInfoText : MonoBehaviour
             cachedHeight = World.height;   
         }   
     }
+
+    public void ForceUpdate()
+    {
+        cachedWidth = -1;
+        cachedHeight = -1;
+    }
 }

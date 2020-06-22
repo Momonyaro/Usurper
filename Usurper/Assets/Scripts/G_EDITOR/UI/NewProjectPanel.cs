@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using RENDERER.MAP;
+using EDITOR.EXPORT;
 
 public class NewProjectPanel : MonoBehaviour
 {
@@ -22,15 +23,22 @@ public class NewProjectPanel : MonoBehaviour
 
     private void CreateMenu()
     {
-        mapNameField.SetTextWithoutNotify(mapName);
-        mapWidthField.SetTextWithoutNotify(mapWidth.ToString());
-        mapHeightField.SetTextWithoutNotify(mapHeight.ToString());
-        CreateInfoTextDump();
+        if (mapNameField != null) mapNameField.SetTextWithoutNotify(mapName);
+        if (mapWidthField != null) mapWidthField.SetTextWithoutNotify(mapWidth.ToString());
+        if (mapHeightField != null) mapHeightField.SetTextWithoutNotify(mapHeight.ToString());
+        if (mapInfoTextBox != null) CreateInfoTextDump();
     }
 
     public void SubmitNewMap()
     {
         FindObjectOfType<MapViewport>().loadedWorld.CreateNewWorld(mapName, mapWidth, mapHeight);
+    }
+
+    public void FetchExistingMapByName()
+    {
+        FindObjectOfType<MapExporter>().LoadMap(mapName);
+        FindObjectOfType<MapViewport>().OnMapUpdate();
+        FindObjectOfType<BoundsInfoText>().ForceUpdate();
     }
 
     private void CreateInfoTextDump()

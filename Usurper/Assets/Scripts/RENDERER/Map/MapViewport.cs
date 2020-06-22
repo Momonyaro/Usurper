@@ -25,6 +25,12 @@ namespace RENDERER.MAP
         RIGHT
     }
 
+    public enum EDITOR_BRUSH_MODES
+    {
+        PEN,
+        CHUNK_FILL
+    }
+
     public class MapViewport : MonoBehaviour
     {
 
@@ -37,12 +43,14 @@ namespace RENDERER.MAP
         [SerializeField]
         public List<TileObject> cachedTiles;
         public static MAP_DISPLAY_MODES MAP_DISPLAY_MODE = MAP_DISPLAY_MODES.DEFAULT;
+        public static EDITOR_BRUSH_MODES EDITOR_BRUSH_MODE = EDITOR_BRUSH_MODES.PEN;
 
         //Here comes the mess that is tilemaps. We need to create it so that it creates the bounds (63x63 tiles) around the player at 0,0.
         public Tilemap viewport;
         public World loadedWorld = new World();
         private MapLighter mapLighter;
         public bool inEditor = false;
+        private bool drawing = false;
 
         private void Start()
         {
@@ -51,7 +59,7 @@ namespace RENDERER.MAP
             if (inEditor)
             {
                 FindObjectOfType<StreamingResourceLoader>().Init();
-                viewPortRadius = 73;
+                viewPortRadius = 55;
                 loadedWorld.Init();
                 OnMapUpdate();
             } 
@@ -63,11 +71,23 @@ namespace RENDERER.MAP
             {
                 if (inEditor)
                 {
-                    if (Input.GetKey(KeyCode.W)) { playerPosOnMap += Vector2Int.up; OnMapUpdate();}
-                    else if (Input.GetKey(KeyCode.A)) { playerPosOnMap += Vector2Int.left; OnMapUpdate();}
-                    else if (Input.GetKey(KeyCode.S)) { playerPosOnMap += Vector2Int.down; OnMapUpdate();}
-                    else if (Input.GetKey(KeyCode.D)) { playerPosOnMap += Vector2Int.right; OnMapUpdate();}
+                    if (Input.GetKey(KeyCode.LeftControl))
+                    {
+                        if (Input.GetKeyDown(KeyCode.W)) { playerPosOnMap += Vector2Int.up * 10; OnMapUpdate(); return; }
+                        else if (Input.GetKeyDown(KeyCode.A)) { playerPosOnMap += Vector2Int.left * 10; OnMapUpdate(); return; }
+                        else if (Input.GetKeyDown(KeyCode.S)) { playerPosOnMap += Vector2Int.down * 10; OnMapUpdate(); return; }
+                        else if (Input.GetKeyDown(KeyCode.D)) { playerPosOnMap += Vector2Int.right * 10; OnMapUpdate(); return; }
+                    }
                 }
+                    if (Input.GetKey(KeyCode.W)) { playerPosOnMap += Vector2Int.up; OnMapUpdate(); return; }
+                    else if (Input.GetKey(KeyCode.A)) { playerPosOnMap += Vector2Int.left; OnMapUpdate(); return; }
+                    else if (Input.GetKey(KeyCode.S)) { playerPosOnMap += Vector2Int.down; OnMapUpdate(); return; }
+                    else if (Input.GetKey(KeyCode.D)) { playerPosOnMap += Vector2Int.right; OnMapUpdate(); return; }
+            }
+
+            if (drawing)
+            {
+                DrawOnMap();
             }
         }
 
@@ -75,38 +95,80 @@ namespace RENDERER.MAP
         {
             if (inEditor && PointerImageGhost.selected.tile != null)
             {
-                //Find where the mouse is and if it's within this chunk!
-                Vector2 mouseWorldPos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-                //Debug.Log(mouseWorldPos);
-
-                foreach (var chunk in loadedWorld.worldData)
-                {
-                    Vector2 cStartPos = chunk.GetChunkStartPos();
-                    Vector2 localMousePos = (playerPosOnMap + mouseWorldPos + new Vector2(.5f, .5f)) - cStartPos; //Get the mouse pos relative to the chunk
-                    Debug.Log(localMousePos);
-                    Vector2Int roundedPos = new Vector2Int(Mathf.FloorToInt(localMousePos.x), Mathf.FloorToInt(localMousePos.y));
-        
-                    if (roundedPos.x < 0 || roundedPos.x >= Chunk.chunkSize ||
-                        roundedPos.y < 0 || roundedPos.y >= Chunk.chunkSize)    continue;
-        
-                    ReplaceTileOnChunk(chunk, roundedPos, PointerImageGhost.selected.id);
-                    break;
-                }
+                drawing = true;
             }
 
         }
 
+        private void OnMouseUp()
+        {
+            if (drawing) OnMapUpdate();
+            drawing = false;
+        }
 
-        private void ReplaceTileOnChunk(Chunk chunkData, Vector2Int tilePos, int idOfNewTile)
+        private void DrawOnMap()
+        {
+            //Find where the mouse is and if it's within this chunk!
+            Vector2 mouseWorldPos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+            //Debug.Log(mouseWorldPos);
+            foreach (var chunk in loadedWorld.worldData)
+            {
+                Vector2 cStartPos = chunk.GetChunkStartPos();
+                Vector2 localMousePos = (playerPosOnMap + mouseWorldPos + new Vector2(.5f, .5f)) - cStartPos; //Get the mouse pos relative to the chunk
+                Debug.Log(localMousePos);
+                Vector2Int roundedPos = new Vector2Int(Mathf.FloorToInt(localMousePos.x), Mathf.FloorToInt(localMousePos.y));
+    
+                if (roundedPos.x < 0 || roundedPos.x >= Chunk.chunkSize ||
+                    roundedPos.y < 0 || roundedPos.y >= Chunk.chunkSize)    continue;
+    
+                Vector3Int toVec3 = new Vector3Int(Mathf.FloorToInt(mouseWorldPos.x + 0.5f), Mathf.FloorToInt(mouseWorldPos.y + 0.5f), 0);
+                toVec3 = viewport.WorldToCell(toVec3);
+                
+                switch (EDITOR_BRUSH_MODE)
+                {
+                    case EDITOR_BRUSH_MODES.PEN:
+                        ReplaceTileOnChunk(chunk, roundedPos, toVec3, PointerImageGhost.selected.id);
+                    break;
+
+                    case EDITOR_BRUSH_MODES.CHUNK_FILL:
+                        ReplaceChunkData(chunk, roundedPos, PointerImageGhost.selected.id);
+                    break;
+                }
+
+                break;
+            }
+        }
+
+        private void ReplaceChunkData(Chunk chunkData, Vector2Int roundedPos, int idOfNewTile)
+        {
+            int idToReplace = chunkData.mapData[roundedPos.x, roundedPos.y];
+            for (int y = 0; y < Chunk.chunkSize; y++)
+            {
+                for (int x = 0; x < Chunk.chunkSize; x++)
+                {
+                    if (chunkData.mapData[x, y] == idToReplace)
+                        chunkData.mapData[x, y] = idOfNewTile;
+                }
+            }
+            OnMapUpdate();
+            drawing = false;
+        }
+
+        private void ReplaceTileOnChunk(Chunk chunkData, Vector2Int tilePos, Vector3Int viewPortPos, int idOfNewTile)
         {
             chunkData.mapData[tilePos.x, tilePos.y] = idOfNewTile; //Please work it's like 2am
-            OnMapUpdate();
+            viewport.SetTile(viewPortPos, TileAtlas.FetchTileObjectByID(idOfNewTile).tile);
         }
 
         public void OnMapUpdate()
         {
             DrawTileArrayToTilemap(ConvertToTiles(loadedWorld.GetWorldDataAtPoint(playerPosOnMap)));
             SetColliderBounds();
+        }
+
+        public void SetBrushMode(int newMode)
+        {
+            EDITOR_BRUSH_MODE = (EDITOR_BRUSH_MODES)newMode;
         }
 
         private void viewPortSetData(int[,] mapData)
@@ -152,7 +214,9 @@ namespace RENDERER.MAP
         {
             Sprite cross = Resources.Load<Sprite>("Sprites/UI/spr_ui_trash");
             Tile crossTile = (Tile)ScriptableObject.CreateInstance(typeof(Tile));
+            Tile editorCrossTile = (Tile)ScriptableObject.CreateInstance(typeof(Tile));
             crossTile.sprite = cross;
+            editorCrossTile.sprite = cross;
             crossTile.color = Color.red;
             int halfWidth = ((viewPortRadius - 1) / 2);
             viewport.size = viewport.WorldToCell(new Vector3Int(viewPortRadius, viewPortRadius, 1));
@@ -171,7 +235,18 @@ namespace RENDERER.MAP
                 }
             }
 
-            tileData[halfWidth, halfWidth].tile = crossTile;
+            if (inEditor)
+            {
+                tileData[halfWidth, halfWidth].tile = editorCrossTile;
+                tileData[halfWidth, halfWidth].tile.color = Color.blue;
+                tileData[halfWidth, halfWidth].lightSource = false;
+            }
+            else
+            {
+                tileData[halfWidth, halfWidth].tile.sprite = SpriteAtlas.FetchSpriteByName("spr_player");
+                tileData[halfWidth, halfWidth].lightSource = true;
+            }
+
             if (tileData[halfWidth, halfWidth].tile.sprite == null) tileData[halfWidth, halfWidth].tile.sprite = Resources.Load<Sprite>("Sprites/spr_err");
             if (!inEditor) tileData = mapLighter.LightPass(tileData, 7);
 

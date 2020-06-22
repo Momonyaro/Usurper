@@ -17,7 +17,9 @@ namespace RENDERER.MAP
 
         public Chunk(int[,] mapData, int xStart, int yStart)
         {
-            if (mapData == null) { SetChunkMapData(GetFallbackData()); return; }
+            xStartPos = xStart;
+            yStartPos = yStart;
+            if (mapData == null) { Debug.Log("Recived null mapdata, using fallback"); SetChunkMapData(GetFallbackData()); return; }
             SetChunkMapData(mapData);
         }
 

@@ -6,7 +6,7 @@ using RENDERER.UTILS.Atlas;
 
 public class ListTileObjContainer : MonoBehaviour
 {
-    TileObject thisTileObj = new TileObject(0, SpriteAtlas.FetchSpriteByName("spr_err"), false, false);
+    TileObject thisTileObj = new TileObject(0, SpriteAtlas.FetchSpriteByName("spr_err"), false, false, false);
 
 
     public InputField  sprNameField;

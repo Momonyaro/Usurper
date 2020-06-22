@@ -23,6 +23,10 @@ namespace RENDERER.UTILS.Atlas
         {
             tileObjects.Clear();
             tileObjects.AddRange(tObjArr);
+            foreach(var tileObj in tileObjects)
+            {
+                Debug.Log(tileObj);
+            }
         }
 
         public static TileObject FetchTileObjectByID(int tObjId)
@@ -36,7 +40,7 @@ namespace RENDERER.UTILS.Atlas
                 }
             }
             Debug.Log("returning error tile.");
-            return new TileObject(-1, SpriteAtlas.FetchSpriteByName("spr_err"), true, false);
+            return new TileObject(-1, SpriteAtlas.FetchSpriteByName("spr_err"), true, false, false);
         }
 
     }
@@ -47,12 +51,14 @@ namespace RENDERER.UTILS.Atlas
         public int id;
         public Tile tile;
         public bool collider;
+        public bool transparent;
         public bool lightSource;
 
-        public TileObject(int id, Sprite sprite, bool collider, bool lightSource)
+        public TileObject(int id, Sprite sprite, bool collider, bool transparent, bool lightSource)
         {
             this.id = id;
             this.collider = collider;
+            this.transparent = transparent;
             this.lightSource = lightSource;
             tile = (Tile)ScriptableObject.CreateInstance(typeof(Tile));
             if (sprite != null)
@@ -63,10 +69,11 @@ namespace RENDERER.UTILS.Atlas
             tile.colliderType = collider ? Tile.ColliderType.Grid : Tile.ColliderType.None;
         }
 
-        public TileObject(int id, string spriteName, bool collider, bool lightSource)
+        public TileObject(int id, string spriteName, bool collider, bool transparent, bool lightSource)
         {
             this.id = id;
             this.collider = collider;
+            this.transparent = transparent;
             this.lightSource = lightSource;
             tile = new Tile();
             tile.sprite = SpriteAtlas.FetchSpriteByName(spriteName); //PLEASE WORK;
@@ -77,7 +84,7 @@ namespace RENDERER.UTILS.Atlas
 
         public TileObject Copy()
         {
-            return new TileObject(id, tile.sprite, collider, lightSource);
+            return new TileObject(id, tile.sprite, collider, transparent, lightSource);
         }
 
         public Tile GetTileCopy()

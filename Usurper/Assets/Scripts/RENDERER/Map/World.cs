@@ -50,9 +50,13 @@ namespace RENDERER.MAP
             Init();
         }
 
-        public void CreateWorldWithExistingData(List<Chunk> chunks)
+        public void CreateWorldWithExistingData(List<Chunk> chunks, string mapName, int width, int height)
         {
-            worldData = chunks;
+            worldName = mapName;
+            World.width = width;
+            World.height = height;
+            worldData.Clear();
+            worldData.AddRange(chunks);
         }
 
         public int[,] GetWorldDataAtPoint(Vector2Int pointOnWorld)
@@ -61,11 +65,13 @@ namespace RENDERER.MAP
             //How do we load the missing data from other chunks?
             int[,] viewportData = new int[MapViewport.viewPortRadius, MapViewport.viewPortRadius];
 
+            Debug.Log(worldData.Count);
             for (int i = 0; i < worldData.Count; i++)
             {
                     //We need to check if this chunk contain data within the renderDistance
                     //Since we have the world positions of the chunks and the player, let's
                     //compare those and see if we get a hit.
+                    Debug.Log(worldData[i].GetChunkStartPos());
                     if (GetDistanceBetweenChunkAndPoint(worldData[i], pointOnWorld) < arbitraryChunkDistance)
                     {
                         //Read Chunk Data and write it to the viewportData buffer!

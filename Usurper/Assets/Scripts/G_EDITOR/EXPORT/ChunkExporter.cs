@@ -13,23 +13,27 @@ namespace EDITOR.EXPORT
         private const string chunkFolderName = "/Regions";
         private const string chunkExtention = ".chnk";
 
-        public List<int[,]> LoadChunks(List<string> chunkPaths)
+        public List<int[,]> LoadChunks(List<string> chunkPaths, string mapName)
         {
             List<int[,]> toReturn = new List<int[,]>();
+            Debug.Log("looking for " + chunkPaths.Count + " chnk files...");
             foreach (var chunkPath in chunkPaths)
             {
-                JsonData fileData = File.ReadAllText(Application.streamingAssetsPath + "/Campaigns" + chunkPath);
+                JsonData fileData = JsonMapper.ToObject(File.ReadAllText(Application.streamingAssetsPath + "/Campaigns/" + mapName + "/" + chunkPath));
                 int chunkSize = (int)fileData["chunkSize"];
-                int[,] chunkData = new int[chunkSize, chunkSize];
+                Debug.Log("found chunk with chunkSize: " + chunkSize);
+                int[,] chunkData = new int[chunkSize, chunkSize]; 
                 for (int y = 0; y < chunkSize; y++)
                 {
                     for (int x = 0; x < chunkSize; x++)
                     {
-                        chunkData[x, y] = (int)fileData["chunkData"][x + y * chunkSize];
+                        int newData = (int)fileData["chunkData"][x + y * chunkSize];
+                        chunkData[x, y] = newData;
                     }
                 }
                 toReturn.Add(chunkData);
             }
+            Debug.Log("returning loaded chunkData with size of: " + toReturn.Count);
             return toReturn;
         }
 
