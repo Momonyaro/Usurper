@@ -34,7 +34,7 @@ namespace RENDERER.MAP
     public class MapViewport : MonoBehaviour
     {
 
-        public static int viewPortRadius = 31;
+        public static int viewPortRadius = 37;
         private const bool RENDER_EDITOR = false;
 
         [SerializeField]
@@ -49,17 +49,19 @@ namespace RENDERER.MAP
         public Tilemap viewport;
         public World loadedWorld = new World();
         private MapLighter mapLighter;
+        private Sprite cross;
         public bool inEditor = false;
         private bool drawing = false;
 
         private void Start()
         {
             mapLighter = new MapLighter();
+            cross = Resources.Load<Sprite>("Sprites/UI/spr_ui_trash");
 
             if (inEditor)
             {
                 FindObjectOfType<StreamingResourceLoader>().Init();
-                viewPortRadius = 55;
+                viewPortRadius = 61;
                 loadedWorld.Init();
                 OnMapUpdate();
             } 
@@ -212,7 +214,6 @@ namespace RENDERER.MAP
 
         public void DrawTileArrayToTilemap(TileObject[,] tileData)
         {
-            Sprite cross = Resources.Load<Sprite>("Sprites/UI/spr_ui_trash");
             Tile crossTile = (Tile)ScriptableObject.CreateInstance(typeof(Tile));
             Tile editorCrossTile = (Tile)ScriptableObject.CreateInstance(typeof(Tile));
             crossTile.sprite = cross;
@@ -221,30 +222,15 @@ namespace RENDERER.MAP
             int halfWidth = ((viewPortRadius - 1) / 2);
             viewport.size = viewport.WorldToCell(new Vector3Int(viewPortRadius, viewPortRadius, 1));
             viewport.ResizeBounds();
-            viewport.SetTile(new Vector3Int(-halfWidth, -halfWidth, 0), null);
-            viewport.SetTile(new Vector3Int( halfWidth,  halfWidth, 0), null);
-            viewport.ResizeBounds();
-            viewport.RefreshAllTiles();
-            Vector3Int[,] positions = new Vector3Int[viewPortRadius, viewPortRadius];
-            for (int y = -halfWidth; y < halfWidth + 1; y++)
-            {
-                for (int x = -halfWidth; x < halfWidth + 1; x++)
-                {
-                    positions[x + halfWidth, y + halfWidth] = new Vector3Int(x, y, 0);
-                    //Debug.Log(positions[i]);
-                }
-            }
 
+            tileData[halfWidth, halfWidth].tile.sprite = SpriteAtlas.FetchSpriteByName("spr_player");
+            tileData[halfWidth, halfWidth].lightSource = true;
+            
             if (inEditor)
             {
                 tileData[halfWidth, halfWidth].tile = editorCrossTile;
                 tileData[halfWidth, halfWidth].tile.color = Color.blue;
                 tileData[halfWidth, halfWidth].lightSource = false;
-            }
-            else
-            {
-                tileData[halfWidth, halfWidth].tile.sprite = SpriteAtlas.FetchSpriteByName("spr_player");
-                tileData[halfWidth, halfWidth].lightSource = true;
             }
 
             if (tileData[halfWidth, halfWidth].tile.sprite == null) tileData[halfWidth, halfWidth].tile.sprite = Resources.Load<Sprite>("Sprites/spr_err");
@@ -256,15 +242,15 @@ namespace RENDERER.MAP
             {
                 for (int x = 0; x < viewPortRadius; x++)
                 {
-                    viewport.SetTile(viewport.WorldToCell(positions[x, y]), tileData[x, y].tile);
+                    viewport.SetTile(viewport.WorldToCell(new Vector3Int(x - halfWidth, y - halfWidth, 0)), tileData[x, y].tile);
                     switch (MAP_DISPLAY_MODE)
                     {
                         case MAP_DISPLAY_MODES.COLLIDER:
-                            if (tileData[x, y].collider) viewport.SetTile(viewport.WorldToCell(positions[x, y]), crossTile);
+                            if (tileData[x, y].collider) viewport.SetTile(viewport.WorldToCell(new Vector3Int(x - halfWidth, y - halfWidth, 0)), crossTile);
                         break;
 
                         case MAP_DISPLAY_MODES.LIGHTS:
-                            if (tileData[x, y].lightSource) viewport.SetTile(viewport.WorldToCell(positions[x, y]), crossTile);
+                            if (tileData[x, y].lightSource) viewport.SetTile(viewport.WorldToCell(new Vector3Int(x - halfWidth, y - halfWidth, 0)), crossTile);
                         break;
                     }
                     
@@ -311,7 +297,6 @@ namespace RENDERER.MAP
                                 Vector2Int cStartPos = chunk.GetChunkStartPos();
                                 if (cStartPos.y < 0)
                                 {
-                                    Debug.Log("Deleting chunk at " + cStartPos + " Because it's Y value is less than 0");
                                     loadedWorld.worldData.Remove(chunk);
                                     break;
                                 }
@@ -327,7 +312,6 @@ namespace RENDERER.MAP
                                 Vector2Int cStartPos = chunk.GetChunkStartPos();
                                 if (cStartPos.x < 0)
                                 {
-                                    Debug.Log("Deleting chunk at " + cStartPos + " Because it's X value is less than 0");
                                     loadedWorld.worldData.Remove(chunk);
                                     break;
                                 }
@@ -365,7 +349,6 @@ namespace RENDERER.MAP
                                 Vector2Int cStartPos = chunk.GetChunkStartPos();
                                 if (cStartPos.y >= (World.height) * Chunk.chunkSize)
                                 {
-                                    Debug.Log("Deleting chunk at " + cStartPos + " Because it's Y value is less than " + (World.height) * Chunk.chunkSize);
                                     loadedWorld.worldData.Remove(chunk);
                                     break;
                                 }
@@ -381,7 +364,6 @@ namespace RENDERER.MAP
                                 Vector2Int cStartPos = chunk.GetChunkStartPos();
                                 if (cStartPos.x >= (World.width) * Chunk.chunkSize)
                                 {
-                                    Debug.Log("Deleting chunk at " + cStartPos + " Because it's X value is less than " + (World.width) * Chunk.chunkSize);
                                     loadedWorld.worldData.Remove(chunk);
                                     break;
                                 }
