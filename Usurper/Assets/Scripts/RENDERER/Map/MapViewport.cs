@@ -242,7 +242,7 @@ namespace RENDERER.MAP
             }
 
             if (tileData[halfWidth, halfWidth].tile.sprite == null) tileData[halfWidth, halfWidth].tile.sprite = Resources.Load<Sprite>("Sprites/spr_err");
-            if (!inEditor) tileData = mapLighter.LightPass(tileData, 7);
+            if (!inEditor) tileData = mapLighter.LightPass(tileData, 8);
 
             Debug.Log("Placing " + tileData.Length + " tiles on viewport...");
 

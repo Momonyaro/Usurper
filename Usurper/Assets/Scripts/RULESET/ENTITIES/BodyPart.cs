@@ -5,6 +5,7 @@ namespace RULESET.ENTITIES
 
     public class BodyPart
     {
+        public string name;
         public int hitThreshold;
         public int damageMultiplier;
         public int canHoldType;            // Dictionary identifier!

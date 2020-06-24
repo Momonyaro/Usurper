@@ -9,7 +9,7 @@ namespace RENDERER.MAP
     //Here we recive the viewport tileData and apply the correct ligthing to it based on time of day and lightSources
     public class MapLighter
     {
-        private const int rayCount = 360;
+        private const int rayCount = 90;
         private const int maxLightsInView = 8;
         private const float ambientLightLevel = 0.15f;
         //private const float ambientLightLevel = 1;
