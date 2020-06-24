@@ -73,9 +73,17 @@ namespace RENDERER.MAP
             {
                 if (inEditor)
                 {
+                    //PLEASE CHANGE THIS SHIT LATER :( IT LOOKS TERRIBLE!
                     if (Input.GetKey(KeyCode.LeftControl))
                     {
-                        if (Input.GetKeyDown(KeyCode.W)) { playerPosOnMap += Vector2Int.up * 10; OnMapUpdate(); return; }
+                        if (Input.GetKey(KeyCode.LeftShift))
+                        {
+                            if (Input.GetKeyDown(KeyCode.W)) { playerPosOnMap += Vector2Int.up * Chunk.chunkSize; OnMapUpdate(); return; }
+                            else if (Input.GetKeyDown(KeyCode.A)) { playerPosOnMap += Vector2Int.left * Chunk.chunkSize; OnMapUpdate(); return; }
+                            else if (Input.GetKeyDown(KeyCode.S)) { playerPosOnMap += Vector2Int.down * Chunk.chunkSize; OnMapUpdate(); return; }
+                            else if (Input.GetKeyDown(KeyCode.D)) { playerPosOnMap += Vector2Int.right * Chunk.chunkSize; OnMapUpdate(); return; }
+                        }
+                        else if (Input.GetKeyDown(KeyCode.W)) { playerPosOnMap += Vector2Int.up * 10; OnMapUpdate(); return; }
                         else if (Input.GetKeyDown(KeyCode.A)) { playerPosOnMap += Vector2Int.left * 10; OnMapUpdate(); return; }
                         else if (Input.GetKeyDown(KeyCode.S)) { playerPosOnMap += Vector2Int.down * 10; OnMapUpdate(); return; }
                         else if (Input.GetKeyDown(KeyCode.D)) { playerPosOnMap += Vector2Int.right * 10; OnMapUpdate(); return; }

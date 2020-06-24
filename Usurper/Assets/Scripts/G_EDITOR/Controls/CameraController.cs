@@ -6,7 +6,7 @@ namespace EDITOR.CONTROLS
     public class CameraController : MonoBehaviour
     {
         private const float minSize = 7;
-        private const float maxSize = 220;
+        private const float maxSize = 24;
 
         public float camMoveSpeed = 1.0f;
         public float camZoomSpeed = .01f;
