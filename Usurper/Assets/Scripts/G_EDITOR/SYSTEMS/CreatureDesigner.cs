@@ -8,15 +8,33 @@ namespace EDITOR.SYSTEMS
     {
         public static EditorCreature selected;
 
-        public List<EditorCreature> playableCreatures = new List<EditorCreature>();
-        public List<EditorCreature> nonPlayableCreatures = new List<EditorCreature>();
+        public List<EditorCreature> creatures = new List<EditorCreature>();
+
+        public GameObject creaturePropertiesPanel;
+        public GameObject creatureAnatomyPanel;
+
+        private void Update()
+        {
+            if (selected != null && !creaturePropertiesPanel.activeInHierarchy)
+            {
+                creaturePropertiesPanel.SetActive(true);
+                creatureAnatomyPanel.SetActive(true);
+                DrawCreature(selected);
+            }
+        }
+
+        public void DrawCreature(EditorCreature creature)
+        {
+            //Have a script on the properties panel to populate the fields correctly
+            //Have a script on the anatomy editor to populate that correctly as well.
+        }
 
         //basically just have a list of all creatures and display them
         //also store the latest selected and show it's properties on
         //the other panels!
     }
 
-    public struct EditorCreature
+    public class EditorCreature
     {
         public string name;
         public string desc;
@@ -30,6 +48,6 @@ namespace EDITOR.SYSTEMS
     {
         public BodyPart containedBodyPart;
         public Rect bodyPartRect;
-        public Vector2 rectPos;
+        public float angle;
     }
 }
