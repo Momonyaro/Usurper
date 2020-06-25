@@ -14,6 +14,8 @@ namespace RULESET.ENTITIES
         public int xp = 0;
         public int gold = 0;
         public int[] stats = {1, 1, 1, 1, 1, 1, 1};     //Strength, Dexterity, Agility, Endurance, Perception, Charisma, Intelligence
+        
+        public int species;             // Dictionary identifier!
         List<Item> inventory = new List<Item>();
         // Effects later
         List<BodyPart> bodyParts = new List<BodyPart>();
