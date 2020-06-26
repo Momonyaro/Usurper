@@ -29,7 +29,7 @@ namespace RENDERER.UTILS.Atlas
                     return sprites[i];
                 }
             }
-            return null;
+            return Resources.Load<Sprite>("Sprites/spr_err");
         }
     }
 }

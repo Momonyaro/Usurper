@@ -47,6 +47,7 @@ namespace RENDERER.MAP
 
         //Here comes the mess that is tilemaps. We need to create it so that it creates the bounds (63x63 tiles) around the player at 0,0.
         public Tilemap viewport;
+        public Tilemap entityViewport;
         public World loadedWorld = new World();
         private MapLighter mapLighter;
         private Sprite cross;
@@ -228,10 +229,11 @@ namespace RENDERER.MAP
             editorCrossTile.sprite = cross;
             crossTile.color = Color.red;
             int halfWidth = ((viewPortRadius - 1) / 2);
-            viewport.size = viewport.WorldToCell(new Vector3Int(viewPortRadius, viewPortRadius, 1));
+            viewport.size = viewport.WorldToCell(new Vector3Int(viewPortRadius, viewPortRadius, 2));
+            entityViewport.size = viewport.WorldToCell(new Vector3Int(viewPortRadius, viewPortRadius, 2));
             viewport.ResizeBounds();
+            entityViewport.ResizeBounds();
 
-            tileData[halfWidth, halfWidth].tile.sprite = SpriteAtlas.FetchSpriteByName("spr_player");
             tileData[halfWidth, halfWidth].lightSource = true;
             
             if (inEditor)
@@ -245,12 +247,16 @@ namespace RENDERER.MAP
             if (!inEditor) tileData = mapLighter.LightPass(tileData, 8);
 
             Debug.Log("Placing " + tileData.Length + " tiles on viewport...");
+            Tile playerTile = (Tile)ScriptableObject.CreateInstance(typeof(Tile));
+            playerTile.sprite = SpriteAtlas.FetchSpriteByName("spr_human_commoner_0");
+            entityViewport.SetTile(entityViewport.WorldToCell(new Vector3Int(0, 0, 1)), playerTile);
 
             for (int y = 0; y < viewPortRadius; y++)
             {
                 for (int x = 0; x < viewPortRadius; x++)
                 {
                     viewport.SetTile(viewport.WorldToCell(new Vector3Int(x - halfWidth, y - halfWidth, 0)), tileData[x, y].tile);
+                    entityViewport.SetColor(entityViewport.WorldToCell(new Vector3Int(x - halfWidth, y - halfWidth, 0)), tileData[x, y].tile.color);
                     switch (MAP_DISPLAY_MODE)
                     {
                         case MAP_DISPLAY_MODES.COLLIDER:
