@@ -26,11 +26,19 @@ namespace EDITOR.SYSTEMS
         {
             CreatureDesigner.selected.name = newName;
             PopulateFieldsWithSelectedProperties();
+            
+
         }
 
         public void SetSelectedSprFromName(string newSprName)
         {
             CreatureDesigner.selected.sprite = SpriteAtlas.FetchSpriteByName(newSprName);
+            PopulateFieldsWithSelectedProperties();
+        }
+
+        public void SetSelectedDesc(string newDesc)
+        {
+            CreatureDesigner.selected.desc = newDesc;
             PopulateFieldsWithSelectedProperties();
         }
 

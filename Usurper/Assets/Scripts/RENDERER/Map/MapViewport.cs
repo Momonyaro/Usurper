@@ -247,9 +247,12 @@ namespace RENDERER.MAP
             if (!inEditor) tileData = mapLighter.LightPass(tileData, 8);
 
             Debug.Log("Placing " + tileData.Length + " tiles on viewport...");
-            Tile playerTile = (Tile)ScriptableObject.CreateInstance(typeof(Tile));
-            playerTile.sprite = SpriteAtlas.FetchSpriteByName("spr_human_commoner_0");
-            entityViewport.SetTile(entityViewport.WorldToCell(new Vector3Int(0, 0, 1)), playerTile);
+            if (!inEditor)
+            {
+                Tile playerTile = (Tile)ScriptableObject.CreateInstance(typeof(Tile));
+                playerTile.sprite = SpriteAtlas.FetchSpriteByName("spr_human_commoner_0");
+                entityViewport.SetTile(entityViewport.WorldToCell(new Vector3Int(0, 0, 1)), playerTile);
+            }
 
             for (int y = 0; y < viewPortRadius; y++)
             {

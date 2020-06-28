@@ -9,18 +9,31 @@ namespace EDITOR.SYSTEMS
     public class CreatureDesigner : MonoBehaviour
     {
         public static EditorCreature selected;
+        private EditorCreature lastSelected;
 
         public static List<EditorCreature> creatures = new List<EditorCreature>();
 
         public GameObject creaturePropertiesPanel;
         public GameObject creatureAnatomyPanel;
+        public GameObject creatureAnatomyPropertyPanel;
         public GameObject creatureListParent;
         public GameObject creatureListPrefab;
 
         private void Start() 
         {
-            creatures.Add(new EditorCreature());
-            creatures.Add(new EditorCreature());
+            creatures.Add(new EditorCreature("Humans test", "Human test description", SpriteAtlas.FetchSpriteByName("spr_human_commoner_0")));
+            creatures.Add(new EditorCreature("Dreml test", "Dreml test descriprion", SpriteAtlas.FetchSpriteByName("spr_player")));
+            creatures[0].bodyParts.Add(new EditorBodyPart(new BodyPart(), new Rect(  0,  90, 100, 150), 0));
+            creatures[0].bodyParts.Add(new EditorBodyPart(new BodyPart(), new Rect(  0, 205,  50,  60), 0));
+            creatures[0].bodyParts.Add(new EditorBodyPart(new BodyPart(), new Rect(  0, -15, 100,  45), 0));
+            creatures[0].bodyParts.Add(new EditorBodyPart(new BodyPart(), new Rect(-80,  60,  35, 150), -8));
+            creatures[0].bodyParts.Add(new EditorBodyPart(new BodyPart(), new Rect( 80,  60,  35, 150), 8));
+            creatures[0].bodyParts.Add(new EditorBodyPart(new BodyPart(), new Rect(-75,  140,  50, 50), 0));
+            creatures[0].bodyParts.Add(new EditorBodyPart(new BodyPart(), new Rect( 75,  140,  50, 50), 0));
+            creatures[0].bodyParts.Add(new EditorBodyPart(new BodyPart(), new Rect(-30,  -115,  35, 150), 0));
+            creatures[0].bodyParts.Add(new EditorBodyPart(new BodyPart(), new Rect( 30,  -115,  35, 150), 0));
+            creatures[0].bodyParts.Add(new EditorBodyPart(new BodyPart(), new Rect(-45,  -205,  60, 30), 0));
+            creatures[0].bodyParts.Add(new EditorBodyPart(new BodyPart(), new Rect( 45,  -205,  60, 30), 0));
 
             //Populate creature list
             PopulateCreatureList();
@@ -44,9 +57,13 @@ namespace EDITOR.SYSTEMS
 
         public void DrawCreature()
         {
+            if (selected != lastSelected) CreatureAnatomyPanel.selected = null;
             //Have a script on the properties panel to populate the fields correctly
             creaturePropertiesPanel.GetComponent<CreaturePropertyPanel>().PopulateFieldsWithSelectedProperties();
             //Have a script on the anatomy editor to populate that correctly as well.
+            creatureAnatomyPanel.GetComponent<CreatureAnatomyPanel>().PopulateAnatomyView();
+            creatureAnatomyPropertyPanel.GetComponent<AnatomyPropertyPanel>().PopulateProperties();
+            lastSelected = selected;
         }
 
         public void PopulateCreatureList()
@@ -79,12 +96,28 @@ namespace EDITOR.SYSTEMS
         public int[] averageStats;
         // Add creature bonuses as well!
         public List<EditorBodyPart> bodyParts;
+
+        public EditorCreature(string name, string desc, Sprite sprite)
+        {
+            this.name = name;
+            this.desc = desc;
+            this.sprite = sprite;
+            averageStats = new int[7] {1, 1, 1, 1, 1, 1, 1};
+            bodyParts = new List<EditorBodyPart>();
+        }
     }
 
-    public struct EditorBodyPart
+    public class EditorBodyPart
     {
         public BodyPart containedBodyPart;
         public Rect bodyPartRect;
         public float angle;
+
+        public EditorBodyPart(BodyPart containedBodyPart, Rect bodyPartRect, float angle)
+        {
+            this.containedBodyPart = containedBodyPart;
+            this.bodyPartRect = bodyPartRect;
+            this.angle = angle;
+        }
     }
 }
