@@ -87,16 +87,16 @@
 		"selected_items":
 		[
 			[
+				"pack",
+				"Package Control: Install Package"
+			],
+			[
 				"pac",
 				"Package Control: Install Package"
 			],
 			[
 				"packa",
 				"Package Control: Remove Package"
-			],
-			[
-				"pack",
-				"Package Control: List Packages"
 			],
 			[
 				"list",

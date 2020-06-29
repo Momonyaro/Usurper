@@ -21,6 +21,8 @@ namespace RULESET.ITEMS
         public int amount = 1;
         public int value = 0;
         public int weight = 0;     //In grams!
+        public int x = 0;
+        public int y = 0;
         public ITEM_CATEGORIES itemCatagory = ITEM_CATEGORIES.ITEM_MISC;
         //List of effects on the item here!!
     }

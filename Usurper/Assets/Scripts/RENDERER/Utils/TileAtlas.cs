@@ -35,7 +35,6 @@ namespace RENDERER.UTILS.Atlas
             {
                 if (tileObjects[i].id.Equals(tObjId))
                 {
-                    Debug.Log("Fetched tileObject: ID=" + tileObjects[i].id + " COLLIDER:" + tileObjects[i].collider + " LIGHTSOURCE:" + tileObjects[i].lightSource);
                     return tileObjects[i];
                 }
             }

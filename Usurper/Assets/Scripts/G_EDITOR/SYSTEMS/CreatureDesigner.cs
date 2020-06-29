@@ -62,7 +62,15 @@ namespace EDITOR.SYSTEMS
             creaturePropertiesPanel.GetComponent<CreaturePropertyPanel>().PopulateFieldsWithSelectedProperties();
             //Have a script on the anatomy editor to populate that correctly as well.
             creatureAnatomyPanel.GetComponent<CreatureAnatomyPanel>().PopulateAnatomyView();
-            creatureAnatomyPropertyPanel.GetComponent<AnatomyPropertyPanel>().PopulateProperties();
+            if (CreatureAnatomyPanel.selected == null)
+            {
+                creatureAnatomyPropertyPanel.SetActive(false);
+            }
+            else 
+            {
+                creatureAnatomyPropertyPanel.SetActive(true);
+                creatureAnatomyPropertyPanel.GetComponent<AnatomyPropertyPanel>().PopulateProperties();
+            }
             lastSelected = selected;
         }
 

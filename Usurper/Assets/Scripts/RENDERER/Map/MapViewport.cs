@@ -35,24 +35,23 @@ namespace RENDERER.MAP
     {
 
         public static int viewPortRadius = 37;
-        private const bool RENDER_EDITOR = false;
 
         [SerializeField]
-        public Vector2Int playerPosOnMap = new Vector2Int(0, 0);
+        public Vector2Int centerPosOnMap = new Vector2Int(0, 0);
         private int[,] viewportMapData;
         [SerializeField]
         public List<TileObject> cachedTiles;
         public static MAP_DISPLAY_MODES MAP_DISPLAY_MODE = MAP_DISPLAY_MODES.DEFAULT;
         public static EDITOR_BRUSH_MODES EDITOR_BRUSH_MODE = EDITOR_BRUSH_MODES.PEN;
-
+        public MapEntityRenderer mapEntityRenderer;
         //Here comes the mess that is tilemaps. We need to create it so that it creates the bounds (63x63 tiles) around the player at 0,0.
         public Tilemap viewport;
-        public Tilemap entityViewport;
         public World loadedWorld = new World();
         private MapLighter mapLighter;
         private Sprite cross;
         public bool inEditor = false;
         private bool drawing = false;
+        private bool playerHasLight = false;
 
         private void Start()
         {
@@ -70,31 +69,6 @@ namespace RENDERER.MAP
 
         private void Update()
         {
-            if (Input.anyKey)
-            {
-                if (inEditor)
-                {
-                    //PLEASE CHANGE THIS SHIT LATER :( IT LOOKS TERRIBLE!
-                    if (Input.GetKey(KeyCode.LeftControl))
-                    {
-                        if (Input.GetKey(KeyCode.LeftShift))
-                        {
-                            if (Input.GetKeyDown(KeyCode.W)) { playerPosOnMap += Vector2Int.up * Chunk.chunkSize; OnMapUpdate(); return; }
-                            else if (Input.GetKeyDown(KeyCode.A)) { playerPosOnMap += Vector2Int.left * Chunk.chunkSize; OnMapUpdate(); return; }
-                            else if (Input.GetKeyDown(KeyCode.S)) { playerPosOnMap += Vector2Int.down * Chunk.chunkSize; OnMapUpdate(); return; }
-                            else if (Input.GetKeyDown(KeyCode.D)) { playerPosOnMap += Vector2Int.right * Chunk.chunkSize; OnMapUpdate(); return; }
-                        }
-                        else if (Input.GetKeyDown(KeyCode.W)) { playerPosOnMap += Vector2Int.up * 10; OnMapUpdate(); return; }
-                        else if (Input.GetKeyDown(KeyCode.A)) { playerPosOnMap += Vector2Int.left * 10; OnMapUpdate(); return; }
-                        else if (Input.GetKeyDown(KeyCode.S)) { playerPosOnMap += Vector2Int.down * 10; OnMapUpdate(); return; }
-                        else if (Input.GetKeyDown(KeyCode.D)) { playerPosOnMap += Vector2Int.right * 10; OnMapUpdate(); return; }
-                    }
-                }
-                    if (Input.GetKey(KeyCode.W)) { playerPosOnMap += Vector2Int.up; OnMapUpdate(); return; }
-                    else if (Input.GetKey(KeyCode.A)) { playerPosOnMap += Vector2Int.left; OnMapUpdate(); return; }
-                    else if (Input.GetKey(KeyCode.S)) { playerPosOnMap += Vector2Int.down; OnMapUpdate(); return; }
-                    else if (Input.GetKey(KeyCode.D)) { playerPosOnMap += Vector2Int.right; OnMapUpdate(); return; }
-            }
 
             if (drawing)
             {
@@ -125,7 +99,7 @@ namespace RENDERER.MAP
             foreach (var chunk in loadedWorld.worldData)
             {
                 Vector2 cStartPos = chunk.GetChunkStartPos();
-                Vector2 localMousePos = (playerPosOnMap + mouseWorldPos + new Vector2(.5f, .5f)) - cStartPos; //Get the mouse pos relative to the chunk
+                Vector2 localMousePos = (centerPosOnMap + mouseWorldPos + new Vector2(.5f, .5f)) - cStartPos; //Get the mouse pos relative to the chunk
                 Debug.Log(localMousePos);
                 Vector2Int roundedPos = new Vector2Int(Mathf.FloorToInt(localMousePos.x), Mathf.FloorToInt(localMousePos.y));
     
@@ -173,7 +147,7 @@ namespace RENDERER.MAP
 
         public void OnMapUpdate()
         {
-            DrawTileArrayToTilemap(ConvertToTiles(loadedWorld.GetWorldDataAtPoint(playerPosOnMap)));
+            DrawTileArrayToTilemap(ConvertToTiles(loadedWorld.GetWorldDataAtPoint(centerPosOnMap)));
             SetColliderBounds();
         }
 
@@ -230,36 +204,29 @@ namespace RENDERER.MAP
             crossTile.color = Color.red;
             int halfWidth = ((viewPortRadius - 1) / 2);
             viewport.size = viewport.WorldToCell(new Vector3Int(viewPortRadius, viewPortRadius, 2));
-            entityViewport.size = viewport.WorldToCell(new Vector3Int(viewPortRadius, viewPortRadius, 2));
             viewport.ResizeBounds();
-            entityViewport.ResizeBounds();
-
-            tileData[halfWidth, halfWidth].lightSource = true;
             
             if (inEditor)
             {
                 tileData[halfWidth, halfWidth].tile = editorCrossTile;
                 tileData[halfWidth, halfWidth].tile.color = Color.blue;
-                tileData[halfWidth, halfWidth].lightSource = false;
             }
 
             if (tileData[halfWidth, halfWidth].tile.sprite == null) tileData[halfWidth, halfWidth].tile.sprite = Resources.Load<Sprite>("Sprites/spr_err");
-            if (!inEditor) tileData = mapLighter.LightPass(tileData, 8);
+            if (!inEditor) 
+            {
+                if (playerHasLight) tileData[halfWidth, halfWidth].lightSource = true;
+                tileData = mapLighter.LightPass(tileData, 8);
+                tileData = mapEntityRenderer.RenderEntitiesWithLighting(tileData);
+            }
 
             Debug.Log("Placing " + tileData.Length + " tiles on viewport...");
-            if (!inEditor)
-            {
-                Tile playerTile = (Tile)ScriptableObject.CreateInstance(typeof(Tile));
-                playerTile.sprite = SpriteAtlas.FetchSpriteByName("spr_human_commoner_0");
-                entityViewport.SetTile(entityViewport.WorldToCell(new Vector3Int(0, 0, 1)), playerTile);
-            }
 
             for (int y = 0; y < viewPortRadius; y++)
             {
                 for (int x = 0; x < viewPortRadius; x++)
                 {
                     viewport.SetTile(viewport.WorldToCell(new Vector3Int(x - halfWidth, y - halfWidth, 0)), tileData[x, y].tile);
-                    entityViewport.SetColor(entityViewport.WorldToCell(new Vector3Int(x - halfWidth, y - halfWidth, 0)), tileData[x, y].tile.color);
                     switch (MAP_DISPLAY_MODE)
                     {
                         case MAP_DISPLAY_MODES.COLLIDER:

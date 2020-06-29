@@ -24,4 +24,28 @@ public class AnatomyPropertyPanel : MonoBehaviour
 		damMultSlider.SetValueWithoutNotify(selectedBodyPart.damageMultiplier);
 		damMultValue.text = selectedBodyPart.damageMultiplier + "%";
 	}
+
+	public void SetBodyPartName(string name)
+	{
+		CreatureAnatomyPanel.selected.containedBodyPart.name = name;
+		FindObjectOfType<CreatureDesigner>().DrawCreature();
+	}
+
+	public void SetBodyPartBool(bool countsForDamage)
+	{
+		CreatureAnatomyPanel.selected.containedBodyPart.countsForDamage = countsForDamage;
+		FindObjectOfType<CreatureDesigner>().DrawCreature();
+	}
+
+	public void SetBodyPartHitThreshold(float hitThresh)
+	{
+		CreatureAnatomyPanel.selected.containedBodyPart.hitThreshold = Mathf.RoundToInt(hitThresh);
+		FindObjectOfType<CreatureDesigner>().DrawCreature();
+	}
+
+	public void SetBodyPartDmgMultiplier(float damageMultiplier)
+	{
+		CreatureAnatomyPanel.selected.containedBodyPart.damageMultiplier = Mathf.RoundToInt(damageMultiplier);
+		FindObjectOfType<CreatureDesigner>().DrawCreature();
+	}
 }
