@@ -65,13 +65,11 @@ namespace RENDERER.MAP
             //How do we load the missing data from other chunks?
             int[,] viewportData = new int[MapViewport.viewPortRadius, MapViewport.viewPortRadius];
 
-            Debug.Log(worldData.Count);
             for (int i = 0; i < worldData.Count; i++)
             {
                     //We need to check if this chunk contain data within the renderDistance
                     //Since we have the world positions of the chunks and the player, let's
                     //compare those and see if we get a hit.
-                    Debug.Log(worldData[i].GetChunkStartPos());
                     if (GetDistanceBetweenChunkAndPoint(worldData[i], pointOnWorld) < arbitraryChunkDistance)
                     {
                         //Read Chunk Data and write it to the viewportData buffer!
@@ -85,12 +83,10 @@ namespace RENDERER.MAP
         private int[,] WriteChunkDataToViewport(int[,] viewportData, Chunk chunk, Vector2Int pointOnWorld)
         {
             //based on the pointOnWorld +- viewportRadius we can fetch the tiles we want and write them to the buffer.
-            Debug.Log("Writing data from chunk at " + chunk.GetChunkStartPos() + " to viewport");
             int[,] chunkMapData = chunk.GetChunkMapData();
             int halfSize = Mathf.FloorToInt(MapViewport.viewPortRadius / 2);
             Rect renderArea = new Rect(pointOnWorld.x - halfSize, pointOnWorld.y - halfSize, 
                                         MapViewport.viewPortRadius, MapViewport.viewPortRadius);
-            Debug.Log("RenderArea: " + renderArea);
 
             for (int y = 0; y < Chunk.chunkSize; y++)
             {

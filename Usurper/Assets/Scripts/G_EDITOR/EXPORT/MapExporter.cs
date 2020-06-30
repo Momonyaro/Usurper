@@ -35,7 +35,7 @@ namespace EDITOR.EXPORT
             Debug.Log(loadedFile["author"].ToString());
             World.width = (int)loadedFile["mapWidth"];
             World.height = (int)loadedFile["mapHeight"];
-            mapObject.playerPosOnMap = new Vector2Int((int)loadedFile["playerStartPosX"], (int)loadedFile["playerStartPosY"]);
+            mapObject.centerPosOnMap = new Vector2Int((int)loadedFile["playerStartPosX"], (int)loadedFile["playerStartPosY"]);
             List<string> chunkPaths = new List<string>();
             for (int i = 0; i < loadedFile["chnkPaths"].Count; i++)
             {
@@ -73,8 +73,8 @@ namespace EDITOR.EXPORT
             toExport.author = "Momonyaro";
             toExport.mapWidth = World.width;
             toExport.mapHeight = World.height;
-            toExport.playerStartPosX = mapObject.playerPosOnMap.x;
-            toExport.playerStartPosY = mapObject.playerPosOnMap.y;
+            toExport.playerStartPosX = mapObject.centerPosOnMap.x;
+            toExport.playerStartPosY = mapObject.centerPosOnMap.y;
             toExport.chnkPaths = chnkExporter.SaveChunks(campaignPath + toExport.mapName, mapObject.loadedWorld.worldData); // Campaigns/[MAPNAME]/mapname.map
             List<TilePaletteObj> toShrink = new List<TilePaletteObj>();
             foreach (var tileAtlasObj in TileAtlas.tileObjects)
