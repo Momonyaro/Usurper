@@ -1,6 +1,7 @@
 using UnityEngine;
 using System.Collections.Generic;
 using RENDERER.UTILS.Atlas;
+using RULESET.WORLD;
 
 
 
@@ -11,13 +12,19 @@ namespace RENDERER.MAP
     {
         private const int rayCount = 90;
         private const int maxLightsInView = 8;
-        private const float ambientLightLevel = 0.15f;
+        private const float logE = 2.718281828f;
+        private float ambientLightLevel = 0.15f;
         //private const float ambientLightLevel = 1;
 
         public TileObject[,] LightPass(TileObject[,] tileData, int dist)
         {
             //int degOffset = 360 / rayCount; // should give a multiplier (ONLY IF NO DECIMAL PRODUCT!!!)
             //here we process line of sight for lightsources
+
+            //Get the new ambientLightLevel from the clock
+            // it seems we want pow(e, (-pow(currentHour - totalHours/2, 2) / totalHours))
+            ambientLightLevel = Mathf.Pow(logE, (-Mathf.Pow((Clock.currentHour - Clock.totalHours / 2), 2) / Clock.totalHours));
+            if (ambientLightLevel <= 0.15f) ambientLightLevel = 0.15f;
 
             List<Vector2Int> lightPositions = new List<Vector2Int>();
             for (int y = 0; y < MapViewport.viewPortRadius; y++)

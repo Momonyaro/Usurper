@@ -14,13 +14,15 @@ namespace RULESET.MANAGERS
 		public List<Item> itemsOnGround = new List<Item>();
 
 		public MapEntityRenderer entityRenderer;
+		[SerializeField]
+		public MapViewport mapViewport;
 
 		private void Awake()
 		{
 			playerEntity = new PlayerEntity();
 			playerEntity.name = "bruh";
-			playerEntity.x = 0;
-			playerEntity.y = 0;
+			playerEntity.x = 5;
+			playerEntity.y = 5;
 
 			actors.Add(new ActorEntity());
 			actors[0].name = "test";
@@ -29,10 +31,13 @@ namespace RULESET.MANAGERS
 		}
 
 		//Process the new player position recieved by the turnManager.
-		public void UpdatePlayer(Vector2 mvmtDirection)
+		public void UpdatePlayer(Vector2Int mvmtDirection)
 		{
-			playerEntity.x += Mathf.RoundToInt(mvmtDirection.x);
-			playerEntity.y += Mathf.RoundToInt(mvmtDirection.y);
+			if (CheckCollisionInDirection(new Vector2Int(playerEntity.x, playerEntity.y), mvmtDirection))
+			{
+				playerEntity.x += Mathf.RoundToInt(mvmtDirection.x);
+				playerEntity.y += Mathf.RoundToInt(mvmtDirection.y);
+			}
 			UpdateEntities();
 		}
 
@@ -61,6 +66,32 @@ namespace RULESET.MANAGERS
 			}
 
 			entityRenderer.CreateNewBuffer(playerEntity, relevantEntities, relevantItems);
+		}
+
+		public bool CheckCollisionInDirection(Vector2Int pos, Vector2Int direction)
+		{
+			//True means there is no collider in the way
+			//First convert the position to the local view
+			int halfWidth = ((MapViewport.viewPortRadius - 1) / 2);
+			Vector2Int targetPos = (pos + direction);
+			Vector2Int localTargetPos = targetPos - mapViewport.centerPosOnMap;
+			if (mapViewport.lastUpdateViewData == null) return false;
+
+			if (localTargetPos.x < -halfWidth || localTargetPos.x >= halfWidth ||
+				localTargetPos.y < -halfWidth || localTargetPos.x >= halfWidth) return false;
+
+
+			foreach (var actor in actors) 
+			{
+				if (actor.x == targetPos.x && actor.y == targetPos.y)
+				{
+					return false;
+				}
+			}
+
+			if (mapViewport.lastUpdateViewData[localTargetPos.x + halfWidth, localTargetPos.y + halfWidth].collider) return false;
+
+			return true;
 		}
 	}
 }

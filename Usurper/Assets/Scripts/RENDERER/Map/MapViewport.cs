@@ -39,6 +39,7 @@ namespace RENDERER.MAP
         [SerializeField]
         public Vector2Int centerPosOnMap = new Vector2Int(0, 0);
         private int[,] viewportMapData;
+        public TileObject[,] lastUpdateViewData;
         [SerializeField]
         public List<TileObject> cachedTiles;
         public static MAP_DISPLAY_MODES MAP_DISPLAY_MODE = MAP_DISPLAY_MODES.DEFAULT;
@@ -197,6 +198,7 @@ namespace RENDERER.MAP
 
         public void DrawTileArrayToTilemap(TileObject[,] tileData)
         {
+            lastUpdateViewData = tileData;
             Tile crossTile = (Tile)ScriptableObject.CreateInstance(typeof(Tile));
             Tile editorCrossTile = (Tile)ScriptableObject.CreateInstance(typeof(Tile));
             crossTile.sprite = cross;

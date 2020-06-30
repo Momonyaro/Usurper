@@ -63,10 +63,10 @@ namespace RULESET.MANAGERS
 
 			if (StateManager.gameState == GameStates.OVERWORLD)
 			{
-				if (Input.GetKey(KeyCode.W)) { GetComponent<TurnManager>().PlayerEndTurn(Vector2.up); timer = timeBetweenInputs; return; }
-            	else if (Input.GetKey(KeyCode.A)) { GetComponent<TurnManager>().PlayerEndTurn(Vector2.left); timer = timeBetweenInputs; return; }
-	            else if (Input.GetKey(KeyCode.S)) { GetComponent<TurnManager>().PlayerEndTurn(Vector2.down); timer = timeBetweenInputs; return; }
-	            else if (Input.GetKey(KeyCode.D)) { GetComponent<TurnManager>().PlayerEndTurn(Vector2.right); timer = timeBetweenInputs; return; }
+				if (Input.GetKey(KeyCode.W)) { GetComponent<TurnManager>().PlayerEndTurn(Vector2Int.up); timer = timeBetweenInputs; return; }
+            	else if (Input.GetKey(KeyCode.A)) { GetComponent<TurnManager>().PlayerEndTurn(Vector2Int.left); timer = timeBetweenInputs; return; }
+	            else if (Input.GetKey(KeyCode.S)) { GetComponent<TurnManager>().PlayerEndTurn(Vector2Int.down); timer = timeBetweenInputs; return; }
+	            else if (Input.GetKey(KeyCode.D)) { GetComponent<TurnManager>().PlayerEndTurn(Vector2Int.right); timer = timeBetweenInputs; return; }
 			}
 		}
 	}

@@ -11,8 +11,9 @@ namespace RENDERER.MAP
 	public class MapEntityRenderer : MonoBehaviour
 	{
 		public List<EntityBufferObject> entityRenderBuffer = new List<EntityBufferObject>();
+		public TileObject[,] lastUpdateBackgroundData;
         public Tilemap entityViewport;
-		public static float entityFlipSpeed = 0.3f;
+		public static float entityFlipSpeed = 0.75f;
 		private float timer = 0;
 
 		private void Awake()
@@ -41,17 +42,19 @@ namespace RENDERER.MAP
 			entityRenderBuffer.Clear();
 			entityViewport.ClearAllTiles();
 			int bufferObjCount = entityRenderBuffer.Count;
+
+			timer = entityFlipSpeed;
+
 			//In here we create the bufferobjects to later be rendered with RenderEntitiesWithLighting
 			//Since species aren't stored yet, let's assume for now that the entity is human.
 
 			entityRenderBuffer.Add(new EntityBufferObject(
-			new Sprite[] {SpriteAtlas.FetchSpriteByName("spr_human_commoner_0")}, 0, 0, 0));
+			new Sprite[] { SpriteAtlas.FetchSpriteByName("spr_human_commoner_0") }, 0, 0, 0));
 			bufferObjCount++;
 
 			for (int i = 0; i < relevantEntities.Count; i++) 
 			{
 				Vector2Int localPos = new Vector2Int(relevantEntities[i].x - player.x, relevantEntities[i].y - player.y);
-				Debug.Log(localPos);
 				entityRenderBuffer.Add(new EntityBufferObject(
 				new Sprite[] {SpriteAtlas.FetchSpriteByName("spr_human_commoner_0")}, localPos.x, localPos.y, 0));
 				bufferObjCount++;
@@ -59,7 +62,6 @@ namespace RENDERER.MAP
 
 			FindObjectOfType<MapViewport>().centerPosOnMap = new Vector2Int(player.x, player.y);
 			FindObjectOfType<MapViewport>().OnMapUpdate();
-
 		}
 
 		public TileObject[,] RenderEntitiesWithLighting(TileObject[,] backgroundData)
@@ -74,7 +76,7 @@ namespace RENDERER.MAP
 				entityViewport.SetTile(entityViewport.WorldToCell(new Vector3Int(entityRenderBuffer[i].x, entityRenderBuffer[i].y, 0)), tile);
 			}
 
-
+			lastUpdateBackgroundData = backgroundData;
 			return backgroundData;
 			// go trough the entityRenderBuffer and for each object, create a tile, set it's color and place it on the entityTilemap
 		}
@@ -82,7 +84,18 @@ namespace RENDERER.MAP
 		public void IncrementBufferedTiles()
 		{
 			// clear entityTilemap in order to wipe outdated tileData
+			int halfWidth = ((MapViewport.viewPortRadius - 1) / 2);
 			// for each entityBufferObject, increment the bufferIndex (account for overflow!) and render the new sprite onto the tile
+			foreach (var entityObj in entityRenderBuffer) 
+			{
+				Tile tile = (Tile)ScriptableObject.CreateInstance(typeof(Tile));
+				entityObj.bufferIndex++;
+				if (entityObj.bufferIndex >= entityObj.bufferData.Length)
+					entityObj.bufferIndex = 0;
+				tile.sprite = entityObj.bufferData[entityObj.bufferIndex];
+				tile.color = lastUpdateBackgroundData[entityObj.x + halfWidth, entityObj.y + halfWidth].tile.color;
+				entityViewport.SetTile(entityViewport.WorldToCell(new Vector3Int(entityObj.x, entityObj.y, 0)), tile);
+			}
 		}
 
 		public void InsertImmediateSprite(Sprite sprite, int x, int y)

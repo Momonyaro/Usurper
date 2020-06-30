@@ -304,6 +304,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   entityRenderer: {fileID: 1463156399}
+  mapViewport: {fileID: 1427095419}
 --- !u!114 &283511164
 MonoBehaviour:
   m_ObjectHideFlags: 0
