@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using RENDERER.UTILS;
+using RENDERER.MAP;
 using RENDERER.UTILS.Atlas;
 
 public class TileAtlasEditor : MonoBehaviour
@@ -16,12 +17,16 @@ public class TileAtlasEditor : MonoBehaviour
 
     private void Start()
     {
-        StartCoroutine(LoadTileAtlasIfReady());
     }
 
     public IEnumerator LoadTileAtlasIfReady()
     {
-        while (!StreamingResourceLoader.finishedReading) { yield return null; }
+        while (!StreamingResourceLoader.finishedReading) { Debug.Log("Waiting for resource loader..."); yield return null; }
+
+        for (int i = 0; i < blockContentParent.transform.childCount; i++)
+        {
+            Destroy(blockContentParent.transform.GetChild(i).gameObject);
+        }
 
         //Here we load it and create the UI blocks
         List<TileObject> fetchedTiles = TileAtlas.tileObjects;
@@ -30,34 +35,33 @@ public class TileAtlasEditor : MonoBehaviour
             GameObject tileBlock = Instantiate(tileBlockPrefab, blockContentParent);
             ListTileObjContainer tileContainer = tileBlock.GetComponent<ListTileObjContainer>();
             tileContainer.SetThisTileObj(fetchedTiles[i]);
+            tileContainer.index = i;
         }
 
-        fetchedTiles.Sort(SortByID);
+        //fetchedTiles.Sort(SortByID);
 
         Instantiate(newTileBlockPrefab, blockContentParent);
 
-        ToggleTileInteractivity();
+        ToggleTileInteractivity(true);
+
+        FindObjectOfType<MapViewport>().OnMapUpdate();
         
         yield break;
     }
 
-    public void ToggleTileInteractivity()
+    public void ToggleTileInteractivity(bool active)
     {
         for (int i = 0; i < transform.childCount; i++)
         {
             if (transform.GetChild(i).GetComponent<ListTileObjContainer>() != null)
             {
                 ListTileObjContainer container = transform.GetChild(i).GetComponent<ListTileObjContainer>();
-                container.sprNameField.interactable = !container.lightSrcToggle.interactable;
-                container.tileIdField.interactable = !container.lightSrcToggle.interactable;
-                container.colliderToggle.interactable = !container.lightSrcToggle.interactable;
-                container.lightSrcToggle.interactable = !container.lightSrcToggle.interactable;
+                if (container.sprNameField != null) container.sprNameField.interactable = active;
+                if (container.tileIdField != null) container.tileIdField.interactable = active;
+                if (container.colliderToggle != null) container.colliderToggle.interactable = active;
+                if (container.lightSrcToggle != null) container.lightSrcToggle.interactable = active;
+                if (container.transparencyToggle != null) container.transparencyToggle.interactable = active;
             }
         }
-    }
-
-    static int SortByID(TileObject t1, TileObject t2)
-    {
-        return t2.id.CompareTo(t1.id);
     }
 }

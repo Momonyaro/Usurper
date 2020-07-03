@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using RENDERER.MAP;
+using RENDERER.UTILS;
 using EDITOR.EXPORT;
 
 public class NewProjectPanel : MonoBehaviour
@@ -31,14 +32,17 @@ public class NewProjectPanel : MonoBehaviour
 
     public void SubmitNewMap()
     {
+        FindObjectOfType<StreamingResourceLoader>().Init();
+        if (FindObjectOfType<TileAtlasEditor>()) { Debug.Log("[EDITOR ONLY] Loading the tile editor!"); StartCoroutine(FindObjectOfType<TileAtlasEditor>().LoadTileAtlasIfReady()); }
         FindObjectOfType<MapViewport>().loadedWorld.CreateNewWorld(mapName, mapWidth, mapHeight);
+        FindObjectOfType<MapViewport>().initialized = true;
     }
 
     public void FetchExistingMapByName()
     {
-        FindObjectOfType<MapExporter>().LoadMap(mapName);
-        FindObjectOfType<MapViewport>().OnMapUpdate();
+        StartCoroutine(FindObjectOfType<MapLoader>().LoadCampaignAndResources(mapName));
         FindObjectOfType<BoundsInfoText>().ForceUpdate();
+        FindObjectOfType<MapViewport>().initialized = true;
     }
 
     private void CreateInfoTextDump()

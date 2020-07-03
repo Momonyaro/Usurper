@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using RENDERER.UTILS;
 using RENDERER.MAP;
+using RULESET.MANAGERS;
 using EDITOR.EXPORT;
 
 public class MapLoader : MonoBehaviour
@@ -26,17 +27,23 @@ public class MapLoader : MonoBehaviour
         StartCoroutine(LoadCampaignAndResources("Usurper"));
     }
 
-    public IEnumerator LoadCampaignAndResources(string campaingName)
+    public IEnumerator LoadCampaignAndResources(string campaignName)
     {
+        Debug.Log(campaignName + " | Attempting fetch...");
         if (loadingStatusText != null) loadingStatusText.text = "Loading Sprites...";
+        Debug.Log("Initializing resources!");
         resourceLoader.Init();
         yield return new WaitForEndOfFrame();
         if (loadingStatusText != null) loadingStatusText.text = "Loading Map Files...";
-        mapExporter.LoadMap(campaingName);
+        Debug.Log("Loading Map!");
+        mapExporter.LoadMap(campaignName);
         yield return new WaitForEndOfFrame();
-        mapViewport.OnMapUpdate();
         if (loadingScreenPanel != null) loadingScreenPanel.SetActive(false);
+        if (FindObjectOfType<TileAtlasEditor>()) { Debug.Log("[EDITOR ONLY] Loading the tile editor!"); StartCoroutine(FindObjectOfType<TileAtlasEditor>().LoadTileAtlasIfReady()); }
+        FindObjectOfType<MapViewport>().initialized = true;
+        Debug.Log("Finished Fetch!");
 
+        FindObjectOfType<EntityManager>().UpdatePlayer(Vector2Int.zero);
         yield break;
     }
 }

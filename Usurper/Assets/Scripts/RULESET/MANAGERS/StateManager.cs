@@ -13,6 +13,7 @@ namespace RULESET.MANAGERS
 		LOBOTOMIZED,
 		POPUP,
 		CHARACTER_CREATION,
+		MAP
 	}
 
 	public delegate void OnNewState();

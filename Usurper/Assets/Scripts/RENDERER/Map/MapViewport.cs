@@ -53,6 +53,7 @@ namespace RENDERER.MAP
         public bool inEditor = false;
         private bool drawing = false;
         private bool playerHasLight = false;
+        public bool initialized = false;
 
         private void Start()
         {
@@ -61,10 +62,7 @@ namespace RENDERER.MAP
 
             if (inEditor)
             {
-                FindObjectOfType<StreamingResourceLoader>().Init();
-                viewPortRadius = 61;
-                loadedWorld.Init();
-                OnMapUpdate();
+                viewPortRadius = 82;
             } 
         }
 
@@ -101,7 +99,6 @@ namespace RENDERER.MAP
             {
                 Vector2 cStartPos = chunk.GetChunkStartPos();
                 Vector2 localMousePos = (centerPosOnMap + mouseWorldPos + new Vector2(.5f, .5f)) - cStartPos; //Get the mouse pos relative to the chunk
-                Debug.Log(localMousePos);
                 Vector2Int roundedPos = new Vector2Int(Mathf.FloorToInt(localMousePos.x), Mathf.FloorToInt(localMousePos.y));
     
                 if (roundedPos.x < 0 || roundedPos.x >= Chunk.chunkSize ||
@@ -222,7 +219,7 @@ namespace RENDERER.MAP
                 tileData = mapEntityRenderer.RenderEntitiesWithLighting(tileData);
             }
 
-            Debug.Log("Placing " + tileData.Length + " tiles on viewport...");
+            //Debug.Log("Placing " + tileData.Length + " tiles on viewport...");
 
             for (int y = 0; y < viewPortRadius; y++)
             {

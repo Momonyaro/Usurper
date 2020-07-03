@@ -14,11 +14,21 @@ namespace RULESET.MANAGERS
 		// It could simply be a return value for the entityManager I guess but we'll see.
 		
 
+		private void Awake()
+		{
+			Clock.instance = clock;
+		}
+
 	    public void PlayerEndTurn(Vector2Int mvmtDirection)
 	    {
 	    	//Pass the mvmtDirection to the entityManager to set the player's new position.
 	    	GetComponent<EntityManager>().UpdatePlayer(mvmtDirection);
 	    	clock.IncrementTicksByAmount(1);
+	    }
+
+	    public void EditorEndTurn(Vector2Int mvmtDirection)
+	    {
+	    	GetComponent<EntityManager>().UpdateEditorCursor(mvmtDirection);
 	    }
 	}
 }

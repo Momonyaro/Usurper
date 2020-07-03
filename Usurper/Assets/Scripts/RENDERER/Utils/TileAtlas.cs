@@ -25,7 +25,6 @@ namespace RENDERER.UTILS.Atlas
             tileObjects.AddRange(tObjArr);
             foreach(var tileObj in tileObjects)
             {
-                Debug.Log(tileObj);
             }
         }
 
@@ -42,6 +41,30 @@ namespace RENDERER.UTILS.Atlas
             return new TileObject(-1, SpriteAtlas.FetchSpriteByName("spr_err"), true, false, false);
         }
 
+        public static void OverwriteTileAtIndex(int id, TileObject newTile)
+        {
+            for(int i = 0; i < tileObjects.Count; i++)
+            {
+                if (tileObjects[i].id == id)
+                {
+                    tileObjects[i] = newTile;
+                    break;
+                }
+            }
+        }
+
+        public static void RemoveTileWithID(int id)
+        {
+            for (int i = 0; i < tileObjects.Count; i++)
+            {
+                if (tileObjects[i].id == id)
+                {
+                    tileObjects.RemoveAt(i);
+                    break;
+                }
+            }
+        }
+
     }
 
     [System.Serializable]
@@ -51,12 +74,14 @@ namespace RENDERER.UTILS.Atlas
         public Tile tile;
         public bool collider;
         public bool transparent;
+        public bool halfHeight;
         public bool lightSource;
 
         public TileObject(int id, Sprite sprite, bool collider, bool transparent, bool lightSource)
         {
             this.id = id;
             this.collider = collider;
+            this.halfHeight = false;
             this.transparent = transparent;
             this.lightSource = lightSource;
             tile = (Tile)ScriptableObject.CreateInstance(typeof(Tile));
@@ -72,6 +97,7 @@ namespace RENDERER.UTILS.Atlas
         {
             this.id = id;
             this.collider = collider;
+            this.halfHeight = false;
             this.transparent = transparent;
             this.lightSource = lightSource;
             tile = new Tile();

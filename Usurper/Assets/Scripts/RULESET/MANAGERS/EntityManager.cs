@@ -41,6 +41,13 @@ namespace RULESET.MANAGERS
 			UpdateEntities();
 		}
 
+		public void UpdateEditorCursor(Vector2Int mvmtDirection)
+		{
+			playerEntity.x += Mathf.RoundToInt(mvmtDirection.x);
+			playerEntity.y += Mathf.RoundToInt(mvmtDirection.y);
+			UpdateEntities();
+		}
+
 		public void UpdateEntities()
 		{
 			int halfWidth = ((MapViewport.viewPortRadius - 1) / 2);

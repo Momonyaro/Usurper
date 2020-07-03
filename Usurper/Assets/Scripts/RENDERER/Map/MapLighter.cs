@@ -14,7 +14,6 @@ namespace RENDERER.MAP
         private const int maxLightsInView = 8;
         private const float logE = 2.718281828f;
         private float ambientLightLevel = 0.15f;
-        //private const float ambientLightLevel = 1;
 
         public TileObject[,] LightPass(TileObject[,] tileData, int dist)
         {
@@ -58,7 +57,7 @@ namespace RENDERER.MAP
         private TileObject[,] DrawLight(TileObject[,] tileData, int x, int y, int dist)
         {
             tileData[x, y].tile.color = new Color(1, 1, 1);
-            int degOffset = 360 / rayCount;
+            int degOffset = Mathf.FloorToInt(360 / rayCount);
 
             for (int i = 0; i < rayCount; i++)
             {
@@ -72,8 +71,8 @@ namespace RENDERER.MAP
 
                 for (int j = 0; j < d; j++)
                 {
-                    int tx = Mathf.RoundToInt(Mathf.Lerp(x, tileX, j / (float)d));
-                    int ty = Mathf.RoundToInt(Mathf.Lerp(y, tileY, j / (float)d));
+                    int tx = Mathf.RoundToInt(Mathf.Lerp(x, tileX, (j + 1) / (float)d));
+                    int ty = Mathf.RoundToInt(Mathf.Lerp(y, tileY, (j + 1) / (float)d));
                     float cMult = 1 - ((j + 1) / (float)d);
                     if (cMult < ambientLightLevel) cMult = ambientLightLevel;
 
@@ -86,7 +85,7 @@ namespace RENDERER.MAP
                         tileData[tx, ty].tile.color = new Color(cMult, cMult, cMult, 1);
 
                     if (tx == x && ty == y) continue;    
-                    if (tileData[tx, ty].collider && !tileData[tx,ty].transparent) break;
+                    if (!tileData[tx,ty].transparent) break;
                 }
             }
 

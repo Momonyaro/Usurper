@@ -24,9 +24,13 @@ namespace RULESET.MANAGERS
 
 		private void Update()
 		{
+			if (!mView.initialized) return;
 			if (mView.inEditor)
 			{
-				EditorControls();
+				if (timer <= 0)
+				{
+					EditorControls();
+				}
 			}
 			else
 			{
@@ -39,7 +43,9 @@ namespace RULESET.MANAGERS
 
 		private void EditorControls()
 		{
-			int mvmtOffset = 1;
+			if (Input.GetKeyDown(KeyCode.Escape)) { PointerImageGhost.ClearSelected(); return; }
+
+			int mvmtOffset = 5;
 			if (Input.GetKey(KeyCode.LeftControl))
             {
             	mvmtOffset = 10;
@@ -48,10 +54,10 @@ namespace RULESET.MANAGERS
                     mvmtOffset = 64;
                 }
             }
-            if (Input.GetKey(KeyCode.W)) { mView.centerPosOnMap += Vector2Int.up * mvmtOffset; mView.OnMapUpdate(); return; }
-            else if (Input.GetKey(KeyCode.A)) { mView.centerPosOnMap += Vector2Int.left * mvmtOffset; mView.OnMapUpdate(); return; }
-            else if (Input.GetKey(KeyCode.S)) { mView.centerPosOnMap += Vector2Int.down * mvmtOffset; mView.OnMapUpdate(); return; }
-            else if (Input.GetKey(KeyCode.D)) { mView.centerPosOnMap += Vector2Int.right * mvmtOffset; mView.OnMapUpdate(); return; }
+            if (Input.GetKey(KeyCode.W)) { GetComponent<TurnManager>().EditorEndTurn(Vector2Int.up * mvmtOffset); timer = timeBetweenInputs; return; }
+            else if (Input.GetKey(KeyCode.A)) { GetComponent<TurnManager>().EditorEndTurn(Vector2Int.left * mvmtOffset); timer = timeBetweenInputs; return; }
+            else if (Input.GetKey(KeyCode.S)) { GetComponent<TurnManager>().EditorEndTurn(Vector2Int.down * mvmtOffset); timer = timeBetweenInputs; return; }
+            else if (Input.GetKey(KeyCode.D)) { GetComponent<TurnManager>().EditorEndTurn(Vector2Int.right * mvmtOffset); timer = timeBetweenInputs; return; }
 		}
 
 		private void GameControls()
@@ -59,10 +65,57 @@ namespace RULESET.MANAGERS
 			//Later we need to pass the input to either the turnmanager or the uimanager instead of directly feeding
 			//commands to the mapViewport!
 
-			if (Input.GetKeyDown(KeyCode.I)) { StateManager.gameState = StateManager.gameState == GameStates.OVERWORLD ? GameStates.INVENTORY : GameStates.OVERWORLD; }
+			// Inventory screen
+			if (Input.GetKeyDown(KeyCode.I)) 
+			{
+				if (StateManager.gameState == GameStates.OVERWORLD)
+					StateManager.gameState = GameStates.INVENTORY;
+				else if (StateManager.gameState == GameStates.INVENTORY)
+					StateManager.gameState = GameStates.OVERWORLD;
+
+				// Change the ui.
+				return;
+			}
+
+			// Targeting mode
+			if (Input.GetKeyDown(KeyCode.V))
+			{
+				if (StateManager.gameState == GameStates.OVERWORLD)
+				{
+					StateManager.gameState = GameStates.COMBAT;
+					FindObjectOfType<MapEntityRenderer>().DrawCombatRange(new Vector2Int(0, 0), 2);
+				}
+				else if (StateManager.gameState == GameStates.COMBAT)
+				{
+					StateManager.gameState = GameStates.OVERWORLD;
+					FindObjectOfType<MapEntityRenderer>().RedrawStoredBuffer();
+				}
+
+				// Render the targeting mode
+				return;
+			}
+
+			// Map screen
+			if (Input.GetKeyDown(KeyCode.M))
+			{
+				if (StateManager.gameState == GameStates.OVERWORLD)
+					StateManager.gameState = GameStates.MAP;
+				else if (StateManager.gameState == GameStates.MAP)
+					StateManager.gameState = GameStates.OVERWORLD;
+
+				// Change the ui.
+				return;
+			}
+
+			if (Input.GetKeyDown(KeyCode.Escape))
+			{
+				StateManager.gameState = GameStates.OVERWORLD;
+				return;
+			}
 
 			if (StateManager.gameState == GameStates.OVERWORLD)
 			{
+
 				if (Input.GetKey(KeyCode.W)) { GetComponent<TurnManager>().PlayerEndTurn(Vector2Int.up); timer = timeBetweenInputs; return; }
             	else if (Input.GetKey(KeyCode.A)) { GetComponent<TurnManager>().PlayerEndTurn(Vector2Int.left); timer = timeBetweenInputs; return; }
 	            else if (Input.GetKey(KeyCode.S)) { GetComponent<TurnManager>().PlayerEndTurn(Vector2Int.down); timer = timeBetweenInputs; return; }

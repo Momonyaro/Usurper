@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.IO;
 using RENDERER.MAP;
 using RENDERER.UTILS.Atlas;
+using RULESET.MANAGERS;
 using LitJson;
 
 namespace EDITOR.EXPORT
@@ -36,6 +37,8 @@ namespace EDITOR.EXPORT
             World.width = (int)loadedFile["mapWidth"];
             World.height = (int)loadedFile["mapHeight"];
             mapObject.centerPosOnMap = new Vector2Int((int)loadedFile["playerStartPosX"], (int)loadedFile["playerStartPosY"]);
+            FindObjectOfType<EntityManager>().playerEntity.x = mapObject.centerPosOnMap.x;
+            FindObjectOfType<EntityManager>().playerEntity.y = mapObject.centerPosOnMap.y;
             List<string> chunkPaths = new List<string>();
             for (int i = 0; i < loadedFile["chnkPaths"].Count; i++)
             {
@@ -62,6 +65,7 @@ namespace EDITOR.EXPORT
             TileAtlas.SetTileObjectArrayToAtlas(importedTiles.ToArray());
 
             mapObject.loadedWorld.CreateWorldWithExistingData(toLoad, loadedFile["mapName"].ToString(), (int)loadedFile["mapWidth"], (int)loadedFile["mapHeight"]);
+            mapObject.initialized = true;
         }
 
         public IEnumerator SaveMap()

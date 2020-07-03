@@ -100,7 +100,7 @@ namespace EDITOR.SYSTEMS
     {
         public string name;
         public string desc;
-        public Sprite sprite;
+        public Sprite sprite; //Change to list to have a pool of sprites instead.
         public int[] averageStats;
         // Add creature bonuses as well!
         public List<EditorBodyPart> bodyParts;

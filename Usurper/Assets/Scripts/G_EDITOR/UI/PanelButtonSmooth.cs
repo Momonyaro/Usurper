@@ -14,12 +14,12 @@ public class PanelButtonSmooth : MonoBehaviour
         if (panelOpen)
         {
             StartCoroutine(MovePanel(panelTransform.position + new Vector3(panelMoveDist, 0, 0), smoothSpeed));
-            if (tempSolutionTileAtlasToggle != null) tempSolutionTileAtlasToggle.ToggleTileInteractivity();
+            if (tempSolutionTileAtlasToggle != null) tempSolutionTileAtlasToggle.ToggleTileInteractivity(!panelOpen);
         }
         else 
         {
             StartCoroutine(MovePanel(panelTransform.position + new Vector3(-panelMoveDist, 0, 0), smoothSpeed));
-            if (tempSolutionTileAtlasToggle != null) tempSolutionTileAtlasToggle.ToggleTileInteractivity();
+            if (tempSolutionTileAtlasToggle != null) tempSolutionTileAtlasToggle.ToggleTileInteractivity(!panelOpen);
         }
     }
 

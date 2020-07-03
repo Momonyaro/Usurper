@@ -1,3 +1,6 @@
+using QFSW.QC;
+using UnityEngine;
+
 // First investigate if this can be implemented this way!!!
 
 // The idea is that by incrementing a in every time a turn ends, we can divide that int into 24 segments.
@@ -14,6 +17,7 @@ namespace RULESET.WORLD
 	public class Clock
 	{
 		public static OnClockUpdate onClockUpdate;
+		public static Clock instance;
 		//We need hours, ticks, day, week, month stored
 
 		public static int currentTick =   0, totalTicks = 100;	// totalTicks  = 1 hour
@@ -22,6 +26,28 @@ namespace RULESET.WORLD
 		public static int currentWeek =   2, totalWeeks = 4;	// totalWeeks  = 1 Month
 		public static int currentMonth =  0, totalMonths = 12;	// totalMonths = 1 Year
 		public static int currentYear = 253;
+
+
+		[Command()]
+		public static void PrintCalendar()
+		{
+			Debug.Log("T: " + currentTick + "/" + totalTicks + " H: " + currentHour + "/" + totalHours + " D: " + currentDay + "/" + totalDays +
+					 " W: " + currentWeek + "/" + totalWeeks + " M: " + currentMonth + "/" + totalMonths + " Y: " + currentYear);
+		}
+
+		[Command()]
+		public static void AdvanceTime(int amount)
+		{
+			currentTick += amount;
+			while (currentTick >= totalTicks)
+			{
+				currentTick -= totalTicks;
+				currentHour++;
+			}
+
+			//onClockUpdate.Invoke();
+			if (currentHour >= totalHours) Clock.instance.IncrementHoursByAmount(0);
+		}
 
 		public void IncrementTicksByAmount(int amount)
 		{
