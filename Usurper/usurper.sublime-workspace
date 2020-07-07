@@ -143,7 +143,7 @@
 			"file": "Assets/Scripts/G_EDITOR/SYSTEMS/ItemPoolEditor.cs",
 			"settings":
 			{
-				"buffer_size": 935,
+				"buffer_size": 868,
 				"encoding": "UTF-8",
 				"line_ending": "Unix"
 			}
@@ -152,7 +152,7 @@
 			"file": "Assets/Scripts/RULESET/ITEMS/Item.cs",
 			"settings":
 			{
-				"buffer_size": 1142,
+				"buffer_size": 767,
 				"encoding": "UTF-8",
 				"line_ending": "Unix"
 			}
@@ -221,34 +221,36 @@
 	[
 		"/home/sebastian/Documents/Projekt/Usurper/Usurper/Assets/Scripts",
 		"/home/sebastian/Documents/Projekt/Usurper/Usurper/Assets/Scripts/G_EDITOR",
-		"/home/sebastian/Documents/Projekt/Usurper/Usurper/Assets/Scripts/G_EDITOR/EXPORT",
-		"/home/sebastian/Documents/Projekt/Usurper/Usurper/Assets/Scripts/G_EDITOR/SYSTEMS",
+		"/home/sebastian/Documents/Projekt/Usurper/Usurper/Assets/Scripts/G_EDITOR/UI",
 		"/home/sebastian/Documents/Projekt/Usurper/Usurper/Assets/Scripts/Plugins",
+		"/home/sebastian/Documents/Projekt/Usurper/Usurper/Assets/Scripts/RENDERER",
+		"/home/sebastian/Documents/Projekt/Usurper/Usurper/Assets/Scripts/RENDERER/Map",
+		"/home/sebastian/Documents/Projekt/Usurper/Usurper/Assets/Scripts/RENDERER/Utils",
 		"/home/sebastian/Documents/Projekt/Usurper/Usurper/Assets/Scripts/RULESET",
-		"/home/sebastian/Documents/Projekt/Usurper/Usurper/Assets/Scripts/RULESET/ITEMS",
-		"/home/sebastian/Documents/Projekt/Usurper/Usurper/Assets/Scripts/RULESET/MANAGERS",
-		"/home/sebastian/Documents/Projekt/Usurper/Usurper/Assets/Scripts/RULESET/WORLD"
+		"/home/sebastian/Documents/Projekt/Usurper/Usurper/Assets/Scripts/RULESET/ITEMS"
 	],
 	"file_history":
 	[
 		"/home/sebastian/Documents/Projekt/Usurper/Usurper/Assets/Scripts/RENDERER/Utils/TileAtlas.cs",
+		"/home/sebastian/Documents/Projekt/Usurper/Usurper/Assets/Scripts/RENDERER/Map/MapViewport.cs",
+		"/home/sebastian/Documents/Projekt/Usurper/Usurper/Assets/Scripts/G_EDITOR/UI/NewProjectPanel.cs",
+		"/home/sebastian/Documents/Projekt/Usurper/Usurper/Assets/Scripts/RENDERER/Map/MapLoader.cs",
+		"/home/sebastian/Documents/Projekt/Usurper/Usurper/Assets/Scripts/RULESET/MANAGERS/InputManager.cs",
+		"/home/sebastian/Documents/Projekt/Usurper/Usurper/Assets/Scripts/RENDERER/Map/MapLighter.cs",
+		"/home/sebastian/Documents/Projekt/Usurper/Usurper/Assets/Scripts/G_EDITOR/UI/ListTileObjContainer.cs",
+		"/home/sebastian/Documents/Projekt/Usurper/Usurper/Assets/Scripts/G_EDITOR/UI/TileAtlasEditor.cs",
+		"/home/sebastian/Documents/Projekt/Usurper/Usurper/Assets/Scripts/RENDERER/Utils/StreamingResourceLoader.cs",
+		"/home/sebastian/Documents/Projekt/Usurper/Usurper/Assets/Scripts/RULESET/MANAGERS/TurnManager.cs",
+		"/home/sebastian/Documents/Projekt/Usurper/Usurper/Assets/Scripts/RULESET/MANAGERS/EntityManager.cs",
+		"/home/sebastian/Documents/Projekt/Usurper/Usurper/Assets/Scripts/RULESET/ITEMS/Item.cs",
+		"/home/sebastian/Documents/Projekt/Usurper/Usurper/Assets/Scripts/RENDERER/Map/MapEntityRenderer.cs",
 		"/home/sebastian/Documents/Projekt/Usurper/Usurper/Assets/Scripts/G_EDITOR/EXPORT/MapExporter.cs",
 		"/home/sebastian/Documents/Projekt/Usurper/Usurper/Assets/Scripts/G_EDITOR/SYSTEMS/CreatureDesigner.cs",
-		"/home/sebastian/Documents/Projekt/Usurper/Usurper/Assets/Scripts/RENDERER/Map/MapEntityRenderer.cs",
-		"/home/sebastian/Documents/Projekt/Usurper/Usurper/Assets/Scripts/RULESET/MANAGERS/InputManager.cs",
-		"/home/sebastian/Documents/Projekt/Usurper/Usurper/Assets/Scripts/G_EDITOR/UI/ListTileObjContainer.cs",
-		"/home/sebastian/Documents/Projekt/Usurper/Usurper/Assets/Scripts/RULESET/MANAGERS/TurnManager.cs",
-		"/home/sebastian/Documents/Projekt/Usurper/Usurper/Assets/Scripts/RENDERER/Map/MapViewport.cs",
-		"/home/sebastian/Documents/Projekt/Usurper/Usurper/Assets/Scripts/RENDERER/Map/MapLoader.cs",
 		"/home/sebastian/Documents/Projekt/Usurper/Usurper/Assets/Scripts/RULESET/WORLD/Clock.cs",
-		"/home/sebastian/Documents/Projekt/Usurper/Usurper/Assets/Scripts/G_EDITOR/UI/TileAtlasEditor.cs",
-		"/home/sebastian/Documents/Projekt/Usurper/Usurper/Assets/Scripts/RENDERER/Map/MapLighter.cs",
 		"/home/sebastian/Documents/Projekt/Usurper/Usurper/Assets/Scripts/G_EDITOR/UI/PanelButtonSmooth.cs",
 		"/home/sebastian/Documents/Projekt/Usurper/Usurper/Assets/Scripts/RULESET/MANAGERS/StateManager.cs",
-		"/home/sebastian/Documents/Projekt/Usurper/Usurper/Assets/Scripts/RULESET/MANAGERS/EntityManager.cs",
 		"/home/sebastian/Documents/Projekt/Usurper/Usurper/Assets/Scripts/RULESET/MANAGERS/UiManager.cs",
 		"/home/sebastian/Documents/Projekt/Usurper/Usurper/Assets/Scripts/RENDERER/Map/World.cs",
-		"/home/sebastian/Documents/Projekt/Usurper/Usurper/Assets/Scripts/RULESET/ITEMS/Item.cs",
 		"/home/sebastian/Documents/Projekt/Usurper/Usurper/Assets/Scripts/RULESET/ENTITIES/BodyPart.cs",
 		"/home/sebastian/Documents/Projekt/Usurper/Usurper/Assets/Scripts/G_EDITOR/UI/AnatomyPropertyPanel.cs",
 		"/home/sebastian/Documents/Projekt/Usurper/Usurper/Assets/Scripts/G_EDITOR/SYSTEMS/CreatureAnatomyPanel.cs",
@@ -301,15 +303,15 @@
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 935,
+						"buffer_size": 868,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								930,
-								930
+								866,
+								866
 							]
 						],
 						"settings":
@@ -320,24 +322,30 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 0,
+					"stack_index": 1,
 					"type": "text"
-				},
+				}
+			]
+		},
+		{
+			"selected": 0,
+			"sheets":
+			[
 				{
 					"buffer": 1,
 					"file": "Assets/Scripts/RULESET/ITEMS/Item.cs",
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 1142,
+						"buffer_size": 767,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								43,
-								30
+								758,
+								758
 							]
 						],
 						"settings":
@@ -350,7 +358,7 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 1,
+					"stack_index": 0,
 					"type": "text"
 				}
 			]
@@ -373,11 +381,18 @@
 				0,
 				1,
 				1
+			],
+			[
+				1,
+				0,
+				2,
+				1
 			]
 		],
 		"cols":
 		[
 			0.0,
+			0.5,
 			1.0
 		],
 		"rows":
@@ -433,7 +448,7 @@
 		],
 		"width": 0.0
 	},
-	"selected_group": 0,
+	"selected_group": 1,
 	"settings":
 	{
 	},

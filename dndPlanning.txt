@@ -1,0 +1,38 @@
+How should we handle proficiencies? I guess the strength and weakness system could help to make that come to fruition but since that is mostly optional
+do we want players to be able to bore themselves into a coma? Perhaps we force the player to have at least 3 weaknesses and 3 strengths? perhaps that's
+too many but it's a good start to encourage roleplaying.
+
+Leveling table:
+Starting, the player is level 1 with 0 xp
+
+stats are divided into
+Strength, Dexterity, Agility, Endurance, Perception, Charisma, Intelligence
+and all go from 0 - 100 which represents a percentage value which is added onto formulas where the stat is used.
+Note that after we add the multiplier, we round DOWN.
+whenever the player levels up they are asked to allocate 5 points into stats of their choosing after resting in a bed.
+
+Damage is the base damage range of your species + the weapon's damage * your strength/dexterity stat. (based on the weapon!)
+Taking damage is another story. We need to take into account armor on the hit body part. (perhaps just a simple subtraction.)
+That might be an issue though as making armor not mitigate enough damage will make people avoid it and making it too good will
+make people only use it.
+
+Perhaps on top of taking into account armor, we also look at level or endurance in order to "bump the numbers" or scale it better.
+If nothing else this shows how important good item balancing is for weapons, armor and other things.
+
+When it comes to dodging, what is the percentage cap we want? 50%? 80%? Do we want to make them able to dodge everyting or should we account
+for the attackers agility as well?
+
+Dodging = (1 - (weight / weightCap)) * agility / attackerAgility        //Looks like it'll work suprisingly well! :)
+
+Calculating health might be wierd since we want something that we can just plug into a formula.
+We basically want a calculation where it scales nicely and doesn't shrink the player health over a level up.
+perhaps we make endurance only go from 1 - 1.5
+
+Health = Mathf.FloorToInt((50 * level) * (1 + (endurance / 2)))
+
+When it comes to the xp we have to consider the fact that when adding the xp it goes through the multiplier that's based on the player's strenghts and weaknesses.
+should xp be linear, exponenial or logaritmical? Probably exponential as we want to reward players taking down bigger and badder monsters
+we could take the last levels value and multiply it by some scalar in order to get a new; higher threshold.
+How about we take a base value, multiply it by the level and then multiply a exponential scalar onto it in order to curve it nicely.
+
+xpNeeded = 25 + (level ^ (12 * .14)) * 3    //This gives a nice exponential curve. It might be a bit too steep but I think we can compensate with later enemy xp amounts.

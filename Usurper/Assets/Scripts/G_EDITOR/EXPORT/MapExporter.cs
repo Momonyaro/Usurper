@@ -16,6 +16,7 @@ namespace EDITOR.EXPORT
         private const string mapExtention = ".map";
 
         ChunkExporter chnkExporter = new ChunkExporter();
+        ItemExporter itemExporter = new ItemExporter();
 
 
         private void Update()
@@ -90,6 +91,7 @@ namespace EDITOR.EXPORT
             JsonData mapData = JsonUtility.ToJson(toExport);
             Directory.CreateDirectory(campaignPath + toExport.mapName + "/");
             string finalPath = campaignPath + toExport.mapName + "/" + toExport.mapName + mapExtention;
+            itemExporter.SaveItemDatabase(campaignPath + toExport.mapName + "/");
             File.WriteAllText(finalPath, mapData.ToString());
 
             yield break;

@@ -2,6 +2,7 @@ using UnityEngine;
 using UnityEngine.Tilemaps;
 using RENDERER.UTILS.Atlas;
 using RENDERER.UTILS;
+using RULESET.MANAGERS;
 using System.Collections.Generic;
 
 
@@ -69,7 +70,7 @@ namespace RENDERER.MAP
         private void Update()
         {
 
-            if (drawing)
+            if (drawing && !InputManager.inEditorUI)
             {
                 DrawOnMap();
             }
@@ -77,7 +78,7 @@ namespace RENDERER.MAP
 
         private void OnMouseDown()
         {
-            if (inEditor && PointerImageGhost.selected.tile != null)
+            if (inEditor && PointerImageGhost.selected.tile != null && !InputManager.inEditorUI)
             {
                 drawing = true;
             }

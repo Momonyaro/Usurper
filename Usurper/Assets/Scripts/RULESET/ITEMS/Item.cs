@@ -29,20 +29,26 @@ namespace RULESET.ITEMS
         DMG_WATER
     }
 
+    [System.Serializable]
     public class Item
     {
-        public string name = "N/A";
+        public string name = "New Item";
+        public string desc = "Item Description";
         public bool stackable = false;
-        public int amount = 1;
-        public int value = 0;
+        public short amount = 1;
+        public short value = 0;
         public int weight = 0;     //In grams!
+        public int groupId = 0;
         public int x = 0;
         public int y = 0;
-        public ITEM_CATEGORIES itemCatagory = ITEM_CATEGORIES.ITEM_MISC;
+
+        public ITEM_CATEGORIES itemCategory = ITEM_CATEGORIES.ITEM_MISC;
         public DAMAGE_TYPES damageType = DAMAGE_TYPES.DMG_CRUSHING;
-        //List of effects on the item here!!
-        //How do we add ranged weapons that use ammo / mana?
-        //Let's keep a reference to ammo type here then we simply search the player inventory for that ammo type and fire that.
+        public short damage = 0;
+        public short armor = 0;
+        public short range = 0;
+        public bool  usesAmmo = false;
+        public int   ammoType = 0;  //This will be set to the group of the ammo
     }
 
 }

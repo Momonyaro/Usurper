@@ -11,6 +11,7 @@ namespace RULESET.MANAGERS
 
 		float timeBetweenInputs = 0.25f;
 		float timer = 0;
+		public static bool inEditorUI = false;
 
 		private void FixedUpdate()
 		{
@@ -25,6 +26,7 @@ namespace RULESET.MANAGERS
 		private void Update()
 		{
 			if (!mView.initialized) return;
+			if (inEditorUI) return;
 			if (mView.inEditor)
 			{
 				if (timer <= 0)
