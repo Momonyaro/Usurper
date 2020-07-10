@@ -11,9 +11,10 @@ namespace RENDERER.MAP
 	public class MapEntityRenderer : MonoBehaviour
 	{
 		public List<EntityBufferObject> entityRenderBuffer = new List<EntityBufferObject>();
+		public List<EntityBufferObject> storedRenderBuffer = new List<EntityBufferObject>();
 		public TileObject[,] lastUpdateBackgroundData;
         public Tilemap entityViewport;
-		public static float entityFlipSpeed = 0.75f;
+		public static float entityFlipSpeed = 0.50f;
 		private float timer = 0;
 		public bool inEditor = false;
 
@@ -50,10 +51,13 @@ namespace RENDERER.MAP
 			//In here we create the bufferobjects to later be rendered with RenderEntitiesWithLighting
 			//Since species aren't stored yet, let's assume for now that the entity is human.
 
-			entityRenderBuffer.Add(new EntityBufferObject(
-			new List<Sprite> { SpriteAtlas.FetchSpriteByName("spr_human_commoner_0") }, 0, 0, 0));
-			bufferObjCount++;
-
+			if (!inEditor)
+			{
+				entityRenderBuffer.Add(new EntityBufferObject(
+					new List<Sprite> { SpriteAtlas.FetchSpriteByName("spr_human_commoner_0") }, 0, 0, 0));
+				bufferObjCount++;
+			}
+			
 			for (int i = 0; i < relevantEntities.Count; i++) 
 			{
 				Vector2Int localPos = new Vector2Int(relevantEntities[i].x - player.x, relevantEntities[i].y - player.y);
@@ -83,6 +87,21 @@ namespace RENDERER.MAP
 			// go trough the entityRenderBuffer and for each object, create a tile, set it's color and place it on the entityTilemap
 		}
 
+		public TileObject[,] RenderEntitiesWithoutLighting(TileObject[,] backgroundData)
+		{
+			int halfWidth = ((MapViewport.viewPortRadius - 1) / 2);
+			//Instead of doing this, the player will be in the entityManager and be parsed with the other entities for rendering!
+			for (int i = 0; i < entityRenderBuffer.Count; i++) 
+			{
+				Tile tile = (Tile)ScriptableObject.CreateInstance(typeof(Tile));
+				tile.sprite = entityRenderBuffer[i].bufferData[entityRenderBuffer[i].bufferIndex];
+				entityViewport.SetTile(entityViewport.WorldToCell(new Vector3Int(entityRenderBuffer[i].x, entityRenderBuffer[i].y, 0)), tile);
+			}
+
+			lastUpdateBackgroundData = backgroundData;
+			return backgroundData;
+		}
+
 		public void IncrementBufferedTiles()
 		{
 			// clear entityTilemap in order to wipe outdated tileData
@@ -104,11 +123,9 @@ namespace RENDERER.MAP
 		{
 			int halfWidth = ((MapViewport.viewPortRadius - 1) / 2);
 			distance++;
+			timer = 0;
 
-			Tile tile = (Tile)ScriptableObject.CreateInstance(typeof(Tile));
-			tile.sprite = SpriteAtlas.FetchSpriteByName("spr_selected");
-			tile.color = Color.white;
-			timer = entityFlipSpeed;
+			storedRenderBuffer.CopyTo(entityRenderBuffer.ToArray());
 
 			// Create tiles to mark area within the distance. 
 			for (int y = -distance; y < distance; y++)
@@ -127,6 +144,7 @@ namespace RENDERER.MAP
 					{
 						if (tileToCheck.x == bufferObj.x && tileToCheck.y == bufferObj.y)
 						{
+							bufferObj.bufferData.Add(SpriteAtlas.FetchSpriteByName("spr_selected"));
 							skipThisEntity = true;
 							break;
 						}
@@ -134,13 +152,16 @@ namespace RENDERER.MAP
 					if (skipThisEntity) continue;
 
 					
-					entityViewport.SetTile(entityViewport.WorldToCell(new Vector3Int(tileToCheck.x, tileToCheck.y, 0)), tile);
+					entityRenderBuffer.Add(new EntityBufferObject(
+						new List<Sprite> { SpriteAtlas.FetchSpriteByName("spr_selected") }, tileToCheck.x, tileToCheck.y, 0));
 				}
 		}
 
 		public void RedrawStoredBuffer()
 		{
 			entityViewport.ClearAllTiles();
+			entityRenderBuffer.Clear();
+			entityRenderBuffer.CopyTo(storedRenderBuffer.ToArray());
 			int halfWidth = ((MapViewport.viewPortRadius - 1) / 2);
 			//Instead of doing this, the player will be in the entityManager and be parsed with the other entities for rendering!
 			for (int i = 0; i < entityRenderBuffer.Count; i++) 

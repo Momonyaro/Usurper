@@ -96,9 +96,7 @@ namespace RULESET.MANAGERS
 				}
 			}
 
-			if (mapViewport.lastUpdateViewData[localTargetPos.x + halfWidth, localTargetPos.y + halfWidth].collider) return false;
-
-			return true;
+			return !mapViewport.lastUpdateViewData[localTargetPos.x + halfWidth, localTargetPos.y + halfWidth].collider;
 		}
 	}
 }

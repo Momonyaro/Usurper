@@ -99,13 +99,13 @@ namespace RENDERER.MAP
             foreach (var chunk in loadedWorld.worldData)
             {
                 Vector2 cStartPos = chunk.GetChunkStartPos();
-                Vector2 localMousePos = (centerPosOnMap + mouseWorldPos + new Vector2(.5f, .5f)) - cStartPos; //Get the mouse pos relative to the chunk
-                Vector2Int roundedPos = new Vector2Int(Mathf.FloorToInt(localMousePos.x), Mathf.FloorToInt(localMousePos.y));
+                Vector2 localMousePos = (centerPosOnMap + mouseWorldPos) - cStartPos; //Get the mouse pos relative to the chunk
+                Vector2Int roundedPos = new Vector2Int(Mathf.FloorToInt(localMousePos.x - 1), Mathf.FloorToInt(localMousePos.y - 1));
     
                 if (roundedPos.x < 0 || roundedPos.x >= Chunk.chunkSize ||
                     roundedPos.y < 0 || roundedPos.y >= Chunk.chunkSize)    continue;
     
-                Vector3Int toVec3 = new Vector3Int(Mathf.FloorToInt(mouseWorldPos.x + 0.5f), Mathf.FloorToInt(mouseWorldPos.y + 0.5f), 0);
+                Vector3Int toVec3 = new Vector3Int(Mathf.FloorToInt(mouseWorldPos.x), Mathf.FloorToInt(mouseWorldPos.y), 0);
                 toVec3 = viewport.WorldToCell(toVec3);
                 
                 switch (EDITOR_BRUSH_MODE)
@@ -217,8 +217,9 @@ namespace RENDERER.MAP
             {
                 if (playerHasLight) tileData[halfWidth, halfWidth].lightSource = true;
                 tileData = mapLighter.LightPass(tileData, 8);
-                tileData = mapEntityRenderer.RenderEntitiesWithLighting(tileData);
             }
+            
+            tileData = mapEntityRenderer.RenderEntitiesWithLighting(tileData);
 
             //Debug.Log("Placing " + tileData.Length + " tiles on viewport...");
 

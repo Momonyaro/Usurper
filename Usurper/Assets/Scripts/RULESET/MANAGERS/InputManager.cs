@@ -90,7 +90,7 @@ namespace RULESET.MANAGERS
 				else if (StateManager.gameState == GameStates.COMBAT)
 				{
 					StateManager.gameState = GameStates.OVERWORLD;
-					FindObjectOfType<MapEntityRenderer>().RedrawStoredBuffer();
+					FindObjectOfType<EntityManager>().UpdateEntities();
 				}
 
 				// Render the targeting mode

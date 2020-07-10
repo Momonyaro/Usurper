@@ -11,6 +11,7 @@ namespace RULESET.ITEMS
         ITEM_FOOD,
         ITEM_POTION,
         ITEM_QUEST,
+        ITEM_CURRENCY,
         ITEM_MISC
     }
 

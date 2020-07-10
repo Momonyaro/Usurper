@@ -67,7 +67,7 @@ namespace EDITOR.SYSTEMS
 						instance.transform.GetChild(0).GetComponent<Text>().text = itemGroups[i].groupName;
                 		instance.transform.GetChild(1).GetComponent<Image>().sprite = itemGroups[i].groupSprite;
 					}
-				break;
+					break;
 
 				case ITEM_POOL_EDITOR_MODE.ITEM_DATABASE_VIEW:
 					for (int i = 0; i < itemDatabase.Count; i++)
@@ -81,13 +81,13 @@ namespace EDITOR.SYSTEMS
 						instance.transform.GetChild(0).GetComponent<Text>().text = itemDatabase[i].name;
 						instance.transform.GetChild(1).GetComponent<Image>().sprite = itemGroups[itemDatabase[i].groupId].groupSprite;
 					}
-				break;
+					break;
 			}
 
 			DrawSelected();
 		}
 
-		public void DrawSelected()
+		private void DrawSelected()
 		{
 			//Hand the itemPropertyEditor the relevant selected item.
 			ItemPropertyEditor propertyEditor = FindObjectOfType<ItemPropertyEditor>();
@@ -108,6 +108,22 @@ namespace EDITOR.SYSTEMS
 		{
 			editorMode = (ITEM_POOL_EDITOR_MODE)newMode;
 			FindObjectOfType<ItemPropertyEditor>().HideBothPanels();
+			DrawEditorList();
+		}
+
+		public void AddNewToActiveList()
+		{
+			switch (editorMode)
+			{
+				case ITEM_POOL_EDITOR_MODE.ITEM_GROUP_VIEW:
+					itemGroups.Add(new ItemGroup());
+					break;
+
+				case ITEM_POOL_EDITOR_MODE.ITEM_DATABASE_VIEW:
+					itemDatabase.Add(new Item());
+					break;
+			}
+
 			DrawEditorList();
 		}
 	}

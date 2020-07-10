@@ -6,6 +6,7 @@ using RENDERER.MAP;
 using RENDERER.UTILS.Atlas;
 using RULESET.MANAGERS;
 using LitJson;
+using RENDERER.UTILS;
 
 namespace EDITOR.EXPORT
 {
@@ -15,6 +16,9 @@ namespace EDITOR.EXPORT
         private string campaignPath = Application.streamingAssetsPath + "/Campaigns/";
         private const string mapExtention = ".map";
 
+        
+        public StreamingResourceLoader resourceLoader;
+        
         ChunkExporter chnkExporter = new ChunkExporter();
         ItemExporter itemExporter = new ItemExporter();
 
@@ -37,6 +41,8 @@ namespace EDITOR.EXPORT
             Debug.Log(loadedFile["author"].ToString());
             World.width = (int)loadedFile["mapWidth"];
             World.height = (int)loadedFile["mapHeight"];
+            
+            resourceLoader.Init((int)loadedFile["spriteSize"], (int)loadedFile["dungeonSpriteSize"]);
             mapObject.centerPosOnMap = new Vector2Int((int)loadedFile["playerStartPosX"], (int)loadedFile["playerStartPosY"]);
             FindObjectOfType<EntityManager>().playerEntity.x = mapObject.centerPosOnMap.x;
             FindObjectOfType<EntityManager>().playerEntity.y = mapObject.centerPosOnMap.y;
@@ -80,6 +86,8 @@ namespace EDITOR.EXPORT
             toExport.mapHeight = World.height;
             toExport.playerStartPosX = mapObject.centerPosOnMap.x;
             toExport.playerStartPosY = mapObject.centerPosOnMap.y;
+            toExport.spriteSize = 32;
+            toExport.dungeonSpriteSize = 64;
             toExport.chnkPaths = chnkExporter.SaveChunks(campaignPath + toExport.mapName, mapObject.loadedWorld.worldData); // Campaigns/[MAPNAME]/mapname.map
             List<TilePaletteObj> toShrink = new List<TilePaletteObj>();
             foreach (var tileAtlasObj in TileAtlas.tileObjects)
@@ -105,6 +113,8 @@ namespace EDITOR.EXPORT
         public string author;
         public int mapWidth;
         public int mapHeight;
+        public int spriteSize;
+        public int dungeonSpriteSize;
         public int playerStartPosX;
         public int playerStartPosY;
         public string[] chnkPaths;

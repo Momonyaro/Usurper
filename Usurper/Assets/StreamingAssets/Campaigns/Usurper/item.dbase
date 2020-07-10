@@ -1,1 +1,10 @@
-{"exportGroups":[{"id":0,"groupName":"TestGroup","groupSpriteName":"spr_ui_trash"}],"exportItems":[{"name":"TestItem","desc":"Item Description","stackable":false,"amount":1,"value":0,"weight":0,"groupId":0,"x":0,"y":0,"itemCategory":6,"damageType":3,"damage":0,"armor":0,"range":0,"usesAmmo":false,"ammoType":0}]}
+{
+	"exportGroups":[
+		{"id":0,"groupName":"TestGroup","groupSpriteName":"spr_ui_trash"},
+		{"id":1,"groupName":"Second Group","groupSpriteName":"spr_selected"},
+		{"id":2,"groupName":"Third Group","groupSpriteName":"spr_human_commoner_0"}],
+
+	"exportItems":[
+		{"name":"Test 1","desc":"This is the description of item 1 in the database","stackable":false,"amount":1,"value":12,"weight":500,"groupId":0,"x":0,"y":0,"itemCategory":6,"damageType":3,"damage":0,"armor":0,"range":0,"usesAmmo":false,"ammoType":0},
+		{"name":"Better Item","desc":"This item is better than test 1 by virtue of being cooler","stackable":true,"amount":26,"value":1,"weight":1,"groupId":1,"x":0,"y":0,"itemCategory":6,"damageType":3,"damage":0,"armor":0,"range":0,"usesAmmo":false,"ammoType":0}]
+}

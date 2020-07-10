@@ -40,7 +40,8 @@ public class NewProjectPanel : MonoBehaviour
 
     public void FetchExistingMapByName()
     {
-        StartCoroutine(FindObjectOfType<MapLoader>().LoadCampaignAndResources(mapName));
+        FindObjectOfType<MapLoader>().customCampaignToLoad = mapName;
+        StartCoroutine(FindObjectOfType<MapLoader>().LoadCampaignAndResources());
         FindObjectOfType<BoundsInfoText>().ForceUpdate();
         FindObjectOfType<MapViewport>().initialized = true;
     }
