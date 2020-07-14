@@ -29,7 +29,7 @@ public class TileAtlasEditor : MonoBehaviour
         }
 
         //Here we load it and create the UI blocks
-        List<TileObject> fetchedTiles = TileAtlas.tileObjects;
+        List<TileObject> fetchedTiles = TileAtlas.TileObjects;
         for (int i = 0; i < fetchedTiles.Count; i++)
         {
             GameObject tileBlock = Instantiate(tileBlockPrefab, blockContentParent);

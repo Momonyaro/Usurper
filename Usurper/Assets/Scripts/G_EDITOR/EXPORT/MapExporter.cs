@@ -31,8 +31,9 @@ namespace EDITOR.EXPORT
             }
         }
 
-        public void LoadMap(string mapName)
+        public bool LoadMap(string mapName)
         {
+            if (!File.Exists(campaignPath + mapName + "/" + mapName + mapExtention)) return false;
             MapViewport mapObject = FindObjectOfType<MapViewport>();
             Debug.Log(campaignPath + mapName);
             JsonData loadedFile = JsonMapper.ToObject(File.ReadAllText(campaignPath + mapName + "/" + mapName + mapExtention));
@@ -70,9 +71,18 @@ namespace EDITOR.EXPORT
                             (bool)loadedFile["tilePalette"][i]["collider"], (bool)loadedFile["tilePalette"][i]["transparent"], (bool)loadedFile["tilePalette"][i]["lightSrc"]));
             }
             TileAtlas.SetTileObjectArrayToAtlas(importedTiles.ToArray());
+            
+            List<TileObject> importedDungeonTiles = new List<TileObject>();
+            for (int i = 0; i < loadedFile["dungeonTilePalette"].Count; i++)
+            {
+                importedDungeonTiles.Add(new TileObject( (int)loadedFile["dungeonTilePalette"][i]["sprId"], loadedFile["dungeonTilePalette"][i]["sprName"].ToString(),
+                            (bool)loadedFile["dungeonTilePalette"][i]["collider"], (bool)loadedFile["dungeonTilePalette"][i]["transparent"], (bool)loadedFile["dungeonTilePalette"][i]["lightSrc"]));
+            }
+            TileAtlas.SetTileObjectArrayToDungeonAtlas(importedDungeonTiles.ToArray());
 
             mapObject.loadedWorld.CreateWorldWithExistingData(toLoad, loadedFile["mapName"].ToString(), (int)loadedFile["mapWidth"], (int)loadedFile["mapHeight"]);
             mapObject.initialized = true;
+            return true;
         }
 
         public IEnumerator SaveMap()
@@ -90,11 +100,18 @@ namespace EDITOR.EXPORT
             toExport.dungeonSpriteSize = 64;
             toExport.chnkPaths = chnkExporter.SaveChunks(campaignPath + toExport.mapName, mapObject.loadedWorld.worldData); // Campaigns/[MAPNAME]/mapname.map
             List<TilePaletteObj> toShrink = new List<TilePaletteObj>();
-            foreach (var tileAtlasObj in TileAtlas.tileObjects)
+            foreach (var tileAtlasObj in TileAtlas.TileObjects)
             {
                 toShrink.Add(new TilePaletteObj(tileAtlasObj.tile.sprite.name, tileAtlasObj.id, tileAtlasObj.collider, tileAtlasObj.transparent, tileAtlasObj.lightSource));
             }
             toExport.tilePalette = toShrink.ToArray();
+            
+            toShrink.Clear();
+            foreach (var tileAtlasObj in TileAtlas.DngTileObjects)
+            {
+                toShrink.Add(new TilePaletteObj(tileAtlasObj.tile.sprite.name, tileAtlasObj.id, tileAtlasObj.collider, tileAtlasObj.transparent, tileAtlasObj.lightSource));
+            }
+            toExport.dungeonTilePalette = toShrink.ToArray();
 
             JsonData mapData = JsonUtility.ToJson(toExport);
             Directory.CreateDirectory(campaignPath + toExport.mapName + "/");
@@ -119,6 +136,7 @@ namespace EDITOR.EXPORT
         public int playerStartPosY;
         public string[] chnkPaths;
         public TilePaletteObj[] tilePalette;
+        public TilePaletteObj[] dungeonTilePalette;
     }
 
 

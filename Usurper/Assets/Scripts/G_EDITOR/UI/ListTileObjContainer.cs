@@ -87,13 +87,13 @@ public class ListTileObjContainer : MonoBehaviour
 
     public void AddNewTileToAtlas()
     {
-        TileAtlas.AddTileObjectToAtlas(new TileObject(TileAtlas.tileObjects.Count, SpriteAtlas.FetchSpriteByName("spr_err"), false, false, false));
+        TileAtlas.AddTileObjectToAtlas(new TileObject(TileAtlas.TileObjects.Count, SpriteAtlas.FetchSpriteByName("spr_err"), false, false, false));
         StartCoroutine(FindObjectOfType<TileAtlasEditor>().LoadTileAtlasIfReady());
     }
 
     public void RemoveThisTileFromAtlas()
     {
-        TileAtlas.RemoveTileWithID(index);
+        TileAtlas.RemoveTileWithId(index);
         StartCoroutine(FindObjectOfType<TileAtlasEditor>().LoadTileAtlasIfReady());
     }
 }

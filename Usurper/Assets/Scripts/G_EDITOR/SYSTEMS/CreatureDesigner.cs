@@ -123,9 +123,22 @@ namespace EDITOR.SYSTEMS
 
         public EditorBodyPart(BodyPart containedBodyPart, Rect bodyPartRect, float angle)
         {
-            this.containedBodyPart = containedBodyPart;
+            this.containedBodyPart = new BodyPart
+            {
+                name = containedBodyPart.name.ToString(),
+                damageMultiplier = containedBodyPart.damageMultiplier,
+                hitThreshold = containedBodyPart.hitThreshold,
+                canEquipType = containedBodyPart.canEquipType,
+                canHoldType = containedBodyPart.canHoldType,
+                countsForDamage = containedBodyPart.countsForDamage
+            };
             this.bodyPartRect = bodyPartRect;
             this.angle = angle;
+        }
+
+        public EditorBodyPart Copy()
+        {
+            return new EditorBodyPart(containedBodyPart, bodyPartRect, angle);
         }
     }
 }

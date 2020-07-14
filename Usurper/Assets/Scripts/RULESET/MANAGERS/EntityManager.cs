@@ -20,6 +20,8 @@ namespace RULESET.MANAGERS
 		private void Awake()
 		{
 			playerEntity = new PlayerEntity();
+			playerEntity.inventory.Add(new Item());
+			playerEntity.inventory[0].name = "TestItem1";
 			playerEntity.name = "bruh";
 			playerEntity.x = 5;
 			playerEntity.y = 5;

@@ -6,6 +6,17 @@ using RULESET.ITEMS;
 namespace RULESET.ENTITIES
 {
 
+    public enum STATS    //Use these instead of integers for setting and getting stats from the stat array.
+    {
+        STAT_STRENGTH,
+        STAT_DEXTERITY,
+        STAT_AGILITY,
+        STAT_ENURANCE,
+        STAT_PERCEPTION,
+        STAT_CHARISMA,
+        STAT_INTELLIGENCE,
+    }
+    
     public abstract class Entity
     {
         public string name = "N/A";
@@ -16,9 +27,9 @@ namespace RULESET.ENTITIES
         public int[] stats = {1, 1, 1, 1, 1, 1, 1};     //Strength, Dexterity, Agility, Endurance, Perception, Charisma, Intelligence
         
         public int species;             // Dictionary identifier!
-        List<Item> inventory = new List<Item>();
+        public List<Item> inventory = new List<Item>();
         // Effects later
-        List<BodyPart> bodyParts = new List<BodyPart>();
+        public List<BodyPart> bodyParts = new List<BodyPart>();
     }
 
 }

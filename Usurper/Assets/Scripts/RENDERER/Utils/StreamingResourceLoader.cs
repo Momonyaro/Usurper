@@ -24,6 +24,7 @@ namespace RENDERER.UTILS
         private void FetchSpritesForAtlas(int pixelsPerUnit, int dngPixelsPerUnit)
         {
             List<Sprite> fetched = new List<Sprite>();
+            List<Sprite> dngFetched = new List<Sprite>();
             string streamingStringPath = Application.streamingAssetsPath + "/Sprites";
             if (Directory.Exists(streamingStringPath))
             {
@@ -52,13 +53,15 @@ namespace RENDERER.UTILS
                         // Change texture into a sprite to pass onto Atlas
                         Sprite export = Sprite.Create(tex, new Rect(0, 0, tex.width, tex.height), new Vector2(0.5f, 0.5f), dngPixelsPerUnit, 0);
                         export.name = filePaths[i].Replace(streamingStringPath + "/", "").Replace(".png", "");
-                        if (export != null) { fetched.Add(export); Debug.Log(export.name); }
+                        if (export != null) { dngFetched.Add(export); Debug.Log(export.name); }
 
                         continue;
                     }
                 }
             }
+            
             Atlas.SpriteAtlas.AddSpriteArrayToAtlas(fetched.ToArray());
+            Atlas.SpriteAtlas.AddSpriteArrayToDungeonAtlas(dngFetched.ToArray());
         }
     }
 

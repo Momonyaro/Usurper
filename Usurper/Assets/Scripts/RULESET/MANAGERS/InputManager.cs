@@ -46,20 +46,33 @@ namespace RULESET.MANAGERS
 		private void EditorControls()
 		{
 			if (Input.GetKeyDown(KeyCode.Escape)) { PointerImageGhost.ClearSelected(); return; }
+			
+			if (ViewModeFlipper.EDITOR_VIEW_MODE == EDITOR_VIEW_MODES.MAP_VIEW_MODE)
+			{
 
-			int mvmtOffset = 5;
-			if (Input.GetKey(KeyCode.LeftControl))
-            {
-            	mvmtOffset = 10;
-                if (Input.GetKey(KeyCode.LeftShift))
-                {
-                    mvmtOffset = 64;
-                }
-            }
-            if (Input.GetKey(KeyCode.W)) { GetComponent<TurnManager>().EditorEndTurn(Vector2Int.up * mvmtOffset); timer = timeBetweenInputs; return; }
-            else if (Input.GetKey(KeyCode.A)) { GetComponent<TurnManager>().EditorEndTurn(Vector2Int.left * mvmtOffset); timer = timeBetweenInputs; return; }
-            else if (Input.GetKey(KeyCode.S)) { GetComponent<TurnManager>().EditorEndTurn(Vector2Int.down * mvmtOffset); timer = timeBetweenInputs; return; }
-            else if (Input.GetKey(KeyCode.D)) { GetComponent<TurnManager>().EditorEndTurn(Vector2Int.right * mvmtOffset); timer = timeBetweenInputs; return; }
+				int mvmtOffset = 5;
+				if (Input.GetKey(KeyCode.LeftControl))
+				{
+					mvmtOffset = 10;
+					if (Input.GetKey(KeyCode.LeftShift))
+					{
+						mvmtOffset = 64;
+					}
+				}
+				if (Input.GetKey(KeyCode.W)) { GetComponent<TurnManager>().EditorEndTurn(Vector2Int.up * mvmtOffset); timer = timeBetweenInputs; return; }
+				else if (Input.GetKey(KeyCode.A)) { GetComponent<TurnManager>().EditorEndTurn(Vector2Int.left * mvmtOffset); timer = timeBetweenInputs; return; }
+				else if (Input.GetKey(KeyCode.S)) { GetComponent<TurnManager>().EditorEndTurn(Vector2Int.down * mvmtOffset); timer = timeBetweenInputs; return; }
+				else if (Input.GetKey(KeyCode.D)) { GetComponent<TurnManager>().EditorEndTurn(Vector2Int.right * mvmtOffset); timer = timeBetweenInputs; return; }
+			}
+			else if (ViewModeFlipper.EDITOR_VIEW_MODE == EDITOR_VIEW_MODES.DUNGEON_VIEW_MODE)
+			{
+				//Here we simply take input to offset the dungeon tilemap position
+				//if (Input.GetKey(KeyCode.W)) { GetComponent<TurnManager>().EditorEndTurn(Vector2Int.up); timer = timeBetweenInputs; return; }
+				//else if (Input.GetKey(KeyCode.A)) { GetComponent<TurnManager>().EditorEndTurn(Vector2Int.left); timer = timeBetweenInputs; return; }
+				//else if (Input.GetKey(KeyCode.S)) { GetComponent<TurnManager>().EditorEndTurn(Vector2Int.down); timer = timeBetweenInputs; return; }
+				//else if (Input.GetKey(KeyCode.D)) { GetComponent<TurnManager>().EditorEndTurn(Vector2Int.right); timer = timeBetweenInputs; return; }
+			}
+			
 		}
 
 		private void GameControls()

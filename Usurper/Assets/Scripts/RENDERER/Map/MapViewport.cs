@@ -141,7 +141,7 @@ namespace RENDERER.MAP
         private void ReplaceTileOnChunk(Chunk chunkData, Vector2Int tilePos, Vector3Int viewPortPos, int idOfNewTile)
         {
             chunkData.mapData[tilePos.x, tilePos.y] = idOfNewTile; //Please work it's like 2am
-            viewport.SetTile(viewPortPos, TileAtlas.FetchTileObjectByID(idOfNewTile).tile);
+            viewport.SetTile(viewPortPos, TileAtlas.FetchTileObjectById(idOfNewTile).tile);
         }
 
         public void OnMapUpdate()
@@ -186,7 +186,7 @@ namespace RENDERER.MAP
                         if (foundInCache) continue;
 
 
-                        TileObject fetched = TileAtlas.FetchTileObjectByID(intData);
+                        TileObject fetched = TileAtlas.FetchTileObjectById(intData);
                         toReturn[x, y] = fetched.Copy();
                         cachedTiles.Add(fetched);
                     }

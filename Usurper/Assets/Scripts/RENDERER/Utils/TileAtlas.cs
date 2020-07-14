@@ -7,34 +7,61 @@ namespace RENDERER.UTILS.Atlas
 {
     public class TileAtlas : MonoBehaviour
     {
-        public static List<TileObject> tileObjects = new List<TileObject>();
+        public static List<TileObject> TileObjects = new List<TileObject>();
+        public static List<TileObject> DngTileObjects = new List<TileObject>();
 
         public static void AddTileObjectToAtlas(TileObject tObject)
         {
-            tileObjects.Add(tObject);
+            TileObjects.Add(tObject);
         }
 
         public static void AddTileObjectArrayToAtlas(TileObject[] tObjArr)
         {
-            tileObjects.AddRange(tObjArr);
+            TileObjects.AddRange(tObjArr);
         }
 
         public static void SetTileObjectArrayToAtlas(TileObject[] tObjArr)
         {
-            tileObjects.Clear();
-            tileObjects.AddRange(tObjArr);
-            foreach(var tileObj in tileObjects)
-            {
-            }
+            TileObjects.Clear();
+            TileObjects.AddRange(tObjArr);
+        }
+        
+        public static void AddTileObjectToDungeonAtlas(TileObject tObject)
+        {
+            DngTileObjects.Add(tObject);
         }
 
-        public static TileObject FetchTileObjectByID(int tObjId)
+        public static void AddTileObjectArrayToDungeonAtlas(TileObject[] tObjArr)
         {
-            for (int i = 0; i < tileObjects.Count; i++)
+            DngTileObjects.AddRange(tObjArr);
+        }
+
+        public static void SetTileObjectArrayToDungeonAtlas(TileObject[] tObjArr)
+        {
+            DngTileObjects.Clear();
+            DngTileObjects.AddRange(tObjArr);
+        }
+
+        public static TileObject FetchTileObjectById(int tObjId)
+        {
+            for (int i = 0; i < TileObjects.Count; i++)
             {
-                if (tileObjects[i].id.Equals(tObjId))
+                if (TileObjects[i].id.Equals(tObjId))
                 {
-                    return tileObjects[i];
+                    return TileObjects[i];
+                }
+            }
+            Debug.Log("returning error tile.");
+            return new TileObject(-1, SpriteAtlas.FetchSpriteByName("spr_err"), true, false, false);
+        }
+        
+        public static TileObject FetchDungeonTileObjectById(int tObjId)
+        {
+            for (int i = 0; i < DngTileObjects.Count; i++)
+            {
+                if (DngTileObjects[i].id.Equals(tObjId))
+                {
+                    return DngTileObjects[i];
                 }
             }
             Debug.Log("returning error tile.");
@@ -43,23 +70,23 @@ namespace RENDERER.UTILS.Atlas
 
         public static void OverwriteTileAtIndex(int id, TileObject newTile)
         {
-            for(int i = 0; i < tileObjects.Count; i++)
+            for(int i = 0; i < TileObjects.Count; i++)
             {
-                if (tileObjects[i].id == id)
+                if (TileObjects[i].id == id)
                 {
-                    tileObjects[i] = newTile;
+                    TileObjects[i] = newTile;
                     break;
                 }
             }
         }
 
-        public static void RemoveTileWithID(int id)
+        public static void RemoveTileWithId(int id)
         {
-            for (int i = 0; i < tileObjects.Count; i++)
+            for (int i = 0; i < TileObjects.Count; i++)
             {
-                if (tileObjects[i].id == id)
+                if (TileObjects[i].id == id)
                 {
-                    tileObjects.RemoveAt(i);
+                    TileObjects.RemoveAt(i);
                     break;
                 }
             }

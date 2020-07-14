@@ -56,14 +56,22 @@ public class MapLoader : MonoBehaviour
         yield return new WaitForEndOfFrame();
         if (loadingStatusText != null) loadingStatusText.text = "Loading Map Files...";
         Debug.Log("Loading Map!");
-        mapExporter.LoadMap(customCampaignToLoad);
-        yield return new WaitForEndOfFrame();
-        if (loadingScreenPanel != null) loadingScreenPanel.SetActive(false);
-        if (FindObjectOfType<TileAtlasEditor>()) { Debug.Log("[EDITOR ONLY] Loading the tile editor!"); StartCoroutine(FindObjectOfType<TileAtlasEditor>().LoadTileAtlasIfReady()); }
-        FindObjectOfType<MapViewport>().initialized = true;
-        Debug.Log("Finished Fetch!");
+        if (mapExporter.LoadMap(customCampaignToLoad))
+        {
+            yield return new WaitForEndOfFrame();
+            if (loadingScreenPanel != null) loadingScreenPanel.SetActive(false);
+            if (FindObjectOfType<TileAtlasEditor>()) { Debug.Log("[EDITOR ONLY] Loading the tile editor!"); StartCoroutine(FindObjectOfType<TileAtlasEditor>().LoadTileAtlasIfReady()); }
+            FindObjectOfType<MapViewport>().initialized = true;
+            Debug.Log("Finished Fetch!");
 
-        FindObjectOfType<EntityManager>().UpdatePlayer(Vector2Int.zero);
+            FindObjectOfType<EntityManager>().UpdatePlayer(Vector2Int.zero);
+        }
+        else
+        {
+            if (mainMenuPanel != null) mainMenuPanel.SetActive(true);
+            if (loadingScreenPanel != null) loadingScreenPanel.SetActive(false);
+        }
+        
         yield break;
     }
 }

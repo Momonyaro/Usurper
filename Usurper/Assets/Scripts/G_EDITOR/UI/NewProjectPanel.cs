@@ -44,6 +44,7 @@ public class NewProjectPanel : MonoBehaviour
         StartCoroutine(FindObjectOfType<MapLoader>().LoadCampaignAndResources());
         FindObjectOfType<BoundsInfoText>().ForceUpdate();
         FindObjectOfType<MapViewport>().initialized = true;
+        FindObjectOfType<MapDungeonFlatRenderer>().CreateNewMap(12, 12, 3, 8);
     }
 
     private void CreateInfoTextDump()

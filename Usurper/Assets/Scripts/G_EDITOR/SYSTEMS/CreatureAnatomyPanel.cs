@@ -93,15 +93,14 @@ namespace EDITOR.SYSTEMS
         public void CopySelected()
         {
             if (selected == null) return;
-            {
-                copy = new EditorBodyPart(selected.containedBodyPart, selected.bodyPartRect, selected.angle);
-            }
+            
+            copy = selected.Copy();
         }
 
         public void PasteCopy()
         {
             if (copy == null || CreatureDesigner.selected == null) return;
-            CreatureDesigner.selected.bodyParts.Add(copy);
+            CreatureDesigner.selected.bodyParts.Add(copy.Copy());
             FindObjectOfType<CreatureDesigner>().DrawCreature();
         }
 
