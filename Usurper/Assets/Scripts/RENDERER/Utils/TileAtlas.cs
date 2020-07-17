@@ -79,6 +79,18 @@ namespace RENDERER.UTILS.Atlas
                 }
             }
         }
+        
+        public static void OverwriteDungeonTileAtIndex(int id, TileObject newTile)
+        {
+            for(int i = 0; i < DngTileObjects.Count; i++)
+            {
+                if (DngTileObjects[i].id == id)
+                {
+                    DngTileObjects[i] = newTile;
+                    break;
+                }
+            }
+        }
 
         public static void RemoveTileWithId(int id)
         {
@@ -87,6 +99,18 @@ namespace RENDERER.UTILS.Atlas
                 if (TileObjects[i].id == id)
                 {
                     TileObjects.RemoveAt(i);
+                    break;
+                }
+            }
+        }
+        
+        public static void RemoveDungeonTileWithId(int id)
+        {
+            for (int i = 0; i < DngTileObjects.Count; i++)
+            {
+                if (DngTileObjects[i].id == id)
+                {
+                    DngTileObjects.RemoveAt(i);
                     break;
                 }
             }

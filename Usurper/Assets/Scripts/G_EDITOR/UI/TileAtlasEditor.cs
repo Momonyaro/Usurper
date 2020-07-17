@@ -14,9 +14,11 @@ public class TileAtlasEditor : MonoBehaviour
     public Transform blockContentParent;
     public GameObject tileBlockPrefab;
     public GameObject newTileBlockPrefab;
+    public bool readDungeonTiles = false;
 
     private void Start()
     {
+        if (readDungeonTiles) StartCoroutine(LoadTileAtlasIfReady());
     }
 
     public IEnumerator LoadTileAtlasIfReady()
@@ -29,22 +31,27 @@ public class TileAtlasEditor : MonoBehaviour
         }
 
         //Here we load it and create the UI blocks
-        List<TileObject> fetchedTiles = TileAtlas.TileObjects;
+        Debug.Log("Reading dungeon tiles ? " + readDungeonTiles);
+        List<TileObject> fetchedTiles = (readDungeonTiles) ? TileAtlas.DngTileObjects : TileAtlas.TileObjects;
         for (int i = 0; i < fetchedTiles.Count; i++)
         {
             GameObject tileBlock = Instantiate(tileBlockPrefab, blockContentParent);
             ListTileObjContainer tileContainer = tileBlock.GetComponent<ListTileObjContainer>();
             tileContainer.SetThisTileObj(fetchedTiles[i]);
+            tileContainer.dungeonTile = readDungeonTiles;
+            tileContainer.parent = this;
             tileContainer.index = i;
         }
 
         //fetchedTiles.Sort(SortByID);
 
-        Instantiate(newTileBlockPrefab, blockContentParent);
+        GameObject newBtn = Instantiate(newTileBlockPrefab, blockContentParent);
+        newBtn.GetComponent<ListTileObjContainer>().parent = this;
+        newBtn.GetComponent<ListTileObjContainer>().dungeonTile = readDungeonTiles;
 
         ToggleTileInteractivity(true);
 
-        FindObjectOfType<MapViewport>().OnMapUpdate();
+        if (!readDungeonTiles) FindObjectOfType<MapViewport>().OnMapUpdate();
         
         yield break;
     }

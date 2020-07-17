@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Tilemaps;
 using RENDERER.UTILS.Atlas;
+using RULESET.WORLD;
 
 namespace RENDERER.MAP
 {
@@ -19,18 +20,16 @@ namespace RENDERER.MAP
         public int minRoomSize = 3;
         public int maxRoomSize = 8;
 
+        private DungeonGenerator _dungeonGenerator = new DungeonGenerator();
         public int[,] mapData;
         public Tilemap tilemap;
 
-        public void CreateNewMap(int width, int height, int minRoomSize, int maxRoomSize)
+        //This needs a total rework to instead use the cell based implementation!
+        //The cells are placed at 2x+1, 2y+1 with the 0 row and column filled with wall tiles!
+
+        private void Start()
         {
-            this.width = width;
-            this.height = height;
-            this.minRoomSize = minRoomSize;
-            this.maxRoomSize = maxRoomSize;
-            mapData = new int[width, height];
-            
-            TileAtlas.AddTileObjectToDungeonAtlas(new TileObject(0, SpriteAtlas.FetchDungeonSpriteByName("dng_human_commoner_0"), false, false, false));
+            mapData = _dungeonGenerator.GenerateDungeon(4,4);
         }
 
         private void Update()

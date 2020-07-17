@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -14,6 +15,11 @@ public class ViewModeFlipper : MonoBehaviour
     public static EDITOR_VIEW_MODES EDITOR_VIEW_MODE;
     [SerializeField]
     public List<ViewModeGroup> viewModeGroups;
+
+    private void Start()
+    {
+        SwitchViewMode(0);
+    }
 
     public void SwitchViewMode(int groupIndex)
     {
