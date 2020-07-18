@@ -33,6 +33,7 @@ public class ViewModeFlipper : MonoBehaviour
                 gObject.SetActive(active);
             }
         }
+        Camera.main.transform.position = new Vector3(0, 0, -10);
     }
 
     [System.Serializable]

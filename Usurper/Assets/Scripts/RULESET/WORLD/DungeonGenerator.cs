@@ -10,9 +10,14 @@ namespace RULESET.WORLD
         private const short ROOM_PLACE_ATTEMPTS = 10;
         
         public DungeonCell[,] Cells = new DungeonCell[4,4];
+        public int widthInCells  = 0;
+        public int heightInCells = 0;
 
         public int[,] GenerateDungeon(int cellWidth, int cellHeight)
         {
+            widthInCells = cellWidth;
+            heightInCells = cellHeight;
+
             //Create the cells!
             CreateCellGrid(cellWidth, cellHeight);
             //Place random rooms (run decor and item pass for each room instead of it's own thing)
@@ -34,9 +39,13 @@ namespace RULESET.WORLD
             for (int y = 0; y < cellHeight; y++)
                 for (int x = 0; x < cellWidth; x++)
                 {
-                    Cells[x, y] = new DungeonCell {Tiles = {[0] = new DungeonTile {SpriteIndex = 1}}};
+                    Cells[x, y].Connected = false;
 
                     //This is to differentiate the tile
+
+                    Cells[x, y].Tiles = new DungeonTile[4];
+                    Cells[x, y].Tiles[0] = new DungeonTile();
+                    Cells[x, y].Tiles[0].SpriteIndex = 1;
                     Cells[x, y].Tiles[1] = new DungeonTile();
                     Cells[x, y].Tiles[2] = new DungeonTile();
                     Cells[x, y].Tiles[3] = new DungeonTile();
@@ -93,9 +102,9 @@ namespace RULESET.WORLD
                 for (int x = 0; x < cellWidth; x++)
                 {
                     intData[(x * CELL_SIZE) + 0, (y * CELL_SIZE) + 0] = Cells[x, y].Tiles[0].SpriteIndex;
-                    intData[(x * CELL_SIZE) + 1, (y * CELL_SIZE) + 1] = Cells[x, y].Tiles[1].SpriteIndex;
-                    intData[(x * CELL_SIZE) + 2, (y * CELL_SIZE) + 2] = Cells[x, y].Tiles[2].SpriteIndex;
-                    intData[(x * CELL_SIZE) + 3, (y * CELL_SIZE) + 3] = Cells[x, y].Tiles[3].SpriteIndex;
+                    intData[(x * CELL_SIZE) + 1, (y * CELL_SIZE) + 0] = Cells[x, y].Tiles[1].SpriteIndex;
+                    intData[(x * CELL_SIZE) + 0, (y * CELL_SIZE) + 1] = Cells[x, y].Tiles[2].SpriteIndex;
+                    intData[(x * CELL_SIZE) + 1, (y * CELL_SIZE) + 1] = Cells[x, y].Tiles[3].SpriteIndex;
                 }
             }
 
@@ -108,12 +117,6 @@ namespace RULESET.WORLD
     {
         public DungeonTile[] Tiles;
         public bool Connected;
-
-        public DungeonCell(bool ignore = false)
-        {
-            Tiles = new DungeonTile[4];
-            Connected = false;
-        }
     }
 
     public struct DungeonTile

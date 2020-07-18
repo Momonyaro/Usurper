@@ -37,7 +37,7 @@ namespace EDITOR.CONTROLS
             if (cam.orthographicSize > maxSize) { cam.orthographicSize = maxSize; }
         }
 
-        private void CameraMoveAction(Vector3 movementVec)
+        public void CameraMoveAction(Vector3 movementVec)
         {
             movementVec *= camMoveSpeed;
             Vector3 lerpOffset = cam.transform.position + movementVec;

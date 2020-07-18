@@ -29,7 +29,7 @@ namespace RENDERER.MAP
 
         private void Start()
         {
-            mapData = _dungeonGenerator.GenerateDungeon(4,4);
+            mapData = _dungeonGenerator.GenerateDungeon(12, 12);       //Add a size dropdown later for small, medium and large presets. (perhaps a huge preset as well?)
         }
 
         private void Update()
@@ -45,8 +45,8 @@ namespace RENDERER.MAP
             //Here we convert the int mapData into tiles for the editor view.
             //How do we store and access the dungeon resources? Do we split the Sprite Atlas? (Yes. Access the Dungeon Sprite List)
             List<TileObject> cachedTiles = new List<TileObject>();
-            for (int y = 0; y < height; y++)
-                for (int x = 0; x < width; x++)
+            for (int y = 0; y < _dungeonGenerator.heightInCells * 2; y++)
+                for (int x = 0; x < _dungeonGenerator.widthInCells * 2; x++)
                 {
                     //For each int in mapData, map it to a tile & draw it to the tilemap
                     //We have to contact the dungeon tile editor...
@@ -75,6 +75,7 @@ namespace RENDERER.MAP
                 }
             
             Debug.Log("cached tile count: " + cachedTiles.Count);
+            Camera.main.transform.position = new Vector3(_dungeonGenerator.widthInCells, _dungeonGenerator.heightInCells, -10);
         }
     }
 }

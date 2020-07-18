@@ -39,8 +39,8 @@ namespace RENDERER.UTILS
                         tex.filterMode = FilterMode.Point;
                         // Change texture into a sprite to pass onto Atlas
                         Sprite export = Sprite.Create(tex, new Rect(0, 0, tex.width, tex.height), new Vector2(0.5f, 0.5f), pixelsPerUnit, 0);
-                        export.name = filePaths[i].Replace(streamingStringPath + "/", "").Replace(".png", "");
-                        if (export != null) { fetched.Add(export); Debug.Log(export.name); }
+                        export.name = filePaths[i].Remove(0, streamingStringPath.Length + 1).Replace(".png", "");
+                        if (export != null) { fetched.Add(export); Debug.Log(export.name); Debug.Log("streamPath: " + streamingStringPath + "/"); }
 
                         continue;
                     }
@@ -52,7 +52,7 @@ namespace RENDERER.UTILS
                         tex.filterMode = FilterMode.Point;
                         // Change texture into a sprite to pass onto Atlas
                         Sprite export = Sprite.Create(tex, new Rect(0, 0, tex.width, tex.height), new Vector2(0.5f, 0.5f), dngPixelsPerUnit, 0);
-                        export.name = filePaths[i].Replace(streamingStringPath + "/", "").Replace(".png", "");
+                        export.name = filePaths[i].Remove(0, streamingStringPath.Length + 1).Replace(".png", "");
                         if (export != null) { dngFetched.Add(export); Debug.Log(export.name); }
 
                         continue;
