@@ -1,5 +1,6 @@
 using UnityEngine;
 using RENDERER.MAP;
+using EDITOR.CONTROLS;
 
 namespace RULESET.MANAGERS
 {
@@ -12,6 +13,7 @@ namespace RULESET.MANAGERS
 		float timeBetweenInputs = 0.25f;
 		float timer = 0;
 		public static bool inEditorUI = false;
+		private CameraController cameraController;
 
 		private void FixedUpdate()
 		{
@@ -66,11 +68,13 @@ namespace RULESET.MANAGERS
 			}
 			else if (ViewModeFlipper.EDITOR_VIEW_MODE == EDITOR_VIEW_MODES.DUNGEON_VIEW_MODE)
 			{
+				if (cameraController == null) { cameraController = FindObjectOfType<CameraController>(); }
+
 				//Here we simply take input to offset the dungeon tilemap position
-				//if (Input.GetKey(KeyCode.W)) { GetComponent<TurnManager>().EditorEndTurn(Vector2Int.up); timer = timeBetweenInputs; return; }
-				//else if (Input.GetKey(KeyCode.A)) { GetComponent<TurnManager>().EditorEndTurn(Vector2Int.left); timer = timeBetweenInputs; return; }
-				//else if (Input.GetKey(KeyCode.S)) { GetComponent<TurnManager>().EditorEndTurn(Vector2Int.down); timer = timeBetweenInputs; return; }
-				//else if (Input.GetKey(KeyCode.D)) { GetComponent<TurnManager>().EditorEndTurn(Vector2Int.right); timer = timeBetweenInputs; return; }
+				if (Input.GetKey(KeyCode.W)) { cameraController.CameraMoveAction(Vector3.up); timer = timeBetweenInputs; return; }
+				else if (Input.GetKey(KeyCode.A)) { cameraController.CameraMoveAction(Vector3.left); timer = timeBetweenInputs; return; }
+				else if (Input.GetKey(KeyCode.S)) { cameraController.CameraMoveAction(Vector3.down); timer = timeBetweenInputs; return; }
+				else if (Input.GetKey(KeyCode.D)) { cameraController.CameraMoveAction(Vector3.right); timer = timeBetweenInputs; return; }
 			}
 			
 		}

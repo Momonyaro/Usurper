@@ -27,15 +27,11 @@ namespace RENDERER.MAP
         //This needs a total rework to instead use the cell based implementation!
         //The cells are placed at 2x+1, 2y+1 with the 0 row and column filled with wall tiles!
 
-        private void Start()
-        {
-            mapData = _dungeonGenerator.GenerateDungeon(4,4);
-        }
-
         private void Update()
         {
             if (Input.GetKeyDown(KeyCode.T))
             {
+                mapData = _dungeonGenerator.GenerateDungeon(32, 25);
                 DrawFullMap();
             }
         }
@@ -44,9 +40,10 @@ namespace RENDERER.MAP
         {
             //Here we convert the int mapData into tiles for the editor view.
             //How do we store and access the dungeon resources? Do we split the Sprite Atlas? (Yes. Access the Dungeon Sprite List)
+            tilemap.ClearAllTiles();
             List<TileObject> cachedTiles = new List<TileObject>();
-            for (int y = 0; y < height; y++)
-                for (int x = 0; x < width; x++)
+            for (int y = 0; y < _dungeonGenerator.heightInCells * 2; y++)
+                for (int x = 0; x < _dungeonGenerator.widthInCells * 2; x++)
                 {
                     //For each int in mapData, map it to a tile & draw it to the tilemap
                     //We have to contact the dungeon tile editor...
@@ -75,6 +72,7 @@ namespace RENDERER.MAP
                 }
             
             Debug.Log("cached tile count: " + cachedTiles.Count);
+            Camera.main.transform.position = new Vector3(_dungeonGenerator.widthInCells, _dungeonGenerator.heightInCells, -10);
         }
     }
 }
