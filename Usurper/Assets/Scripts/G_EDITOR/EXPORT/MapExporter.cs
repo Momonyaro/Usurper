@@ -76,7 +76,7 @@ namespace EDITOR.EXPORT
             for (int i = 0; i < loadedFile["dungeonTilePalette"].Count; i++)
             {
                 importedDungeonTiles.Add(new TileObject( (int)loadedFile["dungeonTilePalette"][i]["sprId"], loadedFile["dungeonTilePalette"][i]["sprName"].ToString(),
-                            (bool)loadedFile["dungeonTilePalette"][i]["collider"], (bool)loadedFile["dungeonTilePalette"][i]["transparent"], (bool)loadedFile["dungeonTilePalette"][i]["lightSrc"]));
+                            (bool)loadedFile["dungeonTilePalette"][i]["collider"], (bool)loadedFile["dungeonTilePalette"][i]["transparent"], (bool)loadedFile["dungeonTilePalette"][i]["lightSrc"], true));
             }
             TileAtlas.SetTileObjectArrayToDungeonAtlas(importedDungeonTiles.ToArray());
 

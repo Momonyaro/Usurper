@@ -16,6 +16,8 @@ public class MapLoader : MonoBehaviour
     public InputField customNameField;
     public GameObject mainMenuPanel;
     public GameObject loadingScreenPanel;
+    public TileAtlasEditor mapEditor;
+    public TileAtlasEditor dngEditor;
 
     public string customCampaignToLoad = "Usurper";
     //When the renderer starts with inEditor = false, that means we want to load a campaign. We should either fix this through a separate scene or by
@@ -60,7 +62,12 @@ public class MapLoader : MonoBehaviour
         {
             yield return new WaitForEndOfFrame();
             if (loadingScreenPanel != null) loadingScreenPanel.SetActive(false);
-            if (FindObjectOfType<TileAtlasEditor>()) { Debug.Log("[EDITOR ONLY] Loading the tile editor!"); StartCoroutine(FindObjectOfType<TileAtlasEditor>().LoadTileAtlasIfReady()); }
+            if (FindObjectOfType<TileAtlasEditor>()) 
+            { 
+                Debug.Log("[EDITOR ONLY] Loading the tile editor!"); 
+                StartCoroutine(mapEditor.LoadTileAtlasIfReady());
+                StartCoroutine(dngEditor.LoadTileAtlasIfReady());
+            }
             FindObjectOfType<MapViewport>().initialized = true;
             Debug.Log("Finished Fetch!");
 

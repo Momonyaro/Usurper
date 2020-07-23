@@ -144,7 +144,7 @@ namespace RENDERER.UTILS.Atlas
             tile.colliderType = collider ? Tile.ColliderType.Grid : Tile.ColliderType.None;
         }
 
-        public TileObject(int id, string spriteName, bool collider, bool transparent, bool lightSource)
+        public TileObject(int id, string spriteName, bool collider, bool transparent, bool lightSource, bool dngTile = false)
         {
             this.id = id;
             this.collider = collider;
@@ -152,7 +152,7 @@ namespace RENDERER.UTILS.Atlas
             this.transparent = transparent;
             this.lightSource = lightSource;
             tile = new Tile();
-            tile.sprite = SpriteAtlas.FetchSpriteByName(spriteName); //PLEASE WORK;
+            tile.sprite = (dngTile) ? SpriteAtlas.FetchDungeonSpriteByName(spriteName) : SpriteAtlas.FetchSpriteByName(spriteName); //PLEASE WORK;
             if (tile.sprite == null) tile.sprite = Resources.Load<Sprite>("Sprites/spr_err");
             tile.name = "tile_" + spriteName;
             tile.colliderType = collider ? Tile.ColliderType.Grid : Tile.ColliderType.None;

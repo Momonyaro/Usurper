@@ -12,9 +12,13 @@ public enum EDITOR_VIEW_MODES
 
 public class ViewModeFlipper : MonoBehaviour
 {
+    //Instead of hiding certain objects by deactivating them, instead hide them from the camera!
     public static EDITOR_VIEW_MODES EDITOR_VIEW_MODE;
-    [SerializeField]
-    public List<ViewModeGroup> viewModeGroups;
+    private const string mapLayerName = "MAP_UI";
+    private const string dngLayerName = "DNG_UI";
+    public CanvasGroup dngCanvas;
+    public CanvasGroup mapCanvas;
+    
 
     private void Start()
     {
@@ -24,21 +28,49 @@ public class ViewModeFlipper : MonoBehaviour
     public void SwitchViewMode(int groupIndex)
     {
         EDITOR_VIEW_MODE = (EDITOR_VIEW_MODES)groupIndex;
+        ShowAllLayers();
         
-        for (int i = 0; i < viewModeGroups.Count; i++)
+        switch (EDITOR_VIEW_MODE)
         {
-            bool active = (i == (int)EDITOR_VIEW_MODE) ? true : false;
-            foreach (var gObject in viewModeGroups[i].groupMembers)
-            {
-                gObject.SetActive(active);
-            }
+            case EDITOR_VIEW_MODES.MAP_VIEW_MODE:
+                    ToggleLayer(dngLayerName);
+                    dngCanvas.blocksRaycasts = false;
+                    mapCanvas.blocksRaycasts = true;
+                    break;
+            
+            case EDITOR_VIEW_MODES.DUNGEON_VIEW_MODE:
+                    ToggleLayer(mapLayerName);
+                    dngCanvas.blocksRaycasts = true;
+                    mapCanvas.blocksRaycasts = false;
+                break;
+            
+            default:
+                break;
         }
+
         Camera.main.transform.position = new Vector3(0, 0, -10);
     }
-
-    [System.Serializable]
-    public class ViewModeGroup
+    
+    //Turn on the bit using an OR operation
+    private void ShowLayer(string layerName)
     {
-        public List<GameObject> groupMembers = new List<GameObject>();
+        Camera.main.cullingMask |= 1 << LayerMask.NameToLayer(layerName);
+    }
+
+    private void ShowAllLayers()
+    {
+        Camera.main.cullingMask = -1;
+    }
+    
+    //Turn off the bit using an and operation with the compliment of the shifted int
+    private void HideLayer(string layerName)
+    {
+        Camera.main.cullingMask &= -(1 << LayerMask.NameToLayer(layerName));
+    }
+    
+    //Toggle the bit using a XOR operation
+    private void ToggleLayer(string layerName)
+    {
+        Camera.main.cullingMask ^= 1 << LayerMask.NameToLayer(layerName);
     }
 }
