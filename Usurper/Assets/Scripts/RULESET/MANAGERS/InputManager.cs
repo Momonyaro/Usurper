@@ -71,10 +71,10 @@ namespace RULESET.MANAGERS
 				if (cameraController == null) { cameraController = FindObjectOfType<CameraController>(); }
 
 				//Here we simply take input to offset the dungeon tilemap position
-				if (Input.GetKey(KeyCode.W)) { cameraController.CameraMoveAction(Vector3.up); timer = timeBetweenInputs; return; }
-				else if (Input.GetKey(KeyCode.A)) { cameraController.CameraMoveAction(Vector3.left); timer = timeBetweenInputs; return; }
-				else if (Input.GetKey(KeyCode.S)) { cameraController.CameraMoveAction(Vector3.down); timer = timeBetweenInputs; return; }
-				else if (Input.GetKey(KeyCode.D)) { cameraController.CameraMoveAction(Vector3.right); timer = timeBetweenInputs; return; }
+				if (Input.GetKey(KeyCode.W)) { cameraController.CameraMoveAction(Vector3.up); return; }
+				else if (Input.GetKey(KeyCode.A)) { cameraController.CameraMoveAction(Vector3.left); return; }
+				else if (Input.GetKey(KeyCode.S)) { cameraController.CameraMoveAction(Vector3.down); return; }
+				else if (Input.GetKey(KeyCode.D)) { cameraController.CameraMoveAction(Vector3.right); return; }
 			}
 			
 		}

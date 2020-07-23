@@ -22,7 +22,7 @@ public class ListTileObjContainer : MonoBehaviour
     private void Init()
     {
         if (transparencyToggle != null) sprNameField.SetTextWithoutNotify(thisTileObj.tile.sprite.name);
-        if (transparencyToggle != null) tileIdField.SetTextWithoutNotify(thisTileObj.id.ToString());
+        if (transparencyToggle != null) tileIdField.SetTextWithoutNotify((dungeonTile) ? (thisTileObj.id).ToString() : thisTileObj.id.ToString());
         if (transparencyToggle != null) colliderToggle.SetIsOnWithoutNotify(thisTileObj.collider);
         if (transparencyToggle != null) lightSrcToggle.SetIsOnWithoutNotify(thisTileObj.lightSource);
         if (transparencyToggle != null) transparencyToggle.SetIsOnWithoutNotify(thisTileObj.transparent);
@@ -52,11 +52,17 @@ public class ListTileObjContainer : MonoBehaviour
         if (success) 
         { 
             int oldId = thisTileObj.id;
-            thisTileObj.id = newId; 
+
             if (dungeonTile)
-                TileAtlas.OverwriteDungeonTileAtIndex(oldId, thisTileObj);
+            {
+                thisTileObj.id = Mathf.Clamp(newId, 256, 511);
+                TileAtlas.OverwriteDungeonTileAtIndex(oldId, thisTileObj.Copy());
+            }
             else
-                TileAtlas.OverwriteTileAtIndex(oldId, thisTileObj);
+            {
+                thisTileObj.id = Mathf.Clamp(newId, 0, 255);
+                TileAtlas.OverwriteTileAtIndex(oldId, thisTileObj.Copy());
+            }
             StartCoroutine(parent.LoadTileAtlasIfReady());
         }
     }
@@ -113,9 +119,9 @@ public class ListTileObjContainer : MonoBehaviour
     public void RemoveThisTileFromAtlas()
     {
         if (dungeonTile)
-            TileAtlas.RemoveDungeonTileWithId(index);
+            TileAtlas.RemoveDungeonTileWithId(thisTileObj.id);
         else
-            TileAtlas.RemoveTileWithId(index);
+            TileAtlas.RemoveTileWithId(thisTileObj.id);
         StartCoroutine(parent.LoadTileAtlasIfReady());
     }
 }

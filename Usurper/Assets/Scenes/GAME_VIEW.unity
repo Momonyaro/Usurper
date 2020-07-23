@@ -3705,6 +3705,8 @@ MonoBehaviour:
   customNameField: {fileID: 0}
   mainMenuPanel: {fileID: 34013060}
   loadingScreenPanel: {fileID: 2061502805}
+  mapEditor: {fileID: 0}
+  dngEditor: {fileID: 0}
   customCampaignToLoad: Usurper
 --- !u!114 &812791454
 MonoBehaviour:
@@ -7701,7 +7703,7 @@ MonoBehaviour:
   m_HandleRect: {fileID: 307919723}
   m_Direction: 2
   m_Value: 1
-  m_Size: 0.40705886
+  m_Size: 0.6117647
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:

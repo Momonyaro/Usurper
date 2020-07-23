@@ -23,7 +23,7 @@ public class TileAtlasEditor : MonoBehaviour
 
     public IEnumerator LoadTileAtlasIfReady()
     {
-        while (!StreamingResourceLoader.finishedReading) { Debug.Log("Waiting for resource loader..."); yield return null; }
+        while (!StreamingResourceLoader.finishedReading) { yield return null; }
 
         for (int i = 0; i < blockContentParent.transform.childCount; i++)
         {
