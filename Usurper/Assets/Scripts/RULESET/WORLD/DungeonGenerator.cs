@@ -63,7 +63,6 @@ namespace RULESET.WORLD
         public void CreateCanvas(int width, int height)
         {
             Tiles = new TILE_TYPES[width, height];
-            Debug.Log("first tile default :" + Tiles[0, 0]);
             for (int y = 0; y < height; y++)
                 for (int x = 0; x < width; x++)
                     Tiles[x, y] = TILE_TYPES.WALL;
@@ -72,7 +71,6 @@ namespace RULESET.WORLD
         public int[,] ConvertToIntData(int width, int height)
         {
             int[,] tileData = new int[width, height];
-            Debug.Log("first tile export :" + (int)Tiles[0, 0]);
             for (int y = 0; y < height; y++)
                 for (int x = 0; x < width; x++)
                     tileData[x, y] = (int)Tiles[x, y];

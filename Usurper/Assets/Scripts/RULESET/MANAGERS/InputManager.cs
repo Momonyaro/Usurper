@@ -22,7 +22,7 @@ namespace RULESET.MANAGERS
 
 		private void Awake()
 		{
-			mView = Object.FindObjectOfType<MapViewport>();
+			mView = FindObjectOfType<MapViewport>();
 		}
 
 		private void Update()

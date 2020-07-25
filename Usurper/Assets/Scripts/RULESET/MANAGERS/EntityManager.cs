@@ -74,7 +74,40 @@ namespace RULESET.MANAGERS
 				}
 			}
 
-			entityRenderer.CreateNewBuffer(playerEntity, relevantEntities, relevantItems);
+			List<Gate> relevantGates;
+			relevantGates = GateManager.GetRelevantGates(new Vector2Int(playerEntity.x, playerEntity.y), halfWidth);
+
+			entityRenderer.CreateNewBuffer(playerEntity, relevantEntities, relevantItems, relevantGates);
+		}
+
+		public void QuietUpdateEntities()
+		{
+			int halfWidth = ((MapViewport.viewPortRadius - 1) / 2);
+			List<Entity> relevantEntities = new List<Entity>();
+			foreach (var actor in actors)
+			{
+				if (actor.x >= playerEntity.x - halfWidth && actor.x < playerEntity.x + halfWidth &&
+					actor.y >= playerEntity.y - halfWidth && actor.y < playerEntity.y + halfWidth)
+				{
+					//Should we also process their turn actions here?
+					relevantEntities.Add(actor);
+				}
+			}
+			List<Item> relevantItems = new List<Item>();
+			foreach (var item in itemsOnGround)
+			{
+				if (item.x >= playerEntity.x - halfWidth && item.x < playerEntity.x + halfWidth &&
+					item.y >= playerEntity.y - halfWidth && item.y < playerEntity.y + halfWidth)
+				{
+					//Should we also process their turn actions here?
+					relevantItems.Add(item);
+				}
+			}
+
+			List<Gate> relevantGates;
+			relevantGates = GateManager.GetRelevantGates(new Vector2Int(playerEntity.x, playerEntity.y), halfWidth);
+
+			entityRenderer.CreateNewBuffer(playerEntity, relevantEntities, relevantItems, relevantGates);
 		}
 
 		public bool CheckCollisionInDirection(Vector2Int pos, Vector2Int direction)

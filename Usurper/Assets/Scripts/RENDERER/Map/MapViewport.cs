@@ -78,11 +78,16 @@ namespace RENDERER.MAP
 
         private void OnMouseDown()
         {
-            if (inEditor && PointerImageGhost.selected.tile != null && !InputManager.inEditorUI)
+            if (inEditor && PointerImageGhost.selected.tile != null && PointerImageGhost.placingEntityLayer == 0 && !InputManager.inEditorUI)
             {
                 drawing = true;
             }
 
+            if (inEditor && PointerImageGhost.selected.tile == null && PointerImageGhost.placingEntityLayer != 0 && !InputManager.inEditorUI)
+            {
+                PointerImageGhost.WorkaroundCreateGate();
+                FindObjectOfType<EntityManager>().QuietUpdateEntities();
+            }
         }
 
         private void OnMouseUp()
@@ -100,12 +105,12 @@ namespace RENDERER.MAP
             {
                 Vector2 cStartPos = chunk.GetChunkStartPos();
                 Vector2 localMousePos = (centerPosOnMap + mouseWorldPos) - cStartPos; //Get the mouse pos relative to the chunk
-                Vector2Int roundedPos = new Vector2Int(Mathf.FloorToInt(localMousePos.x - 1), Mathf.FloorToInt(localMousePos.y - 1));
+                Vector2Int roundedPos = new Vector2Int(Mathf.RoundToInt(localMousePos.x - 1), Mathf.RoundToInt(localMousePos.y - 1));
     
                 if (roundedPos.x < 0 || roundedPos.x >= Chunk.chunkSize ||
                     roundedPos.y < 0 || roundedPos.y >= Chunk.chunkSize)    continue;
     
-                Vector3Int toVec3 = new Vector3Int(Mathf.FloorToInt(mouseWorldPos.x), Mathf.FloorToInt(mouseWorldPos.y), 0);
+                Vector3Int toVec3 = new Vector3Int(Mathf.RoundToInt(mouseWorldPos.x), Mathf.RoundToInt(mouseWorldPos.y), 0);
                 toVec3 = viewport.WorldToCell(toVec3);
                 
                 switch (EDITOR_BRUSH_MODE)

@@ -26,7 +26,7 @@ namespace RENDERER.MAP
 		private void FixedUpdate()
 		{
 			if (inEditor) return;
-			timer -= Time.deltaTime;
+			timer -= Time.fixedDeltaTime;
 			if (timer <= 0)
 			{
 				IncrementBufferedTiles();
@@ -40,7 +40,7 @@ namespace RENDERER.MAP
             entityViewport.ResizeBounds();
 		}
 
-		public void CreateNewBuffer(Entity player, List<Entity> relevantEntities, List<Item> relevantItems)
+		public void CreateNewBuffer(Entity player, List<Entity> relevantEntities, List<Item> relevantItems, List<Gate> relevantGates)
 		{
 			entityRenderBuffer.Clear();
 			entityViewport.ClearAllTiles();
@@ -61,9 +61,46 @@ namespace RENDERER.MAP
 			for (int i = 0; i < relevantEntities.Count; i++) 
 			{
 				Vector2Int localPos = new Vector2Int(relevantEntities[i].x - player.x, relevantEntities[i].y - player.y);
-				entityRenderBuffer.Add(new EntityBufferObject(
-				new List<Sprite> {SpriteAtlas.FetchSpriteByName("spr_human_commoner_0")}, localPos.x, localPos.y, 0));
-				bufferObjCount++;
+
+				bool foundExisting = false;
+				for (int q = 0; q < entityRenderBuffer.Count; q++)
+				{
+					if (entityRenderBuffer[q].x == localPos.x && entityRenderBuffer[q].y == localPos.y)
+					{
+						entityRenderBuffer[q].bufferData.Add(SpriteAtlas.FetchSpriteByName("spr_human_commoner_0"));
+						foundExisting = true;
+					}
+				}
+
+				if (!foundExisting)
+				{
+					entityRenderBuffer.Add(new EntityBufferObject(
+						new List<Sprite> { SpriteAtlas.FetchSpriteByName("spr_human_commoner_0") }, localPos.x, localPos.y, 0));
+					bufferObjCount++;
+				}
+			}
+
+			for (int i = 0; i < relevantGates.Count; i++)
+			{
+				if (!inEditor) break;
+				Vector2Int localPos = new Vector2Int(relevantGates[i].x - player.x, relevantGates[i].y - player.y);
+
+				bool foundExisting = false;
+				for (int q = 0; q < entityRenderBuffer.Count; q++)
+				{
+					if (entityRenderBuffer[q].x == localPos.x && entityRenderBuffer[q].y == localPos.y)
+					{
+						entityRenderBuffer[q].bufferData.Add(SpriteAtlas.FetchSpriteByName("spr_gate_icon"));
+						foundExisting = true;
+					}
+				}
+
+				if (!foundExisting)
+				{
+					entityRenderBuffer.Add(new EntityBufferObject(
+						new List<Sprite> { SpriteAtlas.FetchSpriteByName("spr_gate_icon") }, localPos.x, localPos.y, 0));
+					bufferObjCount++;
+				}
 			}
 
 			FindObjectOfType<MapViewport>().centerPosOnMap = new Vector2Int(player.x, player.y);
@@ -89,7 +126,6 @@ namespace RENDERER.MAP
 
 		public TileObject[,] RenderEntitiesWithoutLighting(TileObject[,] backgroundData)
 		{
-			int halfWidth = ((MapViewport.viewPortRadius - 1) / 2);
 			//Instead of doing this, the player will be in the entityManager and be parsed with the other entities for rendering!
 			for (int i = 0; i < entityRenderBuffer.Count; i++) 
 			{

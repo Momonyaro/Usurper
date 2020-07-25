@@ -53,6 +53,8 @@ namespace RULESET.WORLD
                     Tiles[startRoom.rect.x + x, startRoom.rect.y + y] = TILE_TYPES.FLOOR;
                 }
             }
+            
+            dungeonStack.Push(startRoom);
 
             //Place the entrance!
             Vector2Int entrancePos = new Vector2Int(Random.Range(pos.x, pos.x + size.x), Random.Range(pos.y, pos.y + size.y));
@@ -60,7 +62,7 @@ namespace RULESET.WORLD
             if (placeAtY) entrancePos = ((entrancePos.x - pos.x) * 2 >= size.x) ? new Vector2Int(pos.x + size.x, entrancePos.y) : new Vector2Int(pos.x - 1, entrancePos.y);
             else entrancePos = ((entrancePos.y - pos.y) * 2 >= size.y) ? new Vector2Int(entrancePos.x, pos.y + size.y) : new Vector2Int(entrancePos.x, pos.y - 1);
 
-            Tiles[entrancePos.x, entrancePos.y] = TILE_TYPES.DOOR;
+            Tiles[entrancePos.x, entrancePos.y] = TILE_TYPES.ENTRANCE;
         }
 
         private void RecursiveRoomPlacementLoop(int attemptsPerRoom)
@@ -76,10 +78,11 @@ namespace RULESET.WORLD
                 bool failedToPlace = false;
                 while (q > 0)
                 {
+                    int minCorridorLength = Random.Range(maxRoomSize - 1, maxRoomSize + 1);
                     Vector2Int size = new Vector2Int(Random.Range(minRoomSize, maxRoomSize), Random.Range(minRoomSize, maxRoomSize));
 
-                    bool makeRoom = (Random.value > 0.6) ? true : false;
-                    if (!makeRoom) size = (Random.value > 0.5) ? new Vector2Int(corridorWidth, size.y) : new Vector2Int(size.x, corridorWidth);
+                    bool makeRoom = (Random.value < 0.5);
+                    if (!makeRoom) size = (Random.value > 0.5) ? new Vector2Int(corridorWidth, minCorridorLength) : new Vector2Int(minCorridorLength, corridorWidth);
                     PRect newRoom = new PRect(new RectInt(new Vector2Int(0, 0), size), makeRoom);
 
                     Vector3Int doorData = GetPossibleExpansionDirection(currentRoom);
@@ -99,12 +102,28 @@ namespace RULESET.WORLD
                         case 3:
                             dir = Vector2Int.down;
                             break;
+                        case -1:
+                            q--;
+                            failedToPlace = true;
+                            continue;
                     }
 
-                    failedToPlace = CheckArea(newRoom, new Vector2Int(doorData.x, doorData.y), dir);
+                    failedToPlace = !CheckArea(newRoom, new Vector2Int(doorData.x, doorData.y), dir, out newRoom);
+
+                    if (!failedToPlace)
+                    {
+                        //Now we can place the room / corridor!
+                        if (!currentRoom.room && !newRoom.room) Tiles[doorData.x, doorData.y] = TILE_TYPES.FLOOR;
+                        else Tiles[doorData.x, doorData.y] = TILE_TYPES.DOOR;
+                        PlaceRoom(newRoom);
+                        dungeonStack.Push(newRoom);
+                        Debug.Log("currentRoomPos: " + currentRoom.rect +" doorPos: " + doorData + " newRoomPos: " + newRoom.rect + " pos delta:" + new Vector2Int(newRoom.rect.x - doorData.x, newRoom.rect.y - doorData.y));
+                        break;
+                    }
+                    else q--;
                 }
 
-                if (failedToPlace) dungeonStack.Pop();
+                if (failedToPlace) {dungeonStack.Pop();}
             }
         }
 
@@ -112,17 +131,38 @@ namespace RULESET.WORLD
         {
             Vector2Int pos = new Vector2Int(currentRoom.rect.x, currentRoom.rect.y);
             Vector2Int size = new Vector2Int(currentRoom.rect.width, currentRoom.rect.height);
-            Vector2Int center = new Vector2Int(pos.x + Mathf.FloorToInt(size.x / 2), pos.y + Mathf.FloorToInt(size.y / 2));
+            Vector2Int center = new Vector2Int(pos.x + Mathf.FloorToInt(size.x / 2.0f), pos.y + Mathf.FloorToInt(size.y / 2.0f));
 
-            Vector2Int doorPos = new Vector2Int(Random.Range(pos.x, pos.x + size.x), Random.Range(pos.y, pos.y + size.y));
+            Vector2Int doorPos = new Vector2Int(Random.Range(pos.x, pos.x + size.x - 1), Random.Range(pos.y, pos.y + size.y - 1));
 
+            bool okPos = false;
             for (int i = 0; i < minNewDoorPosAttempts; i++)
             {
-                bool placeAtY = (Random.value > 0.6) ? true : false; // if true, we lock x to either width or zero and y is free between the range
-                if (placeAtY) doorPos = ((doorPos.x - pos.x) * 2 >= size.x) ? new Vector2Int(pos.x + size.x, doorPos.y) : new Vector2Int(pos.x - 1, doorPos.y);
-                else doorPos = ((doorPos.y - pos.y) * 2 >= size.y) ? new Vector2Int(doorPos.x, pos.y + size.y) : new Vector2Int(doorPos.x, pos.y - 1);
+                bool placeAtY = (Random.value > 0.6); // if true, we lock x to either width or zero and y is free between the range
+                if (placeAtY)
+                {
+                    int y = Mathf.Clamp(doorPos.y, pos.y, pos.y + size.y - 1);
+                    if (Random.value > 0.5)
+                        doorPos = new Vector2Int(pos.x - 1, y);
+                    else
+                        doorPos = new Vector2Int(pos.x + size.x, y);
+                }
+                else
+                {
+                    int x = Mathf.Clamp(doorPos.x, pos.x, pos.x + size.x - 1);
+                    if (Random.value > 0.5)
+                        doorPos = new Vector2Int(x, pos.y - 1);
+                    else 
+                        doorPos = new Vector2Int(x, pos.y + size.y);
+                }
 
-                if (Tiles[doorPos.x, doorPos.y] == TILE_TYPES.FLOOR) break;
+                if (doorPos.x < 0 || doorPos.x >=  width) { continue; }
+                if (doorPos.y < 0 || doorPos.y >= height) { continue; }
+
+                if (Tiles[doorPos.x, doorPos.y] != TILE_TYPES.WALL) { continue; }
+
+                okPos = true;
+                break;
             }
 
             int dir = 0;
@@ -130,65 +170,86 @@ namespace RULESET.WORLD
             int deltaY = center.y - doorPos.y;
             bool xLongest = Mathf.Abs(deltaX) >= Mathf.Abs(deltaY);
             //We want to return an int in the range of 0 - 3
-            if      ( xLongest && deltaX > 0) dir = 0;
-            else if ( xLongest && deltaX < 0) dir = 1;
-            else if (!xLongest && deltaY > 0) dir = 2;
-            else if (!xLongest && deltaY < 0) dir = 3;
+            if      ( xLongest && deltaX < 0) dir = 0;
+            else if ( xLongest && deltaX > 0) dir = 1;
+            else if (!xLongest && deltaY < 0) dir = 2;
+            else if (!xLongest && deltaY > 0) dir = 3;
 
+            if (!okPos) dir = -1;
+            
             return new Vector3Int(doorPos.x, doorPos.y, dir);
         }
 
-        private bool CheckArea(PRect pRect, Vector2Int doorPos, Vector2Int direction)
+        private bool CheckArea(PRect pRect, Vector2Int doorPos, Vector2Int direction, out PRect room)
         {
             //check if the area is free. Return true if it is, return false if something is blocking.
 
             //We can shift the room pos some random number before attempting to place it.
             //We do need to also place the room based on a offset from the doorpos and direction.
 
-            int roomOffset = Random.Range(0, pRect.rect.width);
+            
+            //The problem seems to occur one above when going left && one left when going up
+            
+            
+            int xRoomOffset = 0; //Random.Range(0, pRect.rect.width - 1);
+            int yRoomOffset = 0; //Random.Range(0, pRect.rect.height - 1);
 
-            if (direction == Vector2Int.right)
+            if (direction.Equals(Vector2Int.right))
             {
                 pRect.rect.x = doorPos.x + 1;
-                pRect.rect.y = doorPos.y + roomOffset;
+                pRect.rect.y = doorPos.y - yRoomOffset;
             }
-            else if (direction == Vector2Int.left)
+            else if (direction.Equals(Vector2Int.left))
             {
                 pRect.rect.x = doorPos.x - pRect.rect.width;
-                pRect.rect.y = doorPos.y + roomOffset;
+                pRect.rect.y = doorPos.y - yRoomOffset;
             }
-            else if (direction == Vector2Int.up)
+            else if (direction.Equals(Vector2Int.up))
             {
-                pRect.rect.x = doorPos.x + roomOffset;
+                pRect.rect.x = doorPos.x - xRoomOffset;
                 pRect.rect.y = doorPos.y + 1;
             }
-            else if (direction == Vector2Int.down)
+            else if (direction.Equals(Vector2Int.down))
             {
-                pRect.rect.x = doorPos.x + roomOffset;
+                pRect.rect.x = doorPos.x - xRoomOffset;
                 pRect.rect.y = doorPos.y - pRect.rect.height;
             }
+            else Debug.Log("Wierd direction found, check it out! | " + direction);
 
-            //Now that we have a position for the room, we check the area if we can place it.'
+            RectInt areaToCheck = new RectInt(new Vector2Int(pRect.rect.x - 1, pRect.rect.y - 1),
+                new Vector2Int(pRect.rect.width + 1, pRect.rect.height + 1));
 
-            // #######    This is basically a visualization of the area I want to check. It is the room size   
-            // WWWWWW#    except +1 on all sides except the one in the different dir we got passed.
-            // DFFFFW#    This is since we would end up checking the room/corridor we build from.
-            // WFFFFW#    
-            // WFFFFW#    (Please also remember to check that the room is inside the map still! +- the minBorderDist)
-            // WWWWWW#
-            // #######
+            room = pRect;
 
-            return false;
+            for (int y = 0; y < areaToCheck.height + 1; y++)
+                for (int x = 0; x < areaToCheck.width + 1; x++)
+                {
+                    if (areaToCheck.x + x < 0 || areaToCheck.x + x >= width)  { 
+                        return false;
+                    }
+                    if (areaToCheck.y + y < 0 || areaToCheck.y + y >= height) { 
+                        return false;
+                    }
+
+                    if (Tiles[areaToCheck.x + x, areaToCheck.y + y] == TILE_TYPES.FLOOR) { 
+                        return false;
+                    }
+                    if (Tiles[areaToCheck.x + x, areaToCheck.y + y] == TILE_TYPES.ENTRANCE) { 
+                        return false;
+                    }
+                }
+            
+            return true;
         }
 
         private void PlaceRoom(PRect pRect)
         {
             //Draw the rect data to the tiles, add the room to the stack.
-        }
-
-        private void PlaceCorridor(PRect pRect)
-        {
-            //Please take into account that we want the corridor to either lay down or go straight out.
+            for (int y = 0; y < pRect.rect.height; y++)
+                for (int x = 0; x < pRect.rect.width; x++)
+                {
+                    Tiles[pRect.rect.x + x, pRect.rect.y + y] = TILE_TYPES.FLOOR;
+                }
         }
 
         private struct PRect

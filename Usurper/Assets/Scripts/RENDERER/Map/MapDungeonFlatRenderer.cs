@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEngine.Tilemaps;
 using RENDERER.UTILS.Atlas;
 using RULESET.WORLD;
+using RULESET.MANAGERS;
 
 namespace RENDERER.MAP
 {
@@ -11,20 +12,31 @@ namespace RENDERER.MAP
     {
         //This is a map offset to get a minimum size where at least one room will be created!
 
+        public static Gate selected;
         private readonly DungeonGenerator _dungeonGenerator = new DungeonGenerator();
         public int[,] mapData;
         public Tilemap tilemap;
 
+        private int currentAlgorithm = (int)DungeonGenerator.ALGORITHM_NAMES.PATHFINDER;
+        private int currentSize = (int) DungeonGenerator.SIZE_PRESETS_NAMES.SMALL;
+
         //This needs a total rework to instead use the cell based implementation!
         //The cells are placed at 2x+1, 2y+1 with the 0 row and column filled with wall tiles!
 
-        private void Update()
+        public void SetAlgorithm(int index)
         {
-            if (Input.GetKeyDown(KeyCode.T))
-            {
-                mapData = _dungeonGenerator.GenerateDungeon(DungeonGenerator.ALGORITHM_NAMES.PATHFINDER, DungeonGenerator.SIZE_PRESETS_NAMES.DEFAULT);
-                DrawFullMap();
-            }
+            currentAlgorithm = index;
+        }
+
+        public void SetSize(int index)
+        {
+            currentSize = index;
+        }
+        
+        public void GenerateDungeonWithSettings()
+        {
+            mapData = _dungeonGenerator.GenerateDungeon((DungeonGenerator.ALGORITHM_NAMES)currentAlgorithm, (DungeonGenerator.SIZE_PRESETS_NAMES)currentSize);
+            DrawFullMap();
         }
 
         public void DrawFullMap()
