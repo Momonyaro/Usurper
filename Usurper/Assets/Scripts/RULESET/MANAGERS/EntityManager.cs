@@ -150,6 +150,21 @@ namespace RULESET.MANAGERS
 
 			return !mapViewport.lastUpdateViewData[localTargetPos.x + halfWidth, localTargetPos.y + halfWidth].collider;
 		}
+
+		public static Sprite GetCreatureSprite(int speciesId, int spriteIndex = 0)
+		{
+			//Debug.Log("speciesId: " + speciesId + ", spriteIndex: " + spriteIndex);
+			for (int i = 0; i < creatures.Count; i++)
+			{
+				//Debug.Log("testing an actor: actorId = " + speciesId + " against species of Id = " + creatures[i].id);
+				if (creatures[i].id.Equals(speciesId))
+				{
+					//Later we make it fetch the correct sprite as well!
+					return creatures[i].sprite;
+				}
+			}
+			return Resources.Load<Sprite>("Sprites/spr_err");
+		}
 	}
 }
 
@@ -159,6 +174,7 @@ namespace RULESET.ENTITIES
 	{
 		public string name;
 		public string desc;
+		public int id;
 		public Sprite sprite; //Change to list to have a pool of sprites instead.
 		public int[] averageStats;
 		// Add creature bonuses as well!
@@ -168,6 +184,7 @@ namespace RULESET.ENTITIES
 		{
 			this.name = name;
 			this.desc = desc;
+			this.id = 999;
 			this.sprite = sprite;
 			averageStats = new int[7] { 1, 1, 1, 1, 1, 1, 1 };
 			bodyParts = new List<CreatureBodyPart>();

@@ -29,6 +29,7 @@ namespace EDITOR.EXPORT
                     x    = (int)fileData["actors"][i]["x"],
                     y    = (int)fileData["actors"][i]["y"]
                 };
+                a.species = (int)fileData["actors"][i]["species"];
                 toReturn.actors.Add(a);
             }
 
@@ -70,6 +71,7 @@ namespace EDITOR.EXPORT
                 {
                     name = fileData["creatures"][i]["name"].ToString(),
                     desc = fileData["creatures"][i]["desc"].ToString(),
+                    id = (int)fileData["creatures"][i]["id"],
                     spriteName = fileData["creatures"][i]["spriteName"].ToString(), //Change to list to have a pool of sprites instead.
                     averageStats = new int[7] 
                     {
@@ -84,6 +86,7 @@ namespace EDITOR.EXPORT
                     // Add creature bonuses as well!
                     bodyParts = bodyParts
                 };
+                Debug.Log(c.id);
                 toReturn.creatures.Add(c);
             }
 
@@ -123,6 +126,7 @@ namespace EDITOR.EXPORT
     {
         public string name;
         public string desc;
+        public int id;
         public string spriteName; //Change to list to have a pool of sprites instead.
         public int[] averageStats;
         // Add creature bonuses as well!
@@ -132,6 +136,7 @@ namespace EDITOR.EXPORT
         {
             this.name = name;
             this.desc = desc;
+            this.id = 420;
             this.spriteName = spriteName;
             averageStats = new int[7] { 1, 1, 1, 1, 1, 1, 1 };
             bodyParts = new List<CompactBodyPart>();
@@ -141,6 +146,7 @@ namespace EDITOR.EXPORT
         {
             this.name = creature.name;
             this.desc = creature.desc;
+            this.id = creature.id;
             this.spriteName = creature.sprite.name;
             averageStats = creature.averageStats;
             bodyParts = new List<CompactBodyPart>();

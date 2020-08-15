@@ -54,7 +54,7 @@ namespace RENDERER.MAP
 			if (!inEditor)
 			{
 				entityRenderBuffer.Add(new EntityBufferObject(
-					new List<Sprite> { SpriteAtlas.FetchSpriteByName("spr_human_commoner_0") }, 0, 0, 0));
+					new List<Sprite> { EntityManager.GetCreatureSprite(player.species) }, 0, 0, 0));
 				bufferObjCount++;
 			}
 			
@@ -67,7 +67,7 @@ namespace RENDERER.MAP
 				{
 					if (entityRenderBuffer[q].x == localPos.x && entityRenderBuffer[q].y == localPos.y)
 					{
-						entityRenderBuffer[q].bufferData.Add(SpriteAtlas.FetchSpriteByName("spr_human_commoner_0"));
+						entityRenderBuffer[q].bufferData.Add(EntityManager.GetCreatureSprite(relevantEntities[i].species));
 						foundExisting = true;
 					}
 				}
@@ -75,7 +75,7 @@ namespace RENDERER.MAP
 				if (!foundExisting)
 				{
 					entityRenderBuffer.Add(new EntityBufferObject(
-						new List<Sprite> { SpriteAtlas.FetchSpriteByName("spr_human_commoner_0") }, localPos.x, localPos.y, 0));
+						new List<Sprite> { EntityManager.GetCreatureSprite(relevantEntities[i].species) }, localPos.x, localPos.y, 0));
 					bufferObjCount++;
 				}
 			}

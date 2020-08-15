@@ -106,6 +106,7 @@ namespace EDITOR.EXPORT
                     {
                         name = creature.name,
                         desc = creature.desc,
+                        id = creature.id,
                         sprite = SpriteAtlas.FetchSpriteByName(creature.spriteName),
                         averageStats = creature.averageStats,
                         bodyParts = expanded
