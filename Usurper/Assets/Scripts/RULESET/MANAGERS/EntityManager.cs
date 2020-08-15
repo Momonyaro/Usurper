@@ -10,8 +10,9 @@ namespace RULESET.MANAGERS
 	public class EntityManager : MonoBehaviour
 	{
 		public PlayerEntity playerEntity;
-		public List<ActorEntity> actors = new List<ActorEntity>();
-		public List<Item> itemsOnGround = new List<Item>();
+		public static List<ActorEntity> actors = new List<ActorEntity>();
+		public static List<CreatureSpecies> creatures = new List<CreatureSpecies>();
+		public static List<Item> itemsOnGround = new List<Item>();
 
 		public MapEntityRenderer entityRenderer;
 		[SerializeField]
@@ -20,16 +21,32 @@ namespace RULESET.MANAGERS
 		private void Awake()
 		{
 			playerEntity = new PlayerEntity();
-			playerEntity.inventory.Add(new Item());
-			playerEntity.inventory[0].name = "TestItem1";
 			playerEntity.name = "bruh";
 			playerEntity.x = 5;
 			playerEntity.y = 5;
+		}
 
-			actors.Add(new ActorEntity());
-			actors[0].name = "test";
-			actors[0].x = 15;
-			actors[0].y = 15;
+		public static void CreateEntityAtPos(int x, int y)
+		{
+			ActorEntity a = new ActorEntity
+			{
+				name = "New Actor",
+				x = x,
+				y = y
+			};
+			actors.Add(a);
+		}
+
+		public static void RemoveEntityAtPos(int x, int y)
+		{
+			for (int i = 0; i < actors.Count; i++)
+			{
+				if (actors[i].x == x && actors[i].y == y)
+				{
+					actors.RemoveAt(i);
+					break;
+				}
+			}
 		}
 
 		//Process the new player position recieved by the turnManager.
@@ -132,6 +149,55 @@ namespace RULESET.MANAGERS
 			}
 
 			return !mapViewport.lastUpdateViewData[localTargetPos.x + halfWidth, localTargetPos.y + halfWidth].collider;
+		}
+	}
+}
+
+namespace RULESET.ENTITIES
+{
+	public class CreatureSpecies
+	{
+		public string name;
+		public string desc;
+		public Sprite sprite; //Change to list to have a pool of sprites instead.
+		public int[] averageStats;
+		// Add creature bonuses as well!
+		public List<CreatureBodyPart> bodyParts;
+
+		public CreatureSpecies(string name, string desc, Sprite sprite)
+		{
+			this.name = name;
+			this.desc = desc;
+			this.sprite = sprite;
+			averageStats = new int[7] { 1, 1, 1, 1, 1, 1, 1 };
+			bodyParts = new List<CreatureBodyPart>();
+		}
+	}
+
+	public class CreatureBodyPart
+	{
+		public BodyPart containedBodyPart;
+		public RectInt bodyPartRect;
+		public int angle;
+
+		public CreatureBodyPart(BodyPart containedBodyPart, RectInt bodyPartRect, int angle)
+		{
+			this.containedBodyPart = new BodyPart
+			{
+				name = containedBodyPart.name.ToString(),
+				damageMultiplier = containedBodyPart.damageMultiplier,
+				hitThreshold = containedBodyPart.hitThreshold,
+				canEquipType = containedBodyPart.canEquipType,
+				canHoldType = containedBodyPart.canHoldType,
+				countsForDamage = containedBodyPart.countsForDamage
+			};
+			this.bodyPartRect = bodyPartRect;
+			this.angle = angle;
+		}
+
+		public CreatureBodyPart Copy()
+		{
+			return new CreatureBodyPart(containedBodyPart, bodyPartRect, angle);
 		}
 	}
 }

@@ -78,15 +78,29 @@ namespace RENDERER.MAP
 
         private void OnMouseDown()
         {
-            if (inEditor && PointerImageGhost.selected.tile != null && PointerImageGhost.placingEntityLayer == 0 && !InputManager.inEditorUI)
+            if (inEditor && !InputManager.inEditorUI)
             {
-                drawing = true;
-            }
-
-            if (inEditor && PointerImageGhost.selected.tile == null && PointerImageGhost.placingEntityLayer != 0 && !InputManager.inEditorUI)
-            {
-                PointerImageGhost.WorkaroundCreateGate();
-                FindObjectOfType<EntityManager>().QuietUpdateEntities();
+                if (PointerImageGhost.selected.tile != null)
+                {
+                    if (PointerImageGhost.placingEntityLayer == 0)
+                    {
+                        drawing = true;
+                    }
+                }
+                else
+                {
+                    if (PointerImageGhost.placingEntityLayer != 0)
+                    {
+                        if (PointerImageGhost.placingEntityLayer == 3 || PointerImageGhost.placingEntityLayer == 4) PointerImageGhost.WorkaroundCreateGate();
+                        if (PointerImageGhost.placingEntityLayer == 1 || PointerImageGhost.placingEntityLayer == 2) PointerImageGhost.WorkaroundCreateEntity();
+                        FindObjectOfType<EntityManager>().QuietUpdateEntities();
+                    }
+                    else
+                    {
+                        //Here we check if we find a Gate/entity at this position and enter the editor for the respective item.
+                        PointerImageGhost.CheckEntityLayerInteractions();
+                    }
+                }
             }
         }
 

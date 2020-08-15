@@ -30,8 +30,19 @@ namespace RULESET.MANAGERS
                     toReturn.Add(Gates[i]);
                 }
             }
-            Debug.Log(toReturn.Count);
             return toReturn;
+        }
+
+        public static Gate FetchGateAtPos(int x, int y)
+        {
+            for (int i = 0; i < Gates.Count; i++)
+            {
+                if (Gates[i].x == x && Gates[i].y == y)
+                {
+                    return Gates[i];
+                }
+            }
+            return new Gate("NO:GATE:FOUND:AT:THIS:POS", -1, -1);
         }
 
         public static bool PlaceAtPosition(int x, int y)
@@ -69,13 +80,17 @@ namespace RULESET.MANAGERS
         public string name;
         public int x;
         public int y;
+        public int width;
+        public int height;
         public int[,] dngData;
 
-        public Gate(string name, int x, int y, int[,] dngData)
+        public Gate(string name, int x, int y, int width, int height, int[,] dngData)
         {
             this.name = name;
             this.x = x;
             this.y = y;
+            this.width = width;
+            this.height = height;
             this.dngData = dngData;
         }
 
@@ -84,7 +99,9 @@ namespace RULESET.MANAGERS
             this.name = name;
             this.x = x;
             this.y = y;
-            dngData = new int[75,50];
+            width = 1;
+            height = 1;
+            dngData = new int[1,1];
         }
     }
 }

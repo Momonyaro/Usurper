@@ -7,6 +7,8 @@ using RENDERER.UTILS.Atlas;
 using RULESET.MANAGERS;
 using LitJson;
 using RENDERER.UTILS;
+using RULESET.ITEMS;
+using RULESET.ENTITIES;
 
 namespace EDITOR.EXPORT
 {
@@ -21,7 +23,8 @@ namespace EDITOR.EXPORT
         
         ChunkExporter chnkExporter = new ChunkExporter();
         ItemExporter itemExporter = new ItemExporter();
-
+        EntityExporter entityExporter = new EntityExporter();
+        DungeonExporter dungeonExporter = new DungeonExporter();
 
         private void Update()
         {
@@ -79,6 +82,61 @@ namespace EDITOR.EXPORT
                             (bool)loadedFile["dungeonTilePalette"][i]["collider"], (bool)loadedFile["dungeonTilePalette"][i]["transparent"], (bool)loadedFile["dungeonTilePalette"][i]["lightSrc"], true));
             }
             TileAtlas.SetTileObjectArrayToDungeonAtlas(importedDungeonTiles.ToArray());
+            
+            EntityBlock eBlock;
+            if (File.Exists(campaignPath + mapName + "/Actors.dbase"))
+            {
+                eBlock = entityExporter.LoadEntities(campaignPath + mapName);
+                EntityManager.actors.Clear();
+                EntityManager.creatures.Clear();
+                EntityManager.actors = eBlock.actors;
+
+                foreach (var creature in eBlock.creatures)
+                {
+                    List<CreatureBodyPart> expanded = new List<CreatureBodyPart>();
+
+                    for (int i = 0; i < creature.bodyParts.Count; i++)
+                    {
+                        Debug.Log("posX: " + creature.bodyParts[i].partX + ", posY: " + creature.bodyParts[i].partY +
+                                ", width: " + creature.bodyParts[i].width + ", height: " + creature.bodyParts[i].height);
+                        expanded.Add(creature.bodyParts[i].ExpandCompacted());
+                    }
+
+                    EntityManager.creatures.Add(new RULESET.ENTITIES.CreatureSpecies("", "", null) 
+                    {
+                        name = creature.name,
+                        desc = creature.desc,
+                        sprite = SpriteAtlas.FetchSpriteByName(creature.spriteName),
+                        averageStats = creature.averageStats,
+                        bodyParts = expanded
+                    });
+                }
+            }
+
+            if (File.Exists(campaignPath + mapName + "/Dungeons.dbase"))
+                GateManager.Gates = dungeonExporter.LoadDungeons(campaignPath + mapName);
+
+            if (File.Exists(campaignPath + mapName + "/Items.dbase"))
+            {
+                ExportDatabase fetched = itemExporter.LoadItemDatabase(campaignPath + mapName);
+
+                ItemManager.itemDatabase.Clear();
+                for (int i = 0; i < fetched.exportItems.Length; i++)
+                {
+                    ItemManager.itemDatabase.Add(new Item(fetched.exportItems[i]));
+                }
+
+                ItemManager.itemGroups.Clear();
+                for (int i = 0; i < fetched.exportGroups.Length; i++)
+                {
+                    ItemManager.itemGroups.Add(new ItemGroup()
+                    { 
+                        id = fetched.exportGroups[i].id,
+                        groupName = fetched.exportGroups[i].groupName,
+                        groupSprite = SpriteAtlas.FetchSpriteByName(fetched.exportGroups[i].groupSpriteName)
+                    });
+                }
+            }
 
             mapObject.loadedWorld.CreateWorldWithExistingData(toLoad, loadedFile["mapName"].ToString(), (int)loadedFile["mapWidth"], (int)loadedFile["mapHeight"]);
             mapObject.initialized = true;
@@ -117,6 +175,8 @@ namespace EDITOR.EXPORT
             Directory.CreateDirectory(campaignPath + toExport.mapName + "/");
             string finalPath = campaignPath + toExport.mapName + "/" + toExport.mapName + mapExtention;
             itemExporter.SaveItemDatabase(campaignPath + toExport.mapName + "/");
+            entityExporter.SaveEntities(campaignPath + toExport.mapName);
+            dungeonExporter.SaveDungeons(campaignPath + toExport.mapName);
             File.WriteAllText(finalPath, mapData.ToString());
 
             yield break;

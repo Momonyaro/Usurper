@@ -69,7 +69,6 @@ namespace RULESET.WORLD
         {
             //Pick an area within the map, attempt to place a room there. If we fail x number of times,
             //pop the current room and try an earlier position. (if the start room is popped, break!)
-
             while (dungeonStack.Count > 0)
             {
                 PRect currentRoom = dungeonStack.Peek();
@@ -117,13 +116,17 @@ namespace RULESET.WORLD
                         else Tiles[doorData.x, doorData.y] = TILE_TYPES.DOOR;
                         PlaceRoom(newRoom);
                         dungeonStack.Push(newRoom);
-                        Debug.Log("currentRoomPos: " + currentRoom.rect +" doorPos: " + doorData + " newRoomPos: " + newRoom.rect + " pos delta:" + new Vector2Int(newRoom.rect.x - doorData.x, newRoom.rect.y - doorData.y));
+                        //Debug.Log("currentRoomPos: " + currentRoom.rect +" doorPos: " + doorData + " newRoomPos: " + newRoom.rect + " pos delta:" + new Vector2Int(newRoom.rect.x - doorData.x, newRoom.rect.y - doorData.y));
                         break;
                     }
                     else q--;
                 }
 
-                if (failedToPlace) {dungeonStack.Pop();}
+                if (failedToPlace) 
+                {
+                    
+                    dungeonStack.Pop();
+                }
             }
         }
 

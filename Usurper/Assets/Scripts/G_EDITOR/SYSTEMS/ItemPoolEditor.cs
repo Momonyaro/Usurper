@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using RULESET.ITEMS;
+using RULESET.MANAGERS;
 
 //Here we just want a list with items. Present that list and allow editing the properties of individual elements.
 //Also create functionality for adding / removing items from the pool
@@ -21,27 +22,10 @@ namespace EDITOR.SYSTEMS
 	{
 		public static ItemGroup selectedGroup;
 		public static Item 		selectedItem;
-		public static List<ItemGroup> itemGroups = new List<ItemGroup>();
-		public static List<Item> itemDatabase = new List<Item>();
 
 		public ITEM_POOL_EDITOR_MODE editorMode = ITEM_POOL_EDITOR_MODE.ITEM_DATABASE_VIEW;
 		public GameObject listContentParent;
 		public GameObject itemListPrefab;
-
-		
-
-		private void Start()
-		{
-			itemGroups.Add(new ItemGroup());
-			itemGroups[0].id = 0;
-			itemGroups[0].groupName = "TestGroup";
-			itemGroups[0].groupSprite = Resources.Load<Sprite>("Sprites/UI/spr_ui_trash");
-
-			itemDatabase.Add(new Item());
-			itemDatabase[0].name = "TestItem";
-
-			ChangeEditorViewAndDraw(0);
-		}
 
 		//Create something to populate the editor, also make the item groups compile into a dropdown.
 		public void DrawEditorList()
@@ -56,7 +40,7 @@ namespace EDITOR.SYSTEMS
 			switch (editorMode)
 			{
 				case ITEM_POOL_EDITOR_MODE.ITEM_GROUP_VIEW:
-					for (int i = 0; i < itemGroups.Count; i++)
+					for (int i = 0; i < ItemManager.itemGroups.Count; i++)
 					{
 						GameObject instance = Instantiate(itemListPrefab, listContentParent.transform);
 						ItemListItem listItem = instance.GetComponent<ItemListItem>();
@@ -64,13 +48,13 @@ namespace EDITOR.SYSTEMS
 						listItem.relevantMode = editorMode;
 						listItem.propertyEditor = propertyEditor;
 
-						instance.transform.GetChild(0).GetComponent<Text>().text = itemGroups[i].groupName;
-                		instance.transform.GetChild(1).GetComponent<Image>().sprite = itemGroups[i].groupSprite;
+						instance.transform.GetChild(0).GetComponent<Text>().text = ItemManager.itemGroups[i].groupName;
+                		instance.transform.GetChild(1).GetComponent<Image>().sprite = ItemManager.itemGroups[i].groupSprite;
 					}
 					break;
 
 				case ITEM_POOL_EDITOR_MODE.ITEM_DATABASE_VIEW:
-					for (int i = 0; i < itemDatabase.Count; i++)
+					for (int i = 0; i < ItemManager.itemDatabase.Count; i++)
 					{
 						GameObject instance = Instantiate(itemListPrefab, listContentParent.transform);
 						ItemListItem listItem = instance.GetComponent<ItemListItem>();
@@ -78,11 +62,22 @@ namespace EDITOR.SYSTEMS
 						listItem.relevantMode = editorMode;
 						listItem.propertyEditor = propertyEditor;
 
-						instance.transform.GetChild(0).GetComponent<Text>().text = itemDatabase[i].name;
-						instance.transform.GetChild(1).GetComponent<Image>().sprite = itemGroups[itemDatabase[i].groupId].groupSprite;
+						instance.transform.GetChild(0).GetComponent<Text>().text = ItemManager.itemDatabase[i].name;
+						instance.transform.GetChild(1).GetComponent<Image>().sprite = ItemManager.itemGroups[ItemManager.itemDatabase[i].groupId].groupSprite;
 					}
 					break;
 			}
+
+			GameObject instancee = Instantiate(itemListPrefab, listContentParent.transform);
+			ItemListItem listIteme = instancee.GetComponent<ItemListItem>();
+			listIteme.index = 0;
+			listIteme.relevantMode = editorMode;
+			listIteme.addBtn = true;
+			listIteme.propertyEditor = propertyEditor;
+
+			instancee.transform.GetChild(0).GetComponent<Text>().text = "Add New";
+			instancee.transform.GetChild(1).GetComponent<Image>().sprite = Resources.Load<Sprite>("Sprites/UI/spr_ui_plus");
+			instancee.transform.GetChild(1).GetComponent<Image>().color = Color.green;
 
 			DrawSelected();
 		}
@@ -116,23 +111,15 @@ namespace EDITOR.SYSTEMS
 			switch (editorMode)
 			{
 				case ITEM_POOL_EDITOR_MODE.ITEM_GROUP_VIEW:
-					itemGroups.Add(new ItemGroup());
+					ItemManager.itemGroups.Add(new ItemGroup());
 					break;
 
 				case ITEM_POOL_EDITOR_MODE.ITEM_DATABASE_VIEW:
-					itemDatabase.Add(new Item());
+					ItemManager.itemDatabase.Add(new Item());
 					break;
 			}
 
 			DrawEditorList();
 		}
-	}
-
-	[System.Serializable]
-	public class ItemGroup
-	{
-		public int id = 0;
-		public string groupName = "New Group";
-		public Sprite groupSprite = null;
 	}
 }

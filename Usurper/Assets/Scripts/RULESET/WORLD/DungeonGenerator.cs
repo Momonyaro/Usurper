@@ -25,6 +25,7 @@ namespace RULESET.WORLD
         public enum ALGORITHM_NAMES
         {
             PATHFINDER,
+            DRUNKARD
         }
 
 
@@ -33,7 +34,8 @@ namespace RULESET.WORLD
 
         public DungeonAlgorithm[] algorithms =
             {
-                new PathfinderAlgorithm()
+                new PathfinderAlgorithm(),
+                new DrunkardsAlgorithm()
             };
 
         public Vector2Int[] sizePresets =

@@ -1,4 +1,5 @@
 using UnityEngine;
+using EDITOR.EXPORT;
 
 namespace RULESET.ITEMS
 {
@@ -50,6 +51,31 @@ namespace RULESET.ITEMS
         public short range = 0;
         public bool  usesAmmo = false;
         public int   ammoType = 0;  //This will be set to the group of the ammo
+
+        public Item(ExportItem toExpand)
+        {
+            name = toExpand.name;
+            desc = toExpand.desc;
+            stackable = toExpand.stackable;
+            amount = toExpand.amount;
+            value = toExpand.value;
+            weight = toExpand.weight;
+            groupId = toExpand.groupId;
+            x = toExpand.x;
+            y = toExpand.y;
+            itemCategory = toExpand.itemCategory;
+            damageType = toExpand.damageType;
+            damage = toExpand.damage;
+            armor = toExpand.armor;
+            range = toExpand.range;
+            usesAmmo = toExpand.usesAmmo;
+            ammoType = toExpand.ammoType;
+        }
+
+        public Item()
+        {
+
+        }
     }
 
 }

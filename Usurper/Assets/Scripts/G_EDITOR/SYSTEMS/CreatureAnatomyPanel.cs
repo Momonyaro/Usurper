@@ -7,8 +7,8 @@ namespace EDITOR.SYSTEMS
 {
     public class CreatureAnatomyPanel : MonoBehaviour 
     {
-        public static EditorBodyPart selected;
-        private EditorBodyPart copy = null;
+        public static CreatureBodyPart selected;
+        private CreatureBodyPart copy = null;
         public GameObject bodyPartPrefab;
         public GameObject anatomyEditorParent;
         //Also decide how to display the stat view!
@@ -23,7 +23,7 @@ namespace EDITOR.SYSTEMS
             for (int i = 0; i < CreatureDesigner.selected.bodyParts.Count; i++)
             {
                 //Here we need to instantiate them
-                EditorBodyPart bodyPart = CreatureDesigner.selected.bodyParts[i];
+                CreatureBodyPart bodyPart = CreatureDesigner.selected.bodyParts[i];
                 GameObject instance = Instantiate(bodyPartPrefab, anatomyEditorParent.transform);
                 instance.GetComponent<AnatomyListItem>().index = i;
                 instance.GetComponent<RectTransform>().localPosition = new Vector3(bodyPart.bodyPartRect.x, bodyPart.bodyPartRect.y, 0);
@@ -38,35 +38,35 @@ namespace EDITOR.SYSTEMS
         public void MoveSelectedVertical(float distance)
         {
             if (selected != null)
-                selected.bodyPartRect.y += distance;
+                selected.bodyPartRect.y += Mathf.RoundToInt(distance);
             FindObjectOfType<CreatureDesigner>().DrawCreature();
         }
 
         public void MoveSelectedHorizontal(float distance)
         {
             if (selected != null)
-                selected.bodyPartRect.x += distance;
+                selected.bodyPartRect.x += Mathf.RoundToInt(distance);
             FindObjectOfType<CreatureDesigner>().DrawCreature();
         }
 
         public void ModifySelectedWidth(float amount)
         {
             if (selected != null)
-                selected.bodyPartRect.width += amount;
+                selected.bodyPartRect.width += Mathf.RoundToInt(amount);
             FindObjectOfType<CreatureDesigner>().DrawCreature();
         }
 
         public void ModifySelectedHeight(float amount)
         {
             if (selected != null)
-                selected.bodyPartRect.height += amount;
+                selected.bodyPartRect.height += Mathf.RoundToInt(amount);
             FindObjectOfType<CreatureDesigner>().DrawCreature();
         }
 
         public void RotateSelected(float amount)
         {
             if (selected != null)
-                selected.angle -= amount;
+                selected.angle -= Mathf.RoundToInt(amount);
             FindObjectOfType<CreatureDesigner>().DrawCreature();
         }
 
@@ -86,7 +86,7 @@ namespace EDITOR.SYSTEMS
 
         public void AddNewSelected()
         {
-            CreatureDesigner.selected.bodyParts.Add(new EditorBodyPart(new BodyPart(), new Rect(0, 0, 50, 50), 0));
+            CreatureDesigner.selected.bodyParts.Add(new CreatureBodyPart(new BodyPart(), new RectInt(0, 0, 50, 50), 0));
             FindObjectOfType<CreatureDesigner>().DrawCreature();
         }
 

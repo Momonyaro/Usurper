@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
-using RULESET.ITEMS;
+using RULESET.MANAGERS;
 using RENDERER.UTILS.Atlas;
 
 namespace EDITOR.SYSTEMS
@@ -28,7 +28,7 @@ namespace EDITOR.SYSTEMS
                 selectedItemPanel.transform.GetChild(3).GetComponent<InputField>().interactable = false;
             }
             selectedItemPanel.transform.GetChild(3).GetComponent<InputField>().SetTextWithoutNotify(ItemPoolEditor.selectedItem.amount.ToString());
-            selectedItemPanel.transform.GetChild(4).GetComponent<Image>().sprite = ItemPoolEditor.itemGroups[ItemPoolEditor.selectedItem.groupId].groupSprite;
+            selectedItemPanel.transform.GetChild(4).GetComponent<Image>().sprite = ItemManager.itemGroups[ItemPoolEditor.selectedItem.groupId].groupSprite;
             selectedItemPanel.transform.GetChild(5).GetComponent<InputField>().SetTextWithoutNotify(ItemPoolEditor.selectedItem.weight.ToString());
             selectedItemPanel.transform.GetChild(6).GetComponent<InputField>().SetTextWithoutNotify(ItemPoolEditor.selectedItem.value.ToString());
             selectedItemPanel.transform.GetChild(7).GetComponent<InputField>().SetTextWithoutNotify(ItemPoolEditor.selectedItem.groupId.ToString());

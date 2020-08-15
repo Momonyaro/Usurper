@@ -18,13 +18,13 @@ namespace EDITOR.EXPORT
         {
             //Here we write the items and groups to the .dbase file
             List<ExportItem> exportItems = new List<ExportItem>();
-            foreach (var item in ItemPoolEditor.itemDatabase)
+            foreach (var item in ItemManager.itemDatabase)
             {
                 exportItems.Add(new ExportItem(item));
             }
 
             List<ExportItemGroup> exportGroups = new List<ExportItemGroup>();
-            foreach (var group in ItemPoolEditor.itemGroups)
+            foreach (var group in ItemManager.itemGroups)
             {
                 exportGroups.Add(new ExportItemGroup(group));
             }
@@ -32,8 +32,51 @@ namespace EDITOR.EXPORT
             ExportDatabase exportDatabase = new ExportDatabase(exportGroups, exportItems);
             JsonData databaseData = JsonMapper.ToJson(exportDatabase);
             Debug.Log(databaseData.ToString());
-            string finalPath = path + "item" + databaseExtention;
+            string finalPath = path + "Items" + databaseExtention;
             File.WriteAllText(finalPath, databaseData.ToString());
+        }
+
+        public ExportDatabase LoadItemDatabase(string path)
+        {
+            ExportDatabase fetched = new ExportDatabase(new List<ExportItemGroup>(), new List<ExportItem>());
+            JsonData fileData = JsonMapper.ToObject(File.ReadAllText(path + "/" + "Items" + databaseExtention));
+
+            fetched.exportGroups = new ExportItemGroup[fileData["exportGroups"].Count];
+            for (int i = 0; i < fileData["exportGroups"].Count; i++)
+            {
+                fetched.exportGroups[i] = new ExportItemGroup()
+                {
+                    id = (int)fileData["exportGroups"][i]["id"],
+                    groupName = fileData["exportGroups"][i]["groupName"].ToString(),
+                    groupSpriteName = fileData["exportGroups"][i]["groupSpriteName"].ToString()
+                };
+            }
+
+            fetched.exportItems = new ExportItem[fileData["exportItems"].Count];
+            for (int i = 0; i < fileData["exportItems"].Count; i++)
+            {
+                fetched.exportItems[i] = new ExportItem()
+                {
+                    name = fileData["exportItems"][i]["name"].ToString(),
+                    desc = fileData["exportItems"][i]["desc"].ToString(),
+                    stackable = (bool)fileData["exportItems"][i]["stackable"],
+                    amount = (short)fileData["exportItems"][i]["amount"],
+                    value = (short)fileData["exportItems"][i]["value"],
+                    weight = (int)fileData["exportItems"][i]["weight"],     //In grams!
+                    groupId = (int)fileData["exportItems"][i]["groupId"],
+                    x = (int)fileData["exportItems"][i]["x"],
+                    y = (int)fileData["exportItems"][i]["y"],
+                    itemCategory = (ITEM_CATEGORIES)(int)fileData["exportItems"][i]["itemCategory"],
+                    damageType = (DAMAGE_TYPES)(int)fileData["exportItems"][i]["damageType"],
+                    damage = (short)fileData["exportItems"][i]["damage"],
+                    armor = (short)fileData["exportItems"][i]["armor"],
+                    range = (short)fileData["exportItems"][i]["range"],
+                    usesAmmo = (bool)fileData["exportItems"][i]["usesAmmo"],
+                    ammoType = (int)fileData["exportItems"][i]["ammoType"]  //This will be set to the group of the ammo
+                };
+            }
+
+            return fetched;
         }
     }
 
