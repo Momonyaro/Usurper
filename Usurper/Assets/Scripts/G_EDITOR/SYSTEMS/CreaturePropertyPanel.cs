@@ -1,4 +1,5 @@
 using UnityEngine;
+using System.Collections.Generic;
 using UnityEngine.UI;
 using RULESET.ENTITIES;
 using RENDERER.UTILS.Atlas;
@@ -18,9 +19,9 @@ namespace EDITOR.SYSTEMS
         {
             nameField.SetTextWithoutNotify(CreatureDesigner.selected.name);
             idField.SetTextWithoutNotify(CreatureDesigner.selected.id.ToString());
-            if (CreatureDesigner.selected.sprite == null) { sprNameField.SetTextWithoutNotify("spr_err"); } else { sprNameField.SetTextWithoutNotify(CreatureDesigner.selected.sprite.name); }
+            if (CreatureDesigner.selected.sprites == null) { sprNameField.SetTextWithoutNotify("spr_err"); } else { sprNameField.SetTextWithoutNotify(CreatureDesigner.selected.sprites[0].name); }
             descField.SetTextWithoutNotify(CreatureDesigner.selected.desc);
-            sprPreview.sprite = CreatureDesigner.selected.sprite;
+            sprPreview.sprite = CreatureDesigner.selected.sprites[0];
             FindObjectOfType<CreatureDesigner>().PopulateCreatureList();
         }
 
@@ -38,7 +39,7 @@ namespace EDITOR.SYSTEMS
 
         public void SetSelectedSprFromName(string newSprName)
         {
-            CreatureDesigner.selected.sprite = SpriteAtlas.FetchSpriteByName(newSprName);
+            CreatureDesigner.selected.sprites = new List<Sprite>() { SpriteAtlas.FetchSpriteByName(newSprName) };
             PopulateFieldsWithSelectedProperties();
         }
 

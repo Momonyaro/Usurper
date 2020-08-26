@@ -21,29 +21,6 @@ namespace EDITOR.EXPORT
         {
             EntityBlock toReturn = new EntityBlock(new List<ActorEntity>(), new List<CreatureSpecies>());
             JsonData fileData = JsonMapper.ToObject(File.ReadAllText(mapName + "/" + "Actors" + fileExtention));
-            for (int i = 0; i < fileData["actors"].Count; i++)
-            {
-                ActorEntity a = new ActorEntity()
-                {
-                    name = fileData["actors"][i]["name"].ToString(),
-                    x    = (int)fileData["actors"][i]["x"],
-                    y    = (int)fileData["actors"][i]["y"]
-                };
-                a.species = (int)fileData["actors"][i]["species"];
-                toReturn.actors.Add(a);
-            }
-
-            try
-            {
-                if (fileData["creatures"].Count > 0)
-                {
-                    //This means we found it!
-                }
-            }
-            catch
-            {
-                return toReturn;
-            }
 
             for (int i = 0; i < fileData["creatures"].Count; i++)
             {
@@ -51,7 +28,7 @@ namespace EDITOR.EXPORT
                 for (int y = 0; y < fileData["creatures"][i]["bodyParts"].Count; y++)
                 {
                     JsonData bodyPartData = fileData["creatures"][i]["bodyParts"][y];
-                    bodyParts.Add(new CompactBodyPart() 
+                    bodyParts.Add(new CompactBodyPart()
                     {
                         name = bodyPartData["name"].ToString(),
                         countsForDamage = (bool)bodyPartData["countsForDamage"],
@@ -59,9 +36,9 @@ namespace EDITOR.EXPORT
                         damageMultiplier = (int)bodyPartData["damageMultiplier"],
                         canHoldType = (int)bodyPartData["canHoldType"],
                         canEquipType = (int)bodyPartData["canEquipType"],
-                        partX = (int)bodyPartData["partX"], 
-                        partY = (int)bodyPartData["partY"], 
-                        width = (int)bodyPartData["width"], 
+                        partX = (int)bodyPartData["partX"],
+                        partY = (int)bodyPartData["partY"],
+                        width = (int)bodyPartData["width"],
                         height = (int)bodyPartData["height"],
                         angle = (int)bodyPartData["angle"]
                     });
@@ -73,7 +50,7 @@ namespace EDITOR.EXPORT
                     desc = fileData["creatures"][i]["desc"].ToString(),
                     id = (int)fileData["creatures"][i]["id"],
                     spriteName = fileData["creatures"][i]["spriteName"].ToString(), //Change to list to have a pool of sprites instead.
-                    averageStats = new int[7] 
+                    averageStats = new int[7]
                     {
                         (int)fileData["creatures"][i]["averageStats"][0],
                         (int)fileData["creatures"][i]["averageStats"][1],
@@ -88,6 +65,30 @@ namespace EDITOR.EXPORT
                 };
                 Debug.Log(c.id);
                 toReturn.creatures.Add(c);
+            }
+
+            for (int i = 0; i < fileData["actors"].Count; i++)
+            {
+                ActorEntity a = new ActorEntity()
+                {
+                    name = fileData["actors"][i]["name"].ToString(),
+                    x = (int)fileData["actors"][i]["x"],
+                    y = (int)fileData["actors"][i]["y"],
+                    species = (int)fileData["actors"][i]["species"],
+                    spriteIndex = (int)fileData["actors"][i]["spriteIndex"],
+                    actorId = fileData["actors"][i]["actorId"].ToString(),
+                    stats = new int[7]
+                    {
+                        (int)fileData["actors"][i]["stats"][0],
+                        (int)fileData["actors"][i]["stats"][1],
+                        (int)fileData["actors"][i]["stats"][2],
+                        (int)fileData["actors"][i]["stats"][3],
+                        (int)fileData["actors"][i]["stats"][4],
+                        (int)fileData["actors"][i]["stats"][5],
+                        (int)fileData["actors"][i]["stats"][6],
+                    },
+                };
+                toReturn.actors.Add(a);
             }
 
             return toReturn;
@@ -147,7 +148,7 @@ namespace EDITOR.EXPORT
             this.name = creature.name;
             this.desc = creature.desc;
             this.id = creature.id;
-            this.spriteName = creature.sprite.name;
+            this.spriteName = creature.sprites[0].name;
             averageStats = creature.averageStats;
             bodyParts = new List<CompactBodyPart>();
             for (int i = 0; i < creature.bodyParts.Count; i++)

@@ -31,7 +31,6 @@ namespace EDITOR.EXPORT
 
             ExportDatabase exportDatabase = new ExportDatabase(exportGroups, exportItems);
             JsonData databaseData = JsonMapper.ToJson(exportDatabase);
-            Debug.Log(databaseData.ToString());
             string finalPath = path + "Items" + databaseExtention;
             File.WriteAllText(finalPath, databaseData.ToString());
         }

@@ -48,8 +48,8 @@ namespace EDITOR.EXPORT
             
             resourceLoader.Init((int)loadedFile["spriteSize"], (int)loadedFile["dungeonSpriteSize"]);
             mapObject.centerPosOnMap = new Vector2Int((int)loadedFile["playerStartPosX"], (int)loadedFile["playerStartPosY"]);
-            FindObjectOfType<EntityManager>().playerEntity.x = mapObject.centerPosOnMap.x;
-            FindObjectOfType<EntityManager>().playerEntity.y = mapObject.centerPosOnMap.y;
+            EntityManager.playerEntity.x = mapObject.centerPosOnMap.x;
+            EntityManager.playerEntity.y = mapObject.centerPosOnMap.y;
             List<string> chunkPaths = new List<string>();
             for (int i = 0; i < loadedFile["chnkPaths"].Count; i++)
             {
@@ -107,7 +107,7 @@ namespace EDITOR.EXPORT
                         name = creature.name,
                         desc = creature.desc,
                         id = creature.id,
-                        sprite = SpriteAtlas.FetchSpriteByName(creature.spriteName),
+                        sprites = new List<Sprite>() { SpriteAtlas.FetchSpriteByName(creature.spriteName) },
                         averageStats = creature.averageStats,
                         bodyParts = expanded
                     });

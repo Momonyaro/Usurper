@@ -1,4 +1,5 @@
 using UnityEngine;
+using System.Collections.Generic;
 using EDITOR.SYSTEMS;
 using RULESET.MANAGERS;
 
@@ -8,7 +9,7 @@ public class CreatureListItem : MonoBehaviour
 
     public void AddNewToCurrent()
     {
-        EntityManager.creatures.Add(new RULESET.ENTITIES.CreatureSpecies("New Creature", "Creature Description", Resources.Load<Sprite>("Sprites/spr_err")));
+        EntityManager.creatures.Add(new RULESET.ENTITIES.CreatureSpecies("New Creature", "Creature Description", new List<Sprite>() { Resources.Load<Sprite>("Sprites/spr_err") }));
         FindObjectOfType<CreatureDesigner>().PopulateCreatureList();
     }
 

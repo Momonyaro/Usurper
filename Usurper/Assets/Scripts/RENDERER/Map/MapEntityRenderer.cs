@@ -75,7 +75,7 @@ namespace RENDERER.MAP
 				if (!foundExisting)
 				{
 					entityRenderBuffer.Add(new EntityBufferObject(
-						new List<Sprite> { EntityManager.GetCreatureSprite(relevantEntities[i].species) }, localPos.x, localPos.y, 0));
+						new List<Sprite> { EntityManager.GetCreatureSprite(relevantEntities[i].species, relevantEntities[i].spriteIndex) }, localPos.x, localPos.y, 0));
 					bufferObjCount++;
 				}
 			}

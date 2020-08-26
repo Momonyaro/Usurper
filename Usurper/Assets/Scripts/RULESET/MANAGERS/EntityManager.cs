@@ -9,7 +9,7 @@ namespace RULESET.MANAGERS
 {
 	public class EntityManager : MonoBehaviour
 	{
-		public PlayerEntity playerEntity;
+		public static PlayerEntity playerEntity;
 		public static List<ActorEntity> actors = new List<ActorEntity>();
 		public static List<CreatureSpecies> creatures = new List<CreatureSpecies>();
 		public static List<Item> itemsOnGround = new List<Item>();
@@ -160,10 +160,24 @@ namespace RULESET.MANAGERS
 				if (creatures[i].id.Equals(speciesId))
 				{
 					//Later we make it fetch the correct sprite as well!
-					return creatures[i].sprite;
+					return creatures[i].sprites[spriteIndex];
 				}
 			}
 			return Resources.Load<Sprite>("Sprites/spr_err");
+		}
+
+		public static Entity FetchActorFromID(string actorID)
+		{
+			for (int i = 0; i < actors.Count; i++)
+			{
+				if (actors[i].actorId.Equals(actorID))
+				{
+					Debug.Log("Found entity with matching ID : " + actorID);
+					return actors[i];
+				}
+			}
+			Debug.Log("Couldn't entity with matching ID : " + actorID);
+			return null;
 		}
 	}
 }
@@ -175,17 +189,17 @@ namespace RULESET.ENTITIES
 		public string name;
 		public string desc;
 		public int id;
-		public Sprite sprite; //Change to list to have a pool of sprites instead.
+		public List<Sprite> sprites; //Change to list to have a pool of sprites instead.
 		public int[] averageStats;
 		// Add creature bonuses as well!
 		public List<CreatureBodyPart> bodyParts;
 
-		public CreatureSpecies(string name, string desc, Sprite sprite)
+		public CreatureSpecies(string name, string desc, List<Sprite> sprites)
 		{
 			this.name = name;
 			this.desc = desc;
 			this.id = 999;
-			this.sprite = sprite;
+			this.sprites = sprites;
 			averageStats = new int[7] { 1, 1, 1, 1, 1, 1, 1 };
 			bodyParts = new List<CreatureBodyPart>();
 		}

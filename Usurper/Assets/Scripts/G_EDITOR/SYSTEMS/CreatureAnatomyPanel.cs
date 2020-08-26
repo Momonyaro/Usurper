@@ -86,7 +86,9 @@ namespace EDITOR.SYSTEMS
 
         public void AddNewSelected()
         {
+            int newIndex = CreatureDesigner.selected.bodyParts.Count;
             CreatureDesigner.selected.bodyParts.Add(new CreatureBodyPart(new BodyPart(), new RectInt(0, 0, 50, 50), 0));
+            selected = CreatureDesigner.selected.bodyParts[newIndex];
             FindObjectOfType<CreatureDesigner>().DrawCreature();
         }
 
@@ -100,7 +102,9 @@ namespace EDITOR.SYSTEMS
         public void PasteCopy()
         {
             if (copy == null || CreatureDesigner.selected == null) return;
+            int newIndex = CreatureDesigner.selected.bodyParts.Count;
             CreatureDesigner.selected.bodyParts.Add(copy.Copy());
+            selected = CreatureDesigner.selected.bodyParts[newIndex];
             FindObjectOfType<CreatureDesigner>().DrawCreature();
         }
 

@@ -72,7 +72,7 @@ namespace EDITOR.SYSTEMS
                 if (selected == EntityManager.creatures[i]) { instance.GetComponent<Image>().color = new Color32(95, 126, 164, 255); }
                 instance.GetComponent<CreatureListItem>().index = i;
                 instance.transform.GetChild(0).GetComponent<Text>().text = EntityManager.creatures[i].name;
-                instance.transform.GetChild(1).GetComponent<Image>().sprite = EntityManager.creatures[i].sprite;
+                instance.transform.GetChild(1).GetComponent<Image>().sprite = EntityManager.creatures[i].sprites[0];
             }
         }
 

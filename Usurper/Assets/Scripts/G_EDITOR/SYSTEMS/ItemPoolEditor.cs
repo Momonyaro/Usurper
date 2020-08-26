@@ -68,17 +68,6 @@ namespace EDITOR.SYSTEMS
 					break;
 			}
 
-			GameObject instancee = Instantiate(itemListPrefab, listContentParent.transform);
-			ItemListItem listIteme = instancee.GetComponent<ItemListItem>();
-			listIteme.index = 0;
-			listIteme.relevantMode = editorMode;
-			listIteme.addBtn = true;
-			listIteme.propertyEditor = propertyEditor;
-
-			instancee.transform.GetChild(0).GetComponent<Text>().text = "Add New";
-			instancee.transform.GetChild(1).GetComponent<Image>().sprite = Resources.Load<Sprite>("Sprites/UI/spr_ui_plus");
-			instancee.transform.GetChild(1).GetComponent<Image>().color = Color.green;
-
 			DrawSelected();
 		}
 
