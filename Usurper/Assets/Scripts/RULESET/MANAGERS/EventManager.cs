@@ -24,6 +24,11 @@ namespace RULESET.MANAGERS
             RENAME_ACTOR        = 66,
             GIVE_ACTOR_ITEM     = 67,
             GIVE_PLAYER_ITEM    = 68,
+            SET_ACTOR_THREAD    = 69,
+            START_THREAD        = 70,
+            START_QUEST         = 71,
+            COMPLETE_QUEST      = 72,
+            UPDATE_QUEST        = 73,
         }
 
         public enum Constants           //Range 128 - 255
@@ -31,6 +36,9 @@ namespace RULESET.MANAGERS
             PLAYER_HEALTH       = 128,
             PLAYER_MANA         = 129,
             PLAYER_LEVEL        = 130,
+            ACTOR_HEALTH        = 131,
+            ACTOR_MANA          = 132,
+            ACTOR_LEVEL         = 133,
         }
 
         private int eventIndex = 0;

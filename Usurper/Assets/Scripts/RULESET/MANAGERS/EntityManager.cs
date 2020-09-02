@@ -21,7 +21,10 @@ namespace RULESET.MANAGERS
 		private void Awake()
 		{
 			playerEntity = new PlayerEntity();
-			playerEntity.name = "bruh";
+			playerEntity.name = "Momonyaro";
+			playerEntity.maxHealth = playerEntity.CalculateMaxHealth();
+			playerEntity.health = playerEntity.maxHealth / 2;
+			playerEntity.xpNeeded = playerEntity.CalculateXPNeeded();
 			playerEntity.x = 5;
 			playerEntity.y = 5;
 		}

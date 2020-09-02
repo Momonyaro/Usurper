@@ -44,12 +44,18 @@ namespace EDITOR.EXPORT
                     });
                 }
 
+                string[] importedSpriteNames = new string[fileData["creatures"][i]["spriteNames"].Count];
+                for (int q = 0; q < fileData["creatures"][i]["spriteNames"].Count; q++)
+                {
+                    importedSpriteNames[q] = fileData["creatures"][i]["spriteNames"][q].ToString();
+                }
+
                 CompactCreature c = new CompactCreature()
                 {
                     name = fileData["creatures"][i]["name"].ToString(),
                     desc = fileData["creatures"][i]["desc"].ToString(),
                     id = (int)fileData["creatures"][i]["id"],
-                    spriteName = fileData["creatures"][i]["spriteName"].ToString(), //Change to list to have a pool of sprites instead.
+                    spriteNames = importedSpriteNames, //Change to list to have a pool of sprites instead.
                     averageStats = new int[7]
                     {
                         (int)fileData["creatures"][i]["averageStats"][0],
@@ -128,17 +134,17 @@ namespace EDITOR.EXPORT
         public string name;
         public string desc;
         public int id;
-        public string spriteName; //Change to list to have a pool of sprites instead.
+        public string[] spriteNames; //Change to list to have a pool of sprites instead.
         public int[] averageStats;
         // Add creature bonuses as well!
         public List<CompactBodyPart> bodyParts;
 
-        public CompactCreature(string name, string desc, string spriteName)
+        public CompactCreature(string name, string desc, string[] spriteNames)
         {
             this.name = name;
             this.desc = desc;
             this.id = 420;
-            this.spriteName = spriteName;
+            this.spriteNames = spriteNames;
             averageStats = new int[7] { 1, 1, 1, 1, 1, 1, 1 };
             bodyParts = new List<CompactBodyPart>();
         }
@@ -148,7 +154,12 @@ namespace EDITOR.EXPORT
             this.name = creature.name;
             this.desc = creature.desc;
             this.id = creature.id;
-            this.spriteName = creature.sprites[0].name;
+            string[] sprNames = new string[creature.sprites.Count];
+            for (int i = 0; i < creature.sprites.Count; i++)
+            {
+                sprNames[i] = creature.sprites[i].name;
+            }
+            this.spriteNames = sprNames;
             averageStats = creature.averageStats;
             bodyParts = new List<CompactBodyPart>();
             for (int i = 0; i < creature.bodyParts.Count; i++)

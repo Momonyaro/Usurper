@@ -97,9 +97,13 @@ namespace EDITOR.EXPORT
 
                     for (int i = 0; i < creature.bodyParts.Count; i++)
                     {
-                        Debug.Log("posX: " + creature.bodyParts[i].partX + ", posY: " + creature.bodyParts[i].partY +
-                                ", width: " + creature.bodyParts[i].width + ", height: " + creature.bodyParts[i].height);
                         expanded.Add(creature.bodyParts[i].ExpandCompacted());
+                    }
+
+                    List<Sprite> fetched = new List<Sprite>();
+                    for (int i = 0; i < creature.spriteNames.Length; i++)
+                    {
+                        fetched.Add(SpriteAtlas.FetchSpriteByName(creature.spriteNames[i]));
                     }
 
                     EntityManager.creatures.Add(new RULESET.ENTITIES.CreatureSpecies("", "", null) 
@@ -107,7 +111,7 @@ namespace EDITOR.EXPORT
                         name = creature.name,
                         desc = creature.desc,
                         id = creature.id,
-                        sprites = new List<Sprite>() { SpriteAtlas.FetchSpriteByName(creature.spriteName) },
+                        sprites = fetched,
                         averageStats = creature.averageStats,
                         bodyParts = expanded
                     });
