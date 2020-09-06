@@ -44,6 +44,7 @@ namespace RULESET.UI
 
         private void FixedUpdate()
         {
+            UpdateHUDInfo();
             if (currentState == PlayerCardStates.NEUTRAL) return;
 
             if (currentState == PlayerCardStates.GO_TO_MAX)
@@ -58,7 +59,6 @@ namespace RULESET.UI
                 if (Vector3.Distance(hudTransform.localPosition, new Vector3(0, 0, 0)) < 0.3f) currentState = PlayerCardStates.NEUTRAL;
                 lastAction = PlayerCardStates.GO_TO_START;
             }
-            UpdateHUDInfo();
         }
 
         private void UpdateHUDInfo()

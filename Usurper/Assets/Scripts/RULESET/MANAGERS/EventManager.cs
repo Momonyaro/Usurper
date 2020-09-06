@@ -36,25 +36,33 @@ namespace RULESET.MANAGERS
             PLAYER_HEALTH       = 128,
             PLAYER_MANA         = 129,
             PLAYER_LEVEL        = 130,
-            ACTOR_HEALTH        = 131,
-            ACTOR_MANA          = 132,
-            ACTOR_LEVEL         = 133,
+            ACTOR_HEALTH        = 131,  //Takes an actor ID as input!
+            ACTOR_MANA          = 132,  //Takes an actor ID as input!
+            ACTOR_LEVEL         = 133,  //Takes an actor ID as input!
         }
 
         private int eventIndex = 0;
         private int lineIndex = 0;
-        private Event currentEvent = new Event()
-        {
-            eventId = "ME325",
-            eventData = new List<List<string>>() 
-            { 
-                new List<string>() { "0", "64", "MA191", "1", "1" },
-                new List<string>() { "1", "2", "128", "-4", "65", "3", "3" }
-            }
-        };
+
+        public static Dictionary<string, Event> events = new Dictionary<string, Event>();
+        private Event currentEvent;
 
         int constant = 0;
         int comparator = 0;
+
+        private void Start()
+        {
+            events.Add("ME301", 
+            new Event()
+            {
+                title = "Two Test Events",
+                eventData = new List<List<string>>()
+                {
+                    new List<string>() { "0", "64", "MA191", "1", "1" },
+                    new List<string>() { "1", "2", "128", "-4", "65", "3", "3" }
+                }
+            });
+        }
 
         private void Update()
         {
@@ -63,6 +71,8 @@ namespace RULESET.MANAGERS
 
         public void TestEvent()
         {
+            bool foundEvent = events.TryGetValue("ME301", out currentEvent);
+            if (!foundEvent) return;
             lineIndex = 0;
             for (int i = 0; i < currentEvent.eventData.Count; i++)
             {
@@ -200,7 +210,7 @@ namespace RULESET.MANAGERS
 
     public class Event
     {
-        public string eventId;
+        public string title;
         public List<List<string>> eventData;
     }
 }

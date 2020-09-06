@@ -24,7 +24,10 @@ namespace RULESET.MANAGERS
 			playerEntity.name = "Momonyaro";
 			playerEntity.maxHealth = playerEntity.CalculateMaxHealth();
 			playerEntity.health = playerEntity.maxHealth / 2;
+			playerEntity.maxMana = 40;
+			playerEntity.mana = 26;
 			playerEntity.xpNeeded = playerEntity.CalculateXPNeeded();
+			playerEntity.xp = playerEntity.xpNeeded / 4;
 			playerEntity.x = 5;
 			playerEntity.y = 5;
 		}
