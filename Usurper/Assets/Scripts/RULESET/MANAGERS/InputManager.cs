@@ -13,6 +13,7 @@ namespace RULESET.MANAGERS
 		float timeBetweenInputs = 0.25f;
 		float timer = 0;
 		public static bool inEditorUI = false;
+		public static bool in3DDungeon = false;
 		private CameraController cameraController;
 
 		private void FixedUpdate()
@@ -38,7 +39,7 @@ namespace RULESET.MANAGERS
 			}
 			else
 			{
-				if (timer <= 0)
+				if (timer <= 0 && !in3DDungeon)
 				{
 					GameControls();
 				}

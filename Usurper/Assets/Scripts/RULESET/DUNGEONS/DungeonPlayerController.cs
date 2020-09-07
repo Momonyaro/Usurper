@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using RULESET.DUNGEONS;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.PlayerLoop;
@@ -18,32 +19,44 @@ public class DungeonPlayerController : MonoBehaviour
 
     public float turnSpeed = 0.1f;
     public float movementSpeed = 0.7f;
+    public float timeBetweenInput = 0.3f;
     public bool rotating;
     public bool moving;
+    public FPSMapBuilder mapCreator;
+
+    private float timer;
 
     private PlayerFacing facing = PlayerFacing.NORTH;
 
     // -45 to 45 (NORTH), 45 to 135 (EAST), 135 to 180 and -135 to -180 (SOUTH), -45 to -135 (WEST) 
 
 
+    private void Awake()
+    {
+        mapCreator = FindObjectOfType<FPSMapBuilder>();
+    }
+
     private void Update()
     {
-        if (Input.GetKeyDown(KeyCode.W) && !rotating && !moving)
+        if (timer <= 0)
         {
-            StartCoroutine(MovePlayerForward());
-        }
-        if (Input.GetKeyDown(KeyCode.E) && !rotating && !moving)
-        {
-            StartCoroutine(MovePlayerStrafe(1));
-        }
-        if (Input.GetKeyDown(KeyCode.Q) && !rotating && !moving)
-        {
-            StartCoroutine(MovePlayerStrafe(-1));
+            if (Input.GetKey(KeyCode.W) && !rotating && !moving)
+            {
+                StartCoroutine(MovePlayerForward());
+            }
+            if (Input.GetKey(KeyCode.E) && !rotating && !moving)
+            {
+                StartCoroutine(MovePlayerStrafe(1));
+            }
+            if (Input.GetKey(KeyCode.Q) && !rotating && !moving)
+            {
+                StartCoroutine(MovePlayerStrafe(-1));
+            }
         }
 
         if (Input.GetKeyDown(KeyCode.D) && !rotating && !moving)
         {
-            StartCoroutine(RotatePlayerY( 90));
+            StartCoroutine(RotatePlayerY(90));
         }
         if (Input.GetKeyDown(KeyCode.A) && !rotating && !moving)
         {
@@ -53,6 +66,8 @@ public class DungeonPlayerController : MonoBehaviour
         {
             StartCoroutine(RotatePlayerY(180));
         }
+
+        timer -= Time.deltaTime;
     }
 
 
@@ -94,6 +109,7 @@ public class DungeonPlayerController : MonoBehaviour
             finalPos.x += (facing == PlayerFacing.EAST) ? 1 : -1;
         }
 
+        if (mapCreator.FetchCollisionDataAtPosition(Mathf.RoundToInt(finalPos.x), Mathf.RoundToInt(finalPos.z))) { moving = false; yield break; } 
 
         while (Vector3.Distance(currentPos, finalPos) > 0.1f)
         {
@@ -106,6 +122,8 @@ public class DungeonPlayerController : MonoBehaviour
 
         transform.position = finalPos;
         moving = false;
+
+        timer = timeBetweenInput;
 
         yield break;
     }
@@ -135,6 +153,8 @@ public class DungeonPlayerController : MonoBehaviour
                 break;
         }
 
+        if (mapCreator.FetchCollisionDataAtPosition(Mathf.RoundToInt(finalPos.x), Mathf.RoundToInt(finalPos.z))) { moving = false; yield break; }
+
         while (Vector3.Distance(currentPos, finalPos) > 0.1f)
         {
             currentPos = Vector3.Lerp(currentPos, finalPos, movementSpeed);
@@ -146,6 +166,7 @@ public class DungeonPlayerController : MonoBehaviour
 
         transform.position = finalPos;
         moving = false;
+        timer = timeBetweenInput;
 
         yield break;
     }

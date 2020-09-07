@@ -82,6 +82,8 @@ namespace RULESET.MANAGERS
         public int y;
         public int width;
         public int height;
+        public int pStartX;
+        public int pStartY;
         public int[,] dngData;
 
         public Gate(string name, int x, int y, int width, int height, int[,] dngData)
@@ -92,6 +94,8 @@ namespace RULESET.MANAGERS
             this.width = width;
             this.height = height;
             this.dngData = dngData;
+            this.pStartX = 0;
+            this.pStartY = 0;
         }
 
         public Gate(string name, int x, int y)
@@ -102,6 +106,8 @@ namespace RULESET.MANAGERS
             width = 1;
             height = 1;
             dngData = new int[1,1];
+            this.pStartX = 0;
+            this.pStartY = 0;
         }
     }
 }

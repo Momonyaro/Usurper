@@ -12,7 +12,7 @@ namespace RULESET.DUNGEONS
         //This need to hold all the 6 sprites for each side of the cube!
         public List<SpriteRenderer> spriteRenderers = new List<SpriteRenderer>();
 
-        public DungeonCube(Sprite sprite)
+        public void SetCubeSprite(Sprite sprite)
         {
             foreach (var spriteRenderer in spriteRenderers)
             {
