@@ -25,7 +25,7 @@ namespace RULESET.WORLD
 
             RandomlyPlaceStartRoom(width, height);
 
-            RecursiveRoomPlacementLoop(10);
+            RecursiveRoomPlacementLoop(minNewDoorPosAttempts);
 
             return ConvertToIntData(width, height);
         }
@@ -80,8 +80,8 @@ namespace RULESET.WORLD
                     int minCorridorLength = Random.Range(maxRoomSize - 1, maxRoomSize + 1);
                     Vector2Int size = new Vector2Int(Random.Range(minRoomSize, maxRoomSize), Random.Range(minRoomSize, maxRoomSize));
 
-                    bool makeRoom = (Random.value < 0.5);
-                    if (!makeRoom) size = (Random.value > 0.5) ? new Vector2Int(corridorWidth, minCorridorLength) : new Vector2Int(minCorridorLength, corridorWidth);
+                    bool makeRoom = (Random.value > 0.2f);
+                    if (!makeRoom) size = (Random.value > 0.5f) ? new Vector2Int(corridorWidth, minCorridorLength) : new Vector2Int(minCorridorLength, corridorWidth);
                     PRect newRoom = new PRect(new RectInt(new Vector2Int(0, 0), size), makeRoom);
 
                     Vector3Int doorData = GetPossibleExpansionDirection(currentRoom);

@@ -14,6 +14,10 @@ namespace RULESET.MANAGERS
             IF                  = 1,
             ABOVE               = 2,
             BELOW               = 3,
+            AND                 = 4,
+            OR                  = 5,
+            NOR                 = 6,
+            XOR                 = 7,
         }
 
         public enum Actions             //Range 064 - 127
@@ -50,18 +54,21 @@ namespace RULESET.MANAGERS
         int constant = 0;
         int comparator = 0;
 
+        public int result = 0;
+        public bool success = false;
+
         private void Start()
         {
             events.Add("ME301", 
             new Event()
             {
-                title = "Two Test Events",
+                title = "Three Test Events",
                 eventData = new List<List<string>>()
                 {
-                    new List<string>() { "0", "64", "MA191", "1", "1" },
-                    new List<string>() { "1", "2", "128", "-4", "65", "3", "3" }
+                    new List<string>() { "4", "64", "MA191", "1", "1", "1", "2", "128", "-4", "65", "3", "3", "64", "00000", "5", "4" }
                 }
             });
+
         }
 
         private void Update()
@@ -76,10 +83,8 @@ namespace RULESET.MANAGERS
             lineIndex = 0;
             for (int i = 0; i < currentEvent.eventData.Count; i++)
             {
-                eventIndex = 0;
-                if (currentEvent.eventData[lineIndex].Count <= eventIndex) return;    //Check if we're still in range
-                bool success = int.TryParse(currentEvent.eventData[lineIndex][eventIndex], out int result);    //Try to parse the next instruction
-                if (!success) return;  //ERROR, we want to bail!
+                eventIndex = -1;
+                if (!TickProgramCounter()) break;
                 ParseInstruction(result);
                 lineIndex++;
             }
@@ -88,82 +93,147 @@ namespace RULESET.MANAGERS
 
         private bool ParseInstruction(int conditionIndex)
         {
-            eventIndex++;   // Load the next instruction since most instructions call another instruction.
-            if (currentEvent.eventData[lineIndex].Count <= eventIndex) return false;    //Check if we're still in range
-            bool success = int.TryParse(currentEvent.eventData[lineIndex][eventIndex], out int result);    //Try to parse the next instruction
-            //if (!success) return false;  //ERROR, we want to bail!
+            if (!TickProgramCounter()) return false;
             switch (conditionIndex)
             {
                 case (int)Conditions.DO:    // We expect the next thing in the currentEvent to be a action. Parse it as such
-                        ParseInstruction(result);
+                    Debug.Log("instruction: DO");
+                    ParseInstruction(result);
                     return true;
 
                 case (int)Conditions.IF:    // We expect the next thing in the currentEvent to be a condition. Parse it as such
-                        if (ParseInstruction(result))   //This should be the Condition.
-                        {
-                            eventIndex++;   //Prepare to read the action
-                            if (currentEvent.eventData[lineIndex].Count <= eventIndex) return false;    //Check if we're still in range
-                            success = int.TryParse(currentEvent.eventData[lineIndex][eventIndex], out result);  //Try to parse the next instruction
-                            if (!success) return false; //Return if it fails
-                            ParseInstruction(result);   //This call the Action
-                            return true;
-                        }
+                    Debug.Log("instruction: IF");
+                    if (ParseInstruction(result))   //This should be the Condition.
+                    {
+                        if (!TickProgramCounter()) return false;
+                        ParseInstruction(result);   //This call the Action
+                        return true;
+                    }
                     break;
 
                 case (int)Conditions.ABOVE: // We expect a constant then a integer offset. compare them with a simple larger than operator.
-                        constant = FetchConstant(result);
-                    Debug.Log("Returned constant: " + constant + " from above statement");
+                    Debug.Log("instruction: ABOVE");
+                    constant = FetchConstant(result);
 
-                        eventIndex++;   //Prepare to read the int comparator
-                        if (currentEvent.eventData[lineIndex].Count <= eventIndex) return false;    //Check if we're still in range
-                        success = int.TryParse(currentEvent.eventData[lineIndex][eventIndex], out result);  //Try to parse the next instruction
-                        if (!success) return false; //Return if it fails
+                    if (!TickProgramCounter()) return false;
 
-                        comparator = result;
+                    comparator = result;
 
                     return (constant > comparator);
 
                 case (int)Conditions.BELOW: // We expect a constant then a integer offset. compare them with a simple less than operator.
-                        constant = FetchConstant(result);
+                    Debug.Log("instruction: BELOW");
+                    constant = FetchConstant(result);
 
-                        eventIndex++;   //Prepare to read the int comparator
-                        if (currentEvent.eventData[lineIndex].Count <= eventIndex) return false;    //Check if we're still in range
-                        success = int.TryParse(currentEvent.eventData[lineIndex][eventIndex], out result);  //Try to parse the next instruction
-                        if (!success) return false; //Return if it fails
+                    if (!TickProgramCounter()) return false;
 
-                        comparator = result;
+                    comparator = result;
 
                     return (constant < comparator);
 
+                case (int)Conditions.AND:
+                    Debug.Log("instruction: AND");
+                    if (ParseInstruction(result))   //This should be the Condition.
+                    {
+                        if (!TickProgramCounter()) return false;
+
+                        if (ParseInstruction(result))   //This call the second condition
+                        {
+                            if (!TickProgramCounter()) return false;
+
+                            return ParseInstruction(result);   //Execute the action since both instructions returned true
+                        }
+                    }
+
+                    break;
+
+                case (int)Conditions.OR:
+                    Debug.Log("instruction: OR");
+                    if (ParseInstruction(result))
+                    {
+                        if (!TickProgramCounter()) return false;
+
+                        return ParseInstruction(result);   //Execute the action since one of the instructions returned true
+                    }
+
+                    if (!TickProgramCounter()) return false;
+
+                    if (ParseInstruction(result))
+                    {
+                        if (!TickProgramCounter()) return false;
+
+                        return ParseInstruction(result);   //Execute the action since one of the instructions returned true
+                    }
+
+                    break;
+
+                case (int)Conditions.NOR:
+                    Debug.Log("instruction: NOR");
+
+                    if (!ParseInstruction(result))   //This should be the Condition.
+                    {
+                        if (!TickProgramCounter()) return false;
+
+                        if (!ParseInstruction(result))   //This call the second condition
+                        {
+                            if (!TickProgramCounter()) return false;
+
+                            return ParseInstruction(result);   //Execute the action since both instructions returned false
+                        }
+                    }
+
+                    break;
+
+                case (int)Conditions.XOR:
+                    Debug.Log("instruction: XOR");
+                    if (ParseInstruction(result))
+                    {
+                        if (!TickProgramCounter()) return false;
+
+                        if (!ParseInstruction(result))   //This call the second condition
+                        {
+                            if (!TickProgramCounter()) return false;
+
+                            return ParseInstruction(result);   //Execute the action since both instructions returned different results
+                        }
+                        return false;
+                    }
+
+                    if (!TickProgramCounter()) return false;
+
+                    if (!ParseInstruction(result))
+                    {
+                        if (!TickProgramCounter()) return false;
+
+                        if (ParseInstruction(result))   //This call the second condition
+                        {
+                            if (!TickProgramCounter()) return false;
+
+                            return ParseInstruction(result);   //Execute the action since both instructions returned different results
+                        }
+                        return false;
+                    }
+
+                    break;
 
                 case (int)Actions.WARP_ACTOR:
-                        Entity relevantActor = EntityManager.FetchActorFromID(currentEvent.eventData[lineIndex][eventIndex]);
+                    Debug.Log("instruction: WARP_ACTOR");
+                    Entity relevantActor = EntityManager.FetchActorFromID(currentEvent.eventData[lineIndex][eventIndex]);
                         if (relevantActor == null) { Debug.Log("EVENT:ERROR | Could not find Actor with id : " + currentEvent.eventData[lineIndex][eventIndex]); return false; }
 
-                        eventIndex++; 
-                        if (currentEvent.eventData[lineIndex].Count <= eventIndex) return false;    //Check if we're still in range
-                        success = int.TryParse(currentEvent.eventData[lineIndex][eventIndex], out result);  //Try to parse the next instruction
-                        if (!success) return false; //Return if it fails
+                    if (!TickProgramCounter()) return false;
                         relevantActor.x = result;
 
-                        eventIndex++;
-                        if (currentEvent.eventData[lineIndex].Count <= eventIndex) return false;    //Check if we're still in range
-                        success = int.TryParse(currentEvent.eventData[lineIndex][eventIndex], out result);  //Try to parse the next instruction
-                        if (!success) return false; //Return if it fails
+                    if (!TickProgramCounter()) return false;
                         relevantActor.y = result;
 
-                        return true;
+                    return true;
 
                 case (int)Actions.WARP_PLAYER:
-                        if (currentEvent.eventData[lineIndex].Count <= eventIndex) return false;    //Check if we're still in range
-                        success = int.TryParse(currentEvent.eventData[lineIndex][eventIndex], out result);  //Try to parse the next instruction
-                        if (!success) return false; //Return if it fails
+                    Debug.Log("instruction: WARP_PLAYER");
                         EntityManager.playerEntity.x = result;
 
-                        eventIndex++;
-                        if (currentEvent.eventData[lineIndex].Count <= eventIndex) return false;    //Check if we're still in range
-                        success = int.TryParse(currentEvent.eventData[lineIndex][eventIndex], out result);  //Try to parse the next instruction
-                        if (!success) return false; //Return if it fails
+                    if (!TickProgramCounter()) return false;
                         EntityManager.playerEntity.y = result;
 
                     return true;
@@ -186,19 +256,32 @@ namespace RULESET.MANAGERS
             switch(constantIndex)
             {
                 case (int)Constants.PLAYER_HEALTH:
+                    Debug.Log("instruction: Constants.PLAYER_HEALTH");
                     return EntityManager.playerEntity.health;
                 case (int)Constants.PLAYER_MANA:
+                    Debug.Log("instruction: Constants.PLAYER_MANA");
                     return EntityManager.playerEntity.mana;
                 case (int)Constants.PLAYER_LEVEL:
+                    Debug.Log("instruction: Constants.PLAYER_LEVEL");
                     return EntityManager.playerEntity.level;
             }
             return -1;
+        }
+
+        private bool TickProgramCounter()
+        {
+            eventIndex++;
+            if (currentEvent.eventData[lineIndex].Count <= eventIndex) return false;    //Check if we're still in range
+            success = int.TryParse(currentEvent.eventData[lineIndex][eventIndex], out result);  //Try to parse the next instruction
+            Debug.Log("result: " + result);
+            return true;
         }
 
         // DO               usage:  DO [ACTION]                                 always execute the [ACTION] (perhaps unneccesary in hindsight but it might be good for UI?)
         // IF               usage:  IF [CONDITION] [ACTION]                     if the [CONDITION] returns true, we execute the [ACTION]
         // ABOVE            usage:  ABOVE [CONSTANT] [comparator] [ACTION]      if the [CONSTANT] is above the [comparator] then we execute the [ACTION]
         // BELOW            usage:  BELOW [CONSTANT] [comparator] [ACTION]      if the [CONSTANT] is below the [comparator] then we execute the [ACTION]
+        // AND              usage:  AND [CONDITION] [CONDITION] [ACTION]        if both [CONSTANT]s are true, execute [ACTION]
 
         // WARP_ACTOR       usage:  WARP_ACTOR [ACTOR_ID] [posx] [posy]     warp the actor with the [ACTOR_ID] to a new position decided by [posx], [posy]
         // WARP_PLAYER      usage:  WARP_PLAYER [posx] [posy]               warp the player to a new position decided by [posx], [posy]
