@@ -21,7 +21,6 @@ namespace EDITOR.EXPORT
             {
                 JsonData fileData = JsonMapper.ToObject(File.ReadAllText(Application.streamingAssetsPath + "/Campaigns/" + mapName + "/" + chunkPath));
                 int chunkSize = (int)fileData["chunkSize"];
-                Debug.Log("found chunk with chunkSize: " + chunkSize);
                 int[,] chunkData = new int[chunkSize, chunkSize]; 
                 for (int y = 0; y < chunkSize; y++)
                 {

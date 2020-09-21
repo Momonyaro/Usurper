@@ -14,4 +14,4 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   instructionName: Above
   instructionCode: 2
-  prefabArgs: []
+  prefabArgs: 0200000003000000

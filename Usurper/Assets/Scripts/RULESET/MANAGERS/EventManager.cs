@@ -33,6 +33,10 @@ namespace RULESET.MANAGERS
             START_QUEST         = 71,
             COMPLETE_QUEST      = 72,
             UPDATE_QUEST        = 73,
+            WRITE_TO_MEM        = 74,
+            FLUSH_MEM           = 75,
+
+            NOP                 = 127
         }
 
         public enum Constants           //Range 128 - 255
@@ -43,12 +47,16 @@ namespace RULESET.MANAGERS
             ACTOR_HEALTH        = 131,  //Takes an actor ID as input!
             ACTOR_MANA          = 132,  //Takes an actor ID as input!
             ACTOR_LEVEL         = 133,  //Takes an actor ID as input!
+            READ_MEM            = 135,  //Takes a int as input
         }
 
         private int eventIndex = 0;
         private int lineIndex = 0;
 
+        private const int memBankSize = 64;
+
         public static Dictionary<string, Event> events = new Dictionary<string, Event>();
+        public string[] memBank = new string[memBankSize];
         private Event currentEvent;
 
         int constant = 0;
@@ -62,10 +70,14 @@ namespace RULESET.MANAGERS
             events.Add("ME301", 
             new Event()
             {
-                title = "Three Test Events",
+                title = "Test Event",
                 eventData = new List<List<string>>()
                 {
-                    new List<string>() { "4", "64", "MA191", "1", "1", "1", "2", "128", "-4", "65", "3", "3", "64", "00000", "5", "4" }
+                    new List<string>() { "1", "4", "3", "128", "330", "2", "128", "-4", "65", "3", "3" },       //if warp_actor MA191 to 1,1 and player_health > -4 warp_player 3,3
+                    new List<string>() { "0", "64", "MA191", "1", "1" },                                        //warp_actor 00000 to 5,4
+                    new List<string>() { "0", "74", "5", "316" },                                               //write_to_mem index 5 "316"
+                    new List<string>() { "1", "2", "135", "5", "128", "64", "00000", "9", "0" },                //if memBank[5] > player_health warp_actor 00000 8,1
+                    //new List<string>() { "0", "75", "127" },                                                    //flush_mem nop
                 }
             });
 
@@ -73,7 +85,6 @@ namespace RULESET.MANAGERS
 
         private void Update()
         {
-            if (Input.GetKeyDown(KeyCode.F8)) TestEvent();
         }
 
         public void TestEvent()
@@ -139,9 +150,7 @@ namespace RULESET.MANAGERS
 
                         if (ParseInstruction(result))   //This call the second condition
                         {
-                            if (!TickProgramCounter()) return false;
-
-                            return ParseInstruction(result);   //Execute the action since both instructions returned true
+                            return true;
                         }
                     }
 
@@ -151,18 +160,14 @@ namespace RULESET.MANAGERS
                     Debug.Log("instruction: OR");
                     if (ParseInstruction(result))
                     {
-                        if (!TickProgramCounter()) return false;
-
-                        return ParseInstruction(result);   //Execute the action since one of the instructions returned true
+                        return true;
                     }
 
                     if (!TickProgramCounter()) return false;
 
                     if (ParseInstruction(result))
                     {
-                        if (!TickProgramCounter()) return false;
-
-                        return ParseInstruction(result);   //Execute the action since one of the instructions returned true
+                        return true;
                     }
 
                     break;
@@ -176,9 +181,7 @@ namespace RULESET.MANAGERS
 
                         if (!ParseInstruction(result))   //This call the second condition
                         {
-                            if (!TickProgramCounter()) return false;
-
-                            return ParseInstruction(result);   //Execute the action since both instructions returned false
+                            return true;
                         }
                     }
 
@@ -192,9 +195,7 @@ namespace RULESET.MANAGERS
 
                         if (!ParseInstruction(result))   //This call the second condition
                         {
-                            if (!TickProgramCounter()) return false;
-
-                            return ParseInstruction(result);   //Execute the action since both instructions returned different results
+                            return true;
                         }
                         return false;
                     }
@@ -246,6 +247,21 @@ namespace RULESET.MANAGERS
 
                 case (int)Actions.GIVE_PLAYER_ITEM:
                     break;
+
+                case (int)Actions.WRITE_TO_MEM:
+                    Debug.Log("instruction: WRITE TO MEMORY BANK");
+                    comparator = result;
+                    if (!TickProgramCounter()) return false;
+                    memBank[comparator] = currentEvent.eventData[lineIndex][eventIndex];    //Should work since we're not converting it to an int in this case.
+                    break;
+
+                case (int)Actions.FLUSH_MEM:
+                    Debug.Log("instruction: FLUSH MEMORY BANK");
+                    memBank = new string[memBankSize];
+                    break;
+
+                case (int)Actions.NOP:
+                    break;
             }
 
             return false;
@@ -264,6 +280,12 @@ namespace RULESET.MANAGERS
                 case (int)Constants.PLAYER_LEVEL:
                     Debug.Log("instruction: Constants.PLAYER_LEVEL");
                     return EntityManager.playerEntity.level;
+
+                case (int)Constants.READ_MEM:
+                    if (!TickProgramCounter()) return -1;
+                    Debug.Log("instruction: READ MEMORY BANK " + result);
+                    if (!int.TryParse(memBank[result], out result)) return -2;
+                    return result;
             }
             return -1;
         }

@@ -14,4 +14,4 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   instructionName: Warp Actor
   instructionCode: 64
-  prefabArgs: []
+  prefabArgs: 030000000300000003000000

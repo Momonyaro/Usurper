@@ -27,7 +27,6 @@ public class ListTileObjContainer : MonoBehaviour
         if (transparencyToggle != null) lightSrcToggle.SetIsOnWithoutNotify(thisTileObj.lightSource);
         if (transparencyToggle != null) transparencyToggle.SetIsOnWithoutNotify(thisTileObj.transparent);
         if (transparencyToggle != null) tileSprViewer.sprite = thisTileObj.tile.sprite;
-        Debug.Log("parent for " + gameObject.name + " is: " + transform.parent.name);
     }
 
     public void SetThisTileObj(TileObject newTileObj)
